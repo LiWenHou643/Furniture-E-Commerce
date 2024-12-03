@@ -1,5 +1,11 @@
+CREATE DATABASE IF NOT EXISTS appdb;
 USE appdb;
 SET time_zone = 'Asia/Bangkok';
+
+CREATE TABLE roles (
+	role_id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE customers (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -8,8 +14,10 @@ CREATE TABLE customers (
     phone_number CHAR(10) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
 CREATE TABLE addresses (
@@ -43,6 +51,7 @@ CREATE TABLE product_categories (
 CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
+    product_description TEXT,
     product_category_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_category_id) REFERENCES product_categories(category_id)
@@ -84,9 +93,9 @@ CREATE TABLE product_images (
 
 CREATE TABLE carts (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    customer_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
 CREATE TABLE cart_items (
@@ -98,38 +107,51 @@ CREATE TABLE cart_items (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
-CREATE TABLE delivery_services (
-    delivery_service_id INT AUTO_INCREMENT PRIMARY KEY,
-    delivery_service_name VARCHAR(255) NOT NULL,
-    delivery_service_description TEXT,
-    delivery_time VARCHAR(100),
-    cost DECIMAL(10, 2) NOT NULL
+CREATE TABLE coupons (
+    coupon_id INT PRIMARY KEY,
+    coupon_code VARCHAR(50) UNIQUE NOT NULL,   -- Coupon code (e.g., BLACKFRIDAY2024)
+    discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of discount
+    discount_value DECIMAL(10, 2) NOT NULL, -- Discount amount or percentage
+    min_order_value DECIMAL(10, 2),  -- Minimum order value for coupon to apply
+    max_discount_value DECIMAL(10, 2), -- Maximum money amount to discount
+    valid_from DATE,  -- Coupon validity start
+    valid_until DATE,    -- Coupon validity end
+    usage_limit INT,  -- How many times a coupon can be used
+    usage_count INT DEFAULT 0, -- How many times the coupon has been used
+    coupon_status BOOLEAN DEFAULT TRUE  -- If the coupon is active or not
 );
 
-CREATE TABLE promotions (
-    promotion_id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    discount_percentage DECIMAL(5, 2) NOT NULL,  -- Percentage off
-    discount_amount DECIMAL(10, 2),  -- Fixed amount off
-    valid_from DATETIME NOT NULL,
-    valid_to DATETIME NOT NULL,
-    minimum_order_amount DECIMAL(10, 2),  -- Minimum order to apply coupon
-    promotion_status ENUM('active', 'inactive') NOT NULL
+CREATE TABLE sales (
+    sale_id INT PRIMARY KEY,
+    sale_description VARCHAR(255) NOT NULL,     -- e.g., "Black Friday Sale"
+    start_date DATE,                -- When the sale starts
+    end_date DATE,                  -- When the sale ends
+    discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of sale discount
+    discount_value DECIMAL(10, 2) NOT NULL,  -- Discount percentage or amount
+    sale_status BOOLEAN DEFAULT TRUE     -- If the sale is active or not
+);
+
+CREATE TABLE product_sales (
+    product_id INT,
+    sale_id INT,
+    PRIMARY KEY (product_id, sale_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
 );
 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    customer_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10, 2) NOT NULL,
-    delivery_service_id INT,  -- Reference to the delivery service
-    promotion_id INT,         -- Reference to the applied promotion
-    order_status ENUM('pending', 'shipped', 'delivered', 'cancelled') NOT NULL,
-    delivery_address_id INT,  -- Reference to delivery address
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (delivery_service_id) REFERENCES delivery_services(delivery_service_id),
-    FOREIGN KEY (promotion_id) REFERENCES promotions(promotion_id),
-    FOREIGN KEY (delivery_address_id) REFERENCES addresses(address_id)
+    coupon_id INT,         -- Reference to the applied promotion
+    coupon_value DECIMAL(10, 2) NOT NULL, -- Value at time order created
+    order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') NOT NULL,
+    shipping_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date when the order was shipped
+    shipping_address INT NOT NULL,  -- Reference to the shipping address
+    shipping_method ENUM('standard', 'express', 'overnight') NOT NULL,  -- Shipping method
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id)
 );
 
 CREATE TABLE order_details (
@@ -138,9 +160,12 @@ CREATE TABLE order_details (
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
-    discount DECIMAL(10, 2) DEFAULT 0,  -- Discount applied on product level
+    sale_id INT,  -- Sale associated with this product (if applicable)
+    sale_discount DECIMAL(10, 2) DEFAULT 0.00,  -- The discount applied due to the sale (if applicable)
+    total_price DECIMAL(10, 2) DEFAULT 0.00,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
 );
 
 CREATE TABLE payments (
@@ -150,7 +175,18 @@ CREATE TABLE payments (
     amount DECIMAL(10, 2) NOT NULL,
     payment_method ENUM('credit_card', 'paypal', 'bank_transfer', 'cash_on_delivery') NOT NULL,
     payment_status ENUM('pending', 'completed', 'failed') NOT NULL,
-    promo_discount DECIMAL(10, 2) DEFAULT 0,  -- Total discount applied from promo
-    delivery_cost DECIMAL(10, 2) DEFAULT 0,   -- Delivery cost for the order
+    transaction_reference VARCHAR(255), -- Payment gateway or transaction reference
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+CREATE TABLE product_feedback (
+    feedback_id INT AUTO_INCREMENT PRIMARY KEY,  -- Unique feedback identifier
+    customer_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
+    product_id INT NOT NULL,  -- Reference to the product being reviewed
+    rating INT NOT NULL,  -- Product rating (e.g., 1-5 stars)
+    feedback_text TEXT,  -- Written feedback (optional)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- When the feedback was created
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),  -- Reference to customers table
+    FOREIGN KEY (product_id) REFERENCES products(product_id),  -- Reference to products table
+    CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)  -- Ensure rating is between 1 and 5
 );
