@@ -3,7 +3,6 @@ package com.example.application.controller;
 import com.example.application.dto.request.UpdateProfileRequest;
 import com.example.application.dto.response.ApiResponse;
 import com.example.application.dto.response.PersonResponse;
-import com.example.application.service.person.PersonService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

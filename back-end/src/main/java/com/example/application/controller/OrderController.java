@@ -9,7 +9,6 @@ import com.example.application.exception.AppException;
 import com.example.application.exception.ErrorCode;
 import com.example.application.service.OrderService;
 import com.example.application.service.PaymentService;
-import com.example.application.service.person.PersonService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
