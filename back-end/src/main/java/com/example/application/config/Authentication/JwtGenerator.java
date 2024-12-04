@@ -1,6 +1,6 @@
 package com.example.application.config.Authentication;
 
-import com.example.application.entity.Person;
+import com.example.application.entity.Users;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -17,34 +17,34 @@ import java.time.temporal.ChronoUnit;
 public class JwtGenerator {
     private final JwtEncoder jwtEncoder;
 
-    public String generateAccessToken(Person person) {
+    public String generateAccessToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("eyeglass")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(10, ChronoUnit.SECONDS))
-                                          .subject(person.getEmail())
-                                          .claim("scope", person.getRoles().getName())
+                                          .subject(user.getEmail())
+                                          .claim("scope", user.getRole().getRoleName())
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public String generatePaypalToken(Person person) {
+    public String generatePaypalToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("eyeglass")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(60, ChronoUnit.SECONDS))
-                                          .subject(person.getEmail())
-                                          .claim("scope", person.getRoles().getName())
+                                          .subject(user.getEmail())
+                                          .claim("scope", user.getRole().getRoleName())
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public String generateRefreshToken(Person person) {
+    public String generateRefreshToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("eyeglass")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(15, ChronoUnit.DAYS))
-                                          .subject(person.getEmail())
+                                          .subject(user.getEmail())
                                           .claim("scope", "REFRESH_TOKEN")
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

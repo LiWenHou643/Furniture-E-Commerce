@@ -12,21 +12,31 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
@@ -46,24 +56,49 @@ public class SecurityConfig {
     RSAKeyRecord rsaKeyRecord;
     JwtUtils jwtUtils;
 
+    GoogleOAuth2Properties googleOAuth2Properties;
+
     String[] PUBLIC_ENDPOINTS = {
             "/public/**", "/auth/**", "/error", "/payment/success/**", "/payment/cancel/**", "/favicon.ico", "/api/**",
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(Customizer.withDefaults());
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
-                                                             .permitAll()
-                                                             .anyRequest()
-                                                             .authenticated());
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-        httpSecurity.addFilterBefore(new JwtFilter(jwtUtils, PUBLIC_ENDPOINTS),
-                UsernamePasswordAuthenticationFilter.class);
-        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeHttpRequests((requests) -> requests.requestMatchers("/secure").authenticated()
+                                                                 .anyRequest().permitAll())
+                    .formLogin(Customizer.withDefaults())
+                    .oauth2Login(Customizer.withDefaults());
         return httpSecurity.build();
     }
+
+    @Bean
+    public UserDetailsService userDetailsManager() {
+
+        UserDetails susan = User.builder()
+                                .username("admin")
+                                .password("{noop}Hau643@#")
+                                .roles("EMPLOYEE", "MANAGER", "ADMIN")
+                                .build();
+
+        return new InMemoryUserDetailsManager(susan);
+    }
+
+    @Bean
+    ClientRegistrationRepository clientRegistrationRepository() {
+        ClientRegistration google = googleClientRegistration();
+//        ClientRegistration facebook = facebookClientRegistration();
+        return new InMemoryClientRegistrationRepository(google);
+    }
+
+    private ClientRegistration googleClientRegistration() {
+        return CommonOAuth2Provider.GOOGLE.getBuilder("google").clientId(googleOAuth2Properties.getClientId())
+                                          .clientSecret(googleOAuth2Properties.getClientSecret()).build();
+    }
+
+//    private ClientRegistration facebookClientRegistration() {
+//        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId("")
+//                                            .clientSecret("").build();
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

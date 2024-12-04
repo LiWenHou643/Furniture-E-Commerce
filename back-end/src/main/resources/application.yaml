@@ -1,10 +1,10 @@
 spring:
     application:
-        name: ${SPRING_APP_NAME:eyeglass}
+        name: ${SPRING_APP_NAME:app}
     datasource:
-        url: ${DATABASE_URL}
-        username: ${DATABASE_USERNAME}
-        password: ${DATABASE_PASSWORD}
+        url: ${DATABASE_URL:jdbc:mysql://localhost:3306/appdb}
+        username: ${DATABASE_USERNAME:root}
+        password: ${DATABASE_PASSWORD:root}
     jpa:
         hibernate:
             ddl-auto: none
@@ -15,6 +15,17 @@ spring:
     web:
         resources:
             add-mappings: false
+
+    security:
+      oauth2:
+        client:
+            registration:
+                google:
+                    client-id: ${GOOGLE_CLIENT_ID}
+                    client-secret: ${GOOGLE_CLIENT_SECRET}
+                facebook:
+                    client-id: ${FACEBOOK_CLIENT_ID}
+                    client-secret: ${FACEBOOK_CLIENT_SECRET}
 
 logging:
     level:
@@ -30,9 +41,9 @@ server:
 jwt:
     rsa-private-key: classpath:certs/privateKey.pem
     rsa-public-key: classpath:certs/publicKey.pem
-
-paypal:
-    client:
-        id: ${PAYPAL_CLIENT_ID}
-        secret: ${PAYPAL_CLIENT_SECRET}
-    mode: ${PAYPAL_MODE:sandbox}
+#
+#paypal:
+#    client:
+#        id: ${PAYPAL_CLIENT_ID}
+#        secret: ${PAYPAL_CLIENT_SECRET}
+#    mode: ${PAYPAL_MODE:sandbox}

@@ -22,7 +22,7 @@ public class RefreshToken {
     @Column(name = "revoked")
     boolean revoked;
 
-    @ManyToOne
-    @JoinColumn(name = "person_id", referencedColumnName = "id")
-    Person person;
+//    @ManyToOne
+//    @JoinColumn(name = "person_id", referencedColumnName = "id")
+//    Person person;
 }
