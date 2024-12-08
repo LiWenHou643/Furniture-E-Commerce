@@ -57,6 +57,7 @@ public class SecurityConfig {
     JwtUtils jwtUtils;
 
     GoogleOAuth2Properties googleOAuth2Properties;
+    FacebookOAuth2Properties facebookOAuth2Properties;
 
     String[] PUBLIC_ENDPOINTS = {
             "/public/**", "/auth/**", "/error", "/payment/success/**", "/payment/cancel/**", "/favicon.ico", "/api/**",
@@ -67,7 +68,20 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests((requests) -> requests.requestMatchers("/secure").authenticated()
                                                                  .anyRequest().permitAll())
                     .formLogin(Customizer.withDefaults())
-                    .oauth2Login(Customizer.withDefaults());
+                    .oauth2Login(
+                            (oauth2Login) -> oauth2Login.defaultSuccessUrl("/profile", true)
+                                                        .successHandler((request, response, authentication) -> {
+                                                            String continueUrl = (String) request.getSession()
+                                                                                                 .getAttribute(
+                                                                                                         "continueUrl");
+                                                            if (continueUrl != null && !continueUrl.isEmpty()) {
+                                                                response.sendRedirect(
+                                                                        continueUrl); // Redirect to original URL
+                                                            } else {
+                                                                response.sendRedirect(
+                                                                        "/profile"); // Default page after login
+                                                            }
+                                                        }));
         return httpSecurity.build();
     }
 
@@ -86,8 +100,8 @@ public class SecurityConfig {
     @Bean
     ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration google = googleClientRegistration();
-//        ClientRegistration facebook = facebookClientRegistration();
-        return new InMemoryClientRegistrationRepository(google);
+        ClientRegistration facebook = facebookClientRegistration();
+        return new InMemoryClientRegistrationRepository(google, facebook);
     }
 
     private ClientRegistration googleClientRegistration() {
@@ -95,10 +109,10 @@ public class SecurityConfig {
                                           .clientSecret(googleOAuth2Properties.getClientSecret()).build();
     }
 
-//    private ClientRegistration facebookClientRegistration() {
-//        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId("")
-//                                            .clientSecret("").build();
-//    }
+    private ClientRegistration facebookClientRegistration() {
+        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId(facebookOAuth2Properties.getClientId())
+                                            .clientSecret(facebookOAuth2Properties.getClientSecret()).build();
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
