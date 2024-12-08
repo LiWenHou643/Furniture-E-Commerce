@@ -1,20 +1,11 @@
 package com.example.application.controller;
 
-import com.example.application.dto.request.AuthenticationRequest;
-import com.example.application.dto.request.RegisterRequest;
-import com.example.application.dto.response.ApiResponse;
-import com.example.application.dto.response.AuthenticationResponse;
-import com.example.application.dto.response.PersonResponse;
 import com.example.application.service.auth.AuthenticationService;
 import com.example.application.service.auth.LogoutHandlerService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -59,31 +59,41 @@ public class SecurityConfig {
     GoogleOAuth2Properties googleOAuth2Properties;
     FacebookOAuth2Properties facebookOAuth2Properties;
 
-    String[] PUBLIC_ENDPOINTS = {
-            "/public/**", "/auth/**", "/error", "/payment/success/**", "/payment/cancel/**", "/favicon.ico", "/api/**",
-    };
-
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests((requests) -> requests.requestMatchers("/secure").authenticated()
-                                                                 .anyRequest().permitAll())
-                    .formLogin(Customizer.withDefaults())
-                    .oauth2Login(
-                            (oauth2Login) -> oauth2Login.defaultSuccessUrl("/profile", true)
-                                                        .successHandler((request, response, authentication) -> {
-                                                            String continueUrl = (String) request.getSession()
-                                                                                                 .getAttribute(
-                                                                                                         "continueUrl");
-                                                            if (continueUrl != null && !continueUrl.isEmpty()) {
-                                                                response.sendRedirect(
-                                                                        continueUrl); // Redirect to original URL
-                                                            } else {
-                                                                response.sendRedirect(
-                                                                        "/profile"); // Default page after login
-                                                            }
-                                                        }));
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(
+                        (sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+                        .anyRequest().authenticated())
+                .oauth2Login(Customizer.withDefaults())
+                .addFilterBefore(new JwtFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
+
+
+//    @Bean
+//    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.authorizeHttpRequests((requests) -> requests.requestMatchers("/secure").authenticated()
+//                                                                 .anyRequest().permitAll())
+//                    .formLogin(Customizer.withDefaults())
+//                    .oauth2Login(
+//                            (oauth2Login) -> oauth2Login.defaultSuccessUrl("/profile", true)
+//                                                        .successHandler((request, response, authentication) -> {
+//                                                            String continueUrl = (String) request.getSession()
+//                                                                                                 .getAttribute(
+//                                                                                                         "continueUrl");
+//                                                            if (continueUrl != null && !continueUrl.isEmpty()) {
+//                                                                response.sendRedirect(
+//                                                                        continueUrl); // Redirect to original URL
+//                                                            } else {
+//                                                                response.sendRedirect(
+//                                                                        "/profile"); // Default page after login
+//                                                            }
+//                                                        }));
+//        return httpSecurity.build();
+//    }
 
     @Bean
     public UserDetailsService userDetailsManager() {

@@ -5,6 +5,7 @@ import com.example.application.exception.AppException;
 import com.example.application.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,28 +24,19 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
-    private final String[] publicEndpoints;
+
+    String[] PUBLIC_ENDPOINTS = {
+            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**"
+    };
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
-
-        String requestURI = request.getRequestURI();
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-
-        for (String publicEndpoint : publicEndpoints) {
-            boolean isPublicEndpoint = antPathMatcher.match(publicEndpoint, requestURI);
-
-            if (isPublicEndpoint) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) {
 
         try {
             String authorizationHeader = request.getHeader("Authorization");
@@ -72,52 +64,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } catch (AppException e) {
-            var errorResponse = ApiResponse.<Void>builder()
-                                           .code(e.getErrorCode().getCode())
-                                           .message(e.getErrorCode().getMessage())
-                                           .build();
-
-            responseException(response, errorResponse);
-
-        } catch (JwtException | InvalidBearerTokenException e) {
-            log.info("Invalid JWT token: {}", e.getMessage());
-            var code = isTokenExpired(e) ? ErrorCode.JWT_EXPIRED.getCode() : ErrorCode.JWT_INVALID.getCode();
-            var message = isTokenExpired(e) ? ErrorCode.JWT_EXPIRED.getMessage() : ErrorCode.JWT_INVALID.getMessage();
-            var errorResponse = ApiResponse.<Void>builder()
-                                           .code(code)
-                                           .message(message)
-                                           .build();
-            responseException(response, errorResponse);
-
         } catch (Exception e) {
-            var code = ErrorCode.UNCATEGORIZED_EXCEPTION.getCode();
-            var message = e.getMessage();
-            ApiResponse<Void> errorResponse = ApiResponse.<Void>builder()
-                                                         .code(code)
-                                                         .message(message)
-                                                         .build();
-            responseException(response, errorResponse);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
-    private void responseException(HttpServletResponse response, ApiResponse<Void> errorResponse) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(convertObjectToJson(errorResponse));
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(p -> new AntPathMatcher().match(p, request.getServletPath()));
     }
-
-    private boolean isTokenExpired(Exception e) {
-        String errorMessage = e.getMessage();
-        return errorMessage != null && errorMessage.toLowerCase().contains("expired");
-    }
-
-    public String convertObjectToJson(Object object) throws JsonProcessingException {
-        if (object == null) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(object);
-    }
-
 }
