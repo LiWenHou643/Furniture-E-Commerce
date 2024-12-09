@@ -18,7 +18,7 @@ public class Address extends BaseEntity {
     Long addressId;
 
     String unitNumber;  // Optional for apartments or buildings
-    Integer streetNumber;  // Numeric street number
+    int streetNumber;  // Numeric street number
     String streetName;  // Name of the street
     String wardName;  // Ward or Commune (optional)
     String districtName;  // District
@@ -26,6 +26,7 @@ public class Address extends BaseEntity {
     String postalCode;  // Postal code
     String country = "Vietnam";  // Country, default is Vietnam
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     Customer customer;
 }

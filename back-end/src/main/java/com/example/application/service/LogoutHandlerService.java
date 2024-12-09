@@ -1,9 +1,9 @@
-package com.example.application.service.auth;
+package com.example.application.service;
 
 import com.example.application.config.RSAKeyRecord;
 import com.example.application.entity.InvalidatedToken;
-import com.example.application.repository.auth.InvalidatedTokenRepository;
-import com.example.application.repository.auth.RefreshTokenRepository;
+import com.example.application.repository.InvalidatedTokenRepository;
+import com.example.application.repository.RefreshTokenRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,7 +49,7 @@ public class LogoutHandlerService implements LogoutHandler {
             if (cookie.getName().equals("refresh_token")) {
                 refreshTokenRepository.findByRefreshToken(cookie.getValue())
                                       .map(token -> {
-                                          token.setRevoked(true);
+                                          token.setRevoked(1);
                                           refreshTokenRepository.save(token);
                                           return token;
                                       })

@@ -14,15 +14,14 @@ import lombok.experimental.FieldDefaults;
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long refreshTokenId;
 
-    @Column(name = "refresh_token", nullable = false, length = 10000)
+    @Column(nullable = false)
     String refreshToken;
 
-    @Column(name = "revoked")
-    boolean revoked;
+    int revoked;
 
-//    @ManyToOne
-//    @JoinColumn(name = "person_id", referencedColumnName = "id")
-//    Person person;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    Users user;
 }

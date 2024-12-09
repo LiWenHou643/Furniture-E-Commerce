@@ -32,6 +32,6 @@ public class Customer extends BaseEntity {
 
     String avatar;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Address> addresses;
 }

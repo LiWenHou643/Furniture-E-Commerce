@@ -1,15 +1,26 @@
-package com.example.application.service.auth;
+package com.example.application.service;
 
 import com.example.application.config.Authentication.JwtGenerator;
 import com.example.application.config.Authentication.JwtUtils;
+import com.example.application.dto.AuthDTO;
+import com.example.application.dto.LoginRequest;
+import com.example.application.dto.response.TokenType;
+import com.example.application.entity.RefreshToken;
+import com.example.application.entity.Users;
+import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.repository.UserRepository;
-import com.example.application.repository.auth.RefreshTokenRepository;
-import com.example.application.repository.auth.RolesRepository;
+import com.example.application.repository.RefreshTokenRepository;
+import com.example.application.repository.RolesRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 
@@ -17,7 +28,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationService {
+public class AuthService {
     JwtGenerator jwtGenerator;
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
@@ -25,45 +36,45 @@ public class AuthenticationService {
     RolesRepository rolesRepository;
     JwtUtils jwtUtils;
 
-//    public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
-//        Person person = userRepository
-//                .findByEmail(request.username())
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//
-//        boolean authenticated = passwordEncoder.matches(request.password(), person.getPassword());
-//        if (!authenticated) throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
-//
-//        String token = jwtGenerator.generateAccessToken(person);
-//        String refreshToken = jwtGenerator.generateRefreshToken(person);
-//
-//        saveUserRefreshToken(person, refreshToken);
-//        boolean persistent = request.persistent();
-//        if (persistent) createRefreshTokenCookie(response, refreshToken);
-//
-//        Jwt jwt = jwtUtils.getToken(token);
-//        int duration = jwtUtils.getDuration(jwt);
-//
-//        return AuthenticationResponse.builder().accessToken(token).accessTokenExpiry(duration)
-//                                     .tokenType(TokenType.Bearer).username(person.getEmail())
-//                                     .role(person.getRoles().getName()).build();
-//    }
-//
-//    private void saveUserRefreshToken(Person person, String refreshToken) {
-//        var refreshTokenEntity = RefreshToken.builder()
-//                                             .person(person)
-//                                             .refreshToken(refreshToken)
-//                                             .revoked(false)
-//                                             .build();
-//        refreshTokenRepository.save(refreshTokenEntity);
-//    }
-//
-//    private void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-//        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
-//        refreshTokenCookie.setHttpOnly(true);
-//        refreshTokenCookie.setSecure(true);
-//        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); // in seconds (15 days)
-//        response.addCookie(refreshTokenCookie);
-//    }
+    public AuthDTO authenticate(LoginRequest request, HttpServletResponse response) {
+        Users user = userRepository
+                .findByUsername(request.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", request.getUsername()));
+
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!authenticated) throw new BadCredentialsException("Invalid username or password");
+
+        String token = jwtGenerator.generateAccessToken(user);
+        String refreshToken = jwtGenerator.generateRefreshToken(user);
+
+        saveUserRefreshToken(user, refreshToken);
+        int persistent = request.getPersistent();
+        if (persistent == 1) createRefreshTokenCookie(response, refreshToken);
+
+        Jwt jwt = jwtUtils.getToken(token);
+        int duration = jwtUtils.getDuration(jwt);
+
+        return AuthDTO.builder().accessToken(token).accessTokenExpiry(duration)
+                      .tokenType(TokenType.Bearer).username(user.getUsername())
+                      .email(user.getEmail()).role(user.getRole().getRoleName()).build();
+    }
+
+    private void saveUserRefreshToken(Users user, String refreshToken) {
+        var refreshTokenEntity = RefreshToken.builder()
+                                             .user(user)
+                                             .refreshToken(refreshToken)
+                                             .revoked(0)
+                                             .build();
+        refreshTokenRepository.save(refreshTokenEntity);
+    }
+
+    private void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); // in seconds (15 days)
+        response.addCookie(refreshTokenCookie);
+    }
 //
 //    public PersonResponse register(RegisterRequest request) {
 //        Optional<Roles> role = rolesRepository.getByRoleName(AppConstants.ROLE_USER);

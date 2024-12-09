@@ -1,7 +1,7 @@
 package com.example.application.config.Authentication;
 
 import com.example.application.config.RSAKeyRecord;
-import com.example.application.repository.auth.InvalidatedTokenRepository;
+import com.example.application.repository.InvalidatedTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;

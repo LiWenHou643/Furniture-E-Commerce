@@ -24,13 +24,9 @@ public class Users extends BaseEntity {
     String username;
 
     @Column(unique = true)
-    @NotBlank(message = "Email cannot be blank")
-    @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email should be valid")
     String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotBlank(message = "Password cannot be blank")
-    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
     String password;
 
     @ManyToOne
@@ -38,5 +34,5 @@ public class Users extends BaseEntity {
     Roles role;
 
     @Builder.Default
-    int status = 1;
+    int userStatus = 1;
 }

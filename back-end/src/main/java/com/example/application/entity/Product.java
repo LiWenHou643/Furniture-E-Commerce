@@ -33,6 +33,7 @@ public class Product extends BaseEntity {
 
     int ratingCount = 0;
 
+    @Builder.Default
     int productStatus = 1;  // 1 - Active, 0 - Inactive
 
     @ManyToOne

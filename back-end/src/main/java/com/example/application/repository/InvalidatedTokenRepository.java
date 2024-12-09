@@ -1,4 +1,4 @@
-package com.example.application.repository.auth;
+package com.example.application.repository;
 
 import com.example.application.entity.InvalidatedToken;
 import io.micrometer.common.lang.NonNullApi;

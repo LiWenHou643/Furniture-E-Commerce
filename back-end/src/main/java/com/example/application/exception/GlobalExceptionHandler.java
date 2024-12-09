@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.BindException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
@@ -23,8 +24,15 @@ public class GlobalExceptionHandler {
     // General Exception Handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneralException(Exception ex) {
-        ApiResponse<Object> response = new ApiResponse<>("error", "Internal server error", null);
+        ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // No Handler Found Exception
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("error", "No handler found for this request", null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     // ResourceNotFoundException Handler

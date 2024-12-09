@@ -21,7 +21,7 @@ public class ProductController {
 
     ProductService productService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getProducts() {
         List<ProductDTO> items = productService.getProducts();
         return ResponseEntity.ok(new ApiResponse<>("success", "List products found", items));

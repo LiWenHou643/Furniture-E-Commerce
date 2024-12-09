@@ -15,7 +15,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
-    user_status BINARY NOT NULL DEFAULT 1,  -- Account status
+    user_status TINYINT(1) NOT NULL DEFAULT 1,  -- Account status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
@@ -34,6 +34,7 @@ CREATE TABLE customers (
 
 CREATE TABLE addresses (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
     unit_number VARCHAR(50),  -- Optional for apartments or buildings
     street_number INT,        -- Numeric street number
     street_name VARCHAR(255) NOT NULL, -- Name of the street
@@ -43,18 +44,8 @@ CREATE TABLE addresses (
     postal_code VARCHAR(20) NOT NULL, -- Postal code
     country VARCHAR(100) NOT NULL DEFAULT 'Vietnam', -- Country, default is Vietnam
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE customer_address (
-    customer_address_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT,
-    address_id INT,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (address_id) REFERENCES addresses(address_id),
-    UNIQUE(customer_id, address_id),  -- Ensures that a customer cannot be assigned the same address multiple times
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
 CREATE TABLE categories (
@@ -84,7 +75,7 @@ CREATE TABLE products (
     quantity SMALLINT DEFAULT 0,
     rating_count INT DEFAULT 0,
     sub_category_id INT NOT NULL,
-    product_status BINARY NOT NULL DEFAULT 1,
+    product_status TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id)
@@ -107,7 +98,7 @@ CREATE TABLE product_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
     image_url VARCHAR(255) NOT NULL,
-    is_main_image BINARY DEFAULT 0,
+    is_main_image TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
@@ -143,7 +134,7 @@ CREATE TABLE coupons (
     valid_until DATE,    -- Coupon validity end
     usage_limit INT,  -- How many times a coupon can be used
     usage_count INT DEFAULT 0, -- How many times the coupon has been used
-    coupon_status BINARY NOT NULL DEFAULT 1,  -- If the coupon is active or not
+    coupon_status TINYINT(1) NOT NULL DEFAULT 1,  -- If the coupon is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -155,7 +146,7 @@ CREATE TABLE sales (
     end_date DATE,                  -- When the sale ends
     discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of sale discount
     discount_value DECIMAL(10, 2) NOT NULL,  -- Discount percentage or amount
-    sale_status BINARY NOT NULL DEFAULT 1,     -- If the sale is active or not
+    sale_status TINYINT(1) NOT NULL DEFAULT 1,     -- If the sale is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -219,6 +210,20 @@ CREATE TABLE payments (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
+CREATE TABLE invalidated_tokens
+(
+	token_id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(512) NOT NULL,
+    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE refresh_tokens (
+	refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
+    refresh_token VARCHAR(512) NOT NULL,
+    revoked TINYINT(1) NOT NULL DEFAULT 0,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 -- CREATE TABLE product_colors (
 -- 	color_id INT AUTO_INCREMENT PRIMARY KEY,
