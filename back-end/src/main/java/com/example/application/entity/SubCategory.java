@@ -1,10 +1,8 @@
 package com.example.application.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,30 +13,26 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubCategory {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+public class SubCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer subCategoryId;
+    Long subCategoryId;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;  // Many sub-categories belong to one category
+    Category category;  // Many sub-categories belong to one category
 
     @Column(name = "sub_category_name", nullable = false)
-    private String subCategoryName;
+    String subCategoryName;
 
     @Column(name = "sub_category_description")
-    private String subCategoryDescription;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    String subCategoryDescription;
 
     // One sub-category can have many products
     @OneToMany(mappedBy = "subCategory")
-    private List<Product> products;
+    List<Product> products;
 
 }

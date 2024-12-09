@@ -12,9 +12,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -45,6 +49,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Configuration
 @RequiredArgsConstructor
@@ -55,7 +60,6 @@ import java.util.Arrays;
 public class SecurityConfig {
     RSAKeyRecord rsaKeyRecord;
     JwtUtils jwtUtils;
-
     GoogleOAuth2Properties googleOAuth2Properties;
     FacebookOAuth2Properties facebookOAuth2Properties;
 
@@ -66,7 +70,7 @@ public class SecurityConfig {
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .oauth2Login(Customizer.withDefaults())
                 .addFilterBefore(new JwtFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
@@ -94,35 +98,35 @@ public class SecurityConfig {
 //                                                        }));
 //        return httpSecurity.build();
 //    }
-
-    @Bean
-    public UserDetailsService userDetailsManager() {
-
-        UserDetails susan = User.builder()
-                                .username("admin")
-                                .password("{noop}Hau643@#")
-                                .roles("EMPLOYEE", "MANAGER", "ADMIN")
-                                .build();
-
-        return new InMemoryUserDetailsManager(susan);
-    }
-
-    @Bean
-    ClientRegistrationRepository clientRegistrationRepository() {
-        ClientRegistration google = googleClientRegistration();
-        ClientRegistration facebook = facebookClientRegistration();
-        return new InMemoryClientRegistrationRepository(google, facebook);
-    }
-
-    private ClientRegistration googleClientRegistration() {
-        return CommonOAuth2Provider.GOOGLE.getBuilder("google").clientId(googleOAuth2Properties.getClientId())
-                                          .clientSecret(googleOAuth2Properties.getClientSecret()).build();
-    }
-
-    private ClientRegistration facebookClientRegistration() {
-        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId(facebookOAuth2Properties.getClientId())
-                                            .clientSecret(facebookOAuth2Properties.getClientSecret()).build();
-    }
+//
+//    @Bean
+//    public UserDetailsService userDetailsManager() {
+//
+//        UserDetails susan = User.builder()
+//                                .username("admin")
+//                                .password("{noop}Hau643@#")
+//                                .roles("EMPLOYEE", "MANAGER", "ADMIN")
+//                                .build();
+//
+//        return new InMemoryUserDetailsManager(susan);
+//    }
+//
+//    @Bean
+//    ClientRegistrationRepository clientRegistrationRepository() {
+//        ClientRegistration google = googleClientRegistration();
+//        ClientRegistration facebook = facebookClientRegistration();
+//        return new InMemoryClientRegistrationRepository(google, facebook);
+//    }
+//
+//    private ClientRegistration googleClientRegistration() {
+//        return CommonOAuth2Provider.GOOGLE.getBuilder("google").clientId(googleOAuth2Properties.getClientId())
+//                                          .clientSecret(googleOAuth2Properties.getClientSecret()).build();
+//    }
+//
+//    private ClientRegistration facebookClientRegistration() {
+//        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId(facebookOAuth2Properties.getClientId())
+//                                            .clientSecret(facebookOAuth2Properties.getClientSecret()).build();
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

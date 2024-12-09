@@ -5,6 +5,8 @@ import com.example.application.entity.Product;
 import com.example.application.mapper.ProductMapper;
 import com.example.application.repository.ProductRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class ProductService {
     private static final String PRODUCT_LIST_CACHE_KEY = "productList";
     private static final String PRODUCT_CACHE_KEY = "product";

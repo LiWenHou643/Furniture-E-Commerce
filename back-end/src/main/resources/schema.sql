@@ -15,7 +15,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
-    status INT NOT NULL DEFAULT 1,  -- Account status
+    user_status TINYINT(1) NOT NULL DEFAULT 1,  -- Account status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
@@ -82,6 +82,7 @@ CREATE TABLE products (
     average_rating DECIMAL(3, 2) DEFAULT 0,
     rating_count INT DEFAULT 0,
     sub_category_id INT NOT NULL,
+    product_status TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id)
@@ -165,7 +166,7 @@ CREATE TABLE coupons (
     valid_until DATE,    -- Coupon validity end
     usage_limit INT,  -- How many times a coupon can be used
     usage_count INT DEFAULT 0, -- How many times the coupon has been used
-    coupon_status BOOLEAN DEFAULT TRUE,  -- If the coupon is active or not
+    coupon_status TINYINT(1) NOT NULL DEFAULT 1,  -- If the coupon is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -177,7 +178,7 @@ CREATE TABLE sales (
     end_date DATE,                  -- When the sale ends
     discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of sale discount
     discount_value DECIMAL(10, 2) NOT NULL,  -- Discount percentage or amount
-    sale_status BOOLEAN DEFAULT TRUE,     -- If the sale is active or not
+    sale_status TINYINT(1) NOT NULL DEFAULT 1,     -- If the sale is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

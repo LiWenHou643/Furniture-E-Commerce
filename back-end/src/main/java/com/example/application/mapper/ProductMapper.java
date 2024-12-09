@@ -8,10 +8,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class, SubCategoryMapper.class})
 public interface ProductMapper {
-        ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
-
     Product toProduct(ProductDTO productDTO);
-    ProductDTO toDTO(Product product);
-    void updateProductFromDto(ProductDTO productDTO, @MappingTarget Product product);
 
+    ProductDTO toDTO(Product product);
+
+    void updateProductFromDto(ProductDTO productDTO, @MappingTarget Product product);
 }
