@@ -1,14 +1,13 @@
 package com.example.application.controller;
 
 import com.example.application.dto.ProductDTO;
-import com.example.application.service.auth.ProductService;
+import com.example.application.dto.response.ApiResponse;
+import com.example.application.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,9 +22,15 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("/")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ProductDTO> getProducts() {
-        return productService.getProducts();
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> getProducts() {
+        List<ProductDTO> items = productService.getProducts();
+        return ResponseEntity.ok(new ApiResponse<>("success", "List products found", items));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> getItemById(@PathVariable Long id) {
+        ProductDTO item = productService.getProduct(id);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Product found", item));
     }
 
 }

@@ -2,8 +2,6 @@ package com.example.application.service.auth;
 
 import com.example.application.config.RSAKeyRecord;
 import com.example.application.entity.InvalidatedToken;
-import com.example.application.exception.AppException;
-import com.example.application.exception.ErrorCode;
 import com.example.application.repository.auth.InvalidatedTokenRepository;
 import com.example.application.repository.auth.RefreshTokenRepository;
 import jakarta.servlet.http.Cookie;
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -54,8 +53,7 @@ public class LogoutHandlerService implements LogoutHandler {
                                           refreshTokenRepository.save(token);
                                           return token;
                                       })
-                                      .orElseThrow(() -> new AppException(
-                                              ErrorCode.REFRESH_TOKEN_INVALID));
+                                      .orElseThrow(() -> new BadJwtException("Invalid refresh token"));
             }
         }
 

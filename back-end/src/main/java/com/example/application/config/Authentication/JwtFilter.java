@@ -1,13 +1,6 @@
 package com.example.application.config.Authentication;
 
-import com.example.application.dto.response.ApiResponse;
-import com.example.application.exception.AppException;
-import com.example.application.exception.ErrorCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -17,14 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 @Slf4j
@@ -42,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                throw new AppException(ErrorCode.JWT_INVALID);
+                throw new BadJwtException("Invalid token");
             }
 
             String token = authorizationHeader.substring(7);
@@ -52,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter {
             boolean isInvalidated = jwtUtils.isInvalidated(jwt);
 
             if (isExpired) {
-                throw new AppException(ErrorCode.JWT_EXPIRED);
+                throw new BadJwtException("Invalid token");
             } else if (isInvalidated) {
-                throw new AppException(ErrorCode.JWT_INVALID);
+                throw new BadJwtException("Invalid token");
             } else {
                 String username = jwt.getClaim("sub");
                 String authorities = jwt.getClaim("scope");

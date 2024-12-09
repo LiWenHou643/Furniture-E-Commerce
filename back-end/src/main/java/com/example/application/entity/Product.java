@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "products")
@@ -17,21 +19,26 @@ public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer productId;
+    Long productId;
 
-    @Column(name = "product_name", nullable = false)
     String productName;
 
-    @Column(name = "product_description")
     String productDescription;
 
-    @Column(name = "average_rating", columnDefinition = "DECIMAL(3,2) DEFAULT 0")
-    Double averageRating = 0.0;
+    double productPrice = 0.0;
 
-    @Column(name = "rating_count", columnDefinition = "INT DEFAULT 0")
-    Integer ratingCount = 0;
+    double averageRating = 0.0;
+
+    int quantity = 0;
+
+    int ratingCount = 0;
+
+    int productStatus = 1;  // 1 - Active, 0 - Inactive
 
     @ManyToOne
     @JoinColumn(name = "sub_category_id", nullable = false)
     SubCategory subCategory;  // Many products belong to one sub-category
+
+    @OneToMany(mappedBy = "product")
+    List<ProductImage> productImages;
 }

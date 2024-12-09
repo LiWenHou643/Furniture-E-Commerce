@@ -15,7 +15,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
-    user_status TINYINT(1) NOT NULL DEFAULT 1,  -- Account status
+    user_status BINARY NOT NULL DEFAULT 1,  -- Account status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
@@ -79,10 +79,12 @@ CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
     product_description TEXT,
+    product_price DECIMAL(10, 2) DEFAULT 0,
     average_rating DECIMAL(3, 2) DEFAULT 0,
+    quantity SMALLINT DEFAULT 0,
     rating_count INT DEFAULT 0,
     sub_category_id INT NOT NULL,
-    product_status TINYINT(1) NOT NULL DEFAULT 1,
+    product_status BINARY NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id)
@@ -101,36 +103,11 @@ CREATE TABLE product_feedback (
     CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)  -- Ensure rating is between 1 and 5
 );
 
--- CREATE TABLE product_colors (
--- 	color_id INT AUTO_INCREMENT PRIMARY KEY,
---     color_name BOOLEAN DEFAULT FALSE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- CREATE TABLE product_item (
---     product_item_id INT AUTO_INCREMENT PRIMARY KEY,
---     product_id INT NOT NULL,
---     original_price DECIMAL(10, 2) NOT NULL,
---     sale_price DECIMAL(10, 2) NOT NULL,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (product_id) REFERENCES products(product_id)
--- );
-
--- CREATE TABLE product_variation (
--- 	variation_id INT AUTO_INCREMENT PRIMARY KEY,
---     product_item_id INT NOT NULL,
---     product_color_id INT NOT NULL,
---     quantity INT DEFAULT 0,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id),
--- 	FOREIGN KEY (product_color_id) REFERENCES product_colors(color_id)
--- );
-
 CREATE TABLE product_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
     image_url VARCHAR(255) NOT NULL,
-    is_main_image BOOLEAN DEFAULT FALSE,
+    is_main_image BINARY DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
@@ -166,7 +143,7 @@ CREATE TABLE coupons (
     valid_until DATE,    -- Coupon validity end
     usage_limit INT,  -- How many times a coupon can be used
     usage_count INT DEFAULT 0, -- How many times the coupon has been used
-    coupon_status TINYINT(1) NOT NULL DEFAULT 1,  -- If the coupon is active or not
+    coupon_status BINARY NOT NULL DEFAULT 1,  -- If the coupon is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -178,7 +155,7 @@ CREATE TABLE sales (
     end_date DATE,                  -- When the sale ends
     discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of sale discount
     discount_value DECIMAL(10, 2) NOT NULL,  -- Discount percentage or amount
-    sale_status TINYINT(1) NOT NULL DEFAULT 1,     -- If the sale is active or not
+    sale_status BINARY NOT NULL DEFAULT 1,     -- If the sale is active or not
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -241,3 +218,29 @@ CREATE TABLE payments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
+
+
+-- CREATE TABLE product_colors (
+-- 	color_id INT AUTO_INCREMENT PRIMARY KEY,
+--     color_name BOOLEAN DEFAULT FALSE,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- CREATE TABLE product_item (
+--     product_item_id INT AUTO_INCREMENT PRIMARY KEY,
+--     product_id INT NOT NULL,
+--     original_price DECIMAL(10, 2) NOT NULL,
+--     sale_price DECIMAL(10, 2) NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (product_id) REFERENCES products(product_id)
+-- );
+
+-- CREATE TABLE product_variation (
+-- 	variation_id INT AUTO_INCREMENT PRIMARY KEY,
+--     product_item_id INT NOT NULL,
+--     product_color_id INT NOT NULL,
+--     quantity INT DEFAULT 0,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id),
+-- 	FOREIGN KEY (product_color_id) REFERENCES product_colors(color_id)
+-- );

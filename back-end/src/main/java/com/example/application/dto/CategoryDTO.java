@@ -4,16 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class CategoryDTO {
 
-    private String categoryId;
-    private String categoryName;
-    private String categoryDescription;
+    Long categoryId;
+    String categoryName;
+    String categoryDescription;
 
     @Override
     public String toString() {

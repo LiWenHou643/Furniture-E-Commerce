@@ -1,37 +1,30 @@
 package com.example.application.dto;
 
+import com.example.application.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ProductDTO {
-    private String productId;
-    private String productName;
-    private String productDescription;
-    private String productCategory;
-    private String productSubCategory;
-    private double productPrice;
-    private int productQuantity;
-    private String productImage;
-    private boolean productStatus;
-
-    @Override
-    public String toString() {
-        return "ProductDTO{" +
-                "productId='" + productId + '\'' +
-                ", productName='" + productName + '\'' +
-                ", productDescription='" + productDescription + '\'' +
-                ", productCategory='" + productCategory + '\'' +
-                ", productSubCategory='" + productSubCategory + '\'' +
-                ", productPrice=" + productPrice +
-                ", productQuantity=" + productQuantity +
-                ", productImage='" + productImage + '\'' +
-                ", productStatus=" + productStatus +
-                '}';
-    }
+    Long productId;
+    String productName;
+    String productDescription;
+    double productPrice;
+    double averageRating;
+    int ratingCount;
+    CategoryDTO productCategory;
+    SubCategoryDTO productSubCategory;
+    int quantity;
+    List<ProductImageDTO> productImages;
+    int productStatus;
 }
