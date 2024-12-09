@@ -3,24 +3,32 @@ package com.example.application.config.Authentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtUtils jwtUtils;
+    JwtUtils jwtUtils;
+//    HandlerExceptionResolver resolver;
 
     String[] PUBLIC_ENDPOINTS = {
             "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**"
@@ -32,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                throw new BadJwtException("Invalid token");
+                throw new JwtException("Invalid token");
             }
 
             String token = authorizationHeader.substring(7);
@@ -42,9 +50,9 @@ public class JwtFilter extends OncePerRequestFilter {
             boolean isInvalidated = jwtUtils.isInvalidated(jwt);
 
             if (isExpired) {
-                throw new BadJwtException("Invalid token");
+                throw new JwtException("Token expired");
             } else if (isInvalidated) {
-                throw new BadJwtException("Invalid token");
+                throw new JwtException("Invalid token");
             } else {
                 String username = jwt.getClaim("sub");
                 String authorities = jwt.getClaim("scope");
@@ -57,6 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            resolver.resolveException(request, response, null, e);
         }
     }
 
@@ -64,9 +73,4 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(p -> new AntPathMatcher().match(p, request.getRequestURI()));
     }
-
-//    @Override
-//    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-//        return new AntPathRequestMatcher("/api/products/**").matches(request);
-//    }
 }
