@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductDTO {
     Long productId;
     String productName;

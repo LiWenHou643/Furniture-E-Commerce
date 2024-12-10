@@ -6,6 +6,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class SubCategoryDTO {
     Long subCategoryId;
