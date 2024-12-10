@@ -33,5 +33,4 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>("success", "User found successfully", user));
     }
 
-
 }

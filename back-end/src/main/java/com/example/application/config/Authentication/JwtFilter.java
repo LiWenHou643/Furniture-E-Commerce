@@ -1,5 +1,8 @@
 package com.example.application.config.Authentication;
 
+import com.example.application.dto.response.ApiResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +20,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 @Slf4j
@@ -24,14 +28,13 @@ import java.util.Arrays;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
-//    HandlerExceptionResolver resolver;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/users/**"
+            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**"
     };
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws IOException {
 
         try {
             String authorizationHeader = request.getHeader("Authorization");
@@ -59,10 +62,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } catch (Exception e) {
+        } catch (JwtException e) {
+            var apiResponse = new ApiResponse<>("error", "Token invalid or expired", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            resolver.resolveException(request, response, null, e);
+            response.getWriter().write(convertObjectToJson(apiResponse));
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
+    }
+
+    public String convertObjectToJson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
     }
 
     @Override
