@@ -2,15 +2,15 @@ package com.example.application.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "google")
-public class GoogleOAuth2Properties {
-    private String clientId;
-    private String clientSecret;
+@ConfigurationProperties("twilio")
+public class TwilioConfig {
+    private String accountSid;
+    private String authToken;
+    private String phoneNumber;
 }

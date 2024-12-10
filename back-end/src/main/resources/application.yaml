@@ -53,9 +53,14 @@ server:
 jwt:
     rsa-private-key: classpath:certs/privateKey.pem
     rsa-public-key: classpath:certs/publicKey.pem
-#
-#paypal:
-#    client:
-#        id: ${PAYPAL_CLIENT_ID}
-#        secret: ${PAYPAL_CLIENT_SECRET}
-#    mode: ${PAYPAL_MODE:sandbox}
+
+twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:TWILIO_ACCOUNT_SID}
+    auth-token: ${TWILIO_AUTH_TOKEN:TWILIO_AUTH_TOKEN}
+    phone-number: ${TWILIO_PHONE_NUMBER:TWILIO_PHONE_NUMBER}
+
+paypal:
+    client:
+        id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
+        secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
+    mode: ${PAYPAL_MODE:sandbox}

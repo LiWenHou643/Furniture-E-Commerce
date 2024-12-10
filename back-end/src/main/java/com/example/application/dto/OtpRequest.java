@@ -5,8 +5,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class LoginRequest {
-    String username;
-    String password;
-    int persistent;
+public class OtpRequest {
+    String phoneNumber;
+    String otp;
 }

@@ -1,6 +1,6 @@
 package com.example.application.dto;
 
-import com.example.application.dto.response.TokenType;
+import com.example.application.constants.TokenType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

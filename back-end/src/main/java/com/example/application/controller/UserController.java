@@ -1,7 +1,7 @@
 package com.example.application.controller;
 
 import com.example.application.dto.UserDTO;
-import com.example.application.dto.response.ApiResponse;
+import com.example.application.dto.ApiResponse;
 import com.example.application.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

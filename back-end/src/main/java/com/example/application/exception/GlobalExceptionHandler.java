@@ -1,5 +1,5 @@
 package com.example.application.exception;
-import com.example.application.dto.response.ApiResponse;
+import com.example.application.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;

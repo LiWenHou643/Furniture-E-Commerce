@@ -1,11 +1,10 @@
 package com.example.application.controller;
 
 import com.example.application.dto.ProductDTO;
-import com.example.application.dto.response.ApiResponse;
+import com.example.application.dto.ApiResponse;
 import com.example.application.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

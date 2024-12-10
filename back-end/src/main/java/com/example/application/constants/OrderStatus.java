@@ -1,4 +1,4 @@
-package com.example.application.entity;
+package com.example.application.constants;
 
 public enum OrderStatus {
     PENDING,       // Order has been placed, awaiting confirmation

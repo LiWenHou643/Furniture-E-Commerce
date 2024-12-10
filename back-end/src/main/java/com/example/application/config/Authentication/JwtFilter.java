@@ -1,6 +1,6 @@
 package com.example.application.config.Authentication;
 
-import com.example.application.dto.response.ApiResponse;
+import com.example.application.dto.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
