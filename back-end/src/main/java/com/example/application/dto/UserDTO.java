@@ -1,20 +1,19 @@
 package com.example.application.dto;
 
-import com.example.application.dto.response.TokenType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class AuthDTO {
-    String accessToken;
-    int accessTokenExpiry;
-    TokenType tokenType;
+public class UserDTO {
+    Long userId;
     String username;
     String email;
-    String role;
+    Long roleId;
+    String roleName;
+    int userStatus;
 }

@@ -8,18 +8,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 
@@ -31,7 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 //    HandlerExceptionResolver resolver;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**"
+            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/users/**"
     };
 
     @Override

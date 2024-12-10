@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.apache.catalina.User;
 
 import java.util.Set;
 
@@ -19,12 +20,10 @@ public class Customer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long customerId;
 
-    @NotBlank(message = "First name cannot be blank")
     String firstName;
 
-    @NotBlank(message = "Last name cannot be blank")
     String lastName;
 
     @Column(unique = true)
@@ -34,4 +33,8 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Address> addresses;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    Users user;
 }
