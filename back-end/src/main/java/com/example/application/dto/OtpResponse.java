@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PwdResetResponse {
+public class OtpResponse {
     private OtpStatus status;
     private String message;
 }

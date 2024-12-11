@@ -1,11 +1,13 @@
 package com.example.application.dto;
 
 import lombok.Getter;
-import lombok.experimental.FieldDefaults;
+import lombok.Setter;
 
 @Getter
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Setter
 public class OtpRequest {
-    String phoneNumber;
-    String otp;
+    private String phoneNumber;
+    private String email;
+    private String username;
+    private String otp;
 }

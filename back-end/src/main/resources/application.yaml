@@ -37,6 +37,20 @@ spring:
                     client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
                     client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
 
+    mail:
+        host: ${MAIL_HOST:smtp.gmail.com}
+        port: ${MAIL_PORT:587}
+        username: ${MAIL_USERNAME:MAIL_USERNAME}
+        password: ${MAIL_PASSWORD:MAIL_PASSWORD}
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    ssl:
+                        trust: smtp.gmail.com
+
 logging:
     level:
         org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}

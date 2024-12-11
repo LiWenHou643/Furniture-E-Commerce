@@ -1,13 +1,18 @@
 package com.example.application.controller;
 
 import com.example.application.dto.ApiResponse;
-import com.example.application.dto.PwdResetRequest;
-import com.example.application.dto.PwdResetResponse;
-import com.example.application.service.OtpService;
+import com.example.application.dto.OtpRequest;
+import com.example.application.dto.OtpResponse;
+import com.example.application.service.EmailService;
+import com.example.application.service.PhoneService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,12 +20,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/otp")
 public class OtpController {
 
-    OtpService otpService;
+    PhoneService phoneService;
+    EmailService emailService;
 
-    // Endpoint to send OTP
-    @PostMapping("/send")
-    public ResponseEntity<ApiResponse<PwdResetResponse>> sendOtp(@RequestBody PwdResetRequest pwdResetRequest) {
-        var response = otpService.sendOtpPwdReset(pwdResetRequest);
+    // Endpoint to send OTP to phone
+    @PostMapping("/send-phone")
+    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToPhone(@RequestBody OtpRequest otpRequest) {
+        var response = phoneService.sendOtpPwdReset(otpRequest);
+        return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", response));
+    }
+
+    // Endpoint to send OTP to email
+    @PostMapping("/send-email")
+    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToEmail(@RequestBody OtpRequest otpRequest) throws MessagingException {
+        var response = emailService.sendVerificationEmail(otpRequest);
         return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", response));
     }
 
@@ -28,7 +41,7 @@ public class OtpController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyOtp(@RequestBody String phoneNumber, @RequestBody String otp) {
         try {
-            boolean isVerified = otpService.verifyOtp(phoneNumber, otp);
+            boolean isVerified = phoneService.verifyOtp(phoneNumber, otp);
 
             if (isVerified) {
                 return ResponseEntity.ok("OTP verified successfully");

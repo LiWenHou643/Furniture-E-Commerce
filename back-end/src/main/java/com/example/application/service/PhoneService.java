@@ -2,8 +2,8 @@ package com.example.application.service;
 
 import com.example.application.config.TwilioConfig;
 import com.example.application.constants.OtpStatus;
-import com.example.application.dto.PwdResetRequest;
-import com.example.application.dto.PwdResetResponse;
+import com.example.application.dto.OtpRequest;
+import com.example.application.dto.OtpResponse;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -22,9 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class OtpService {
+public class PhoneService {
     RedisTemplate<String, String> redisTemplate;
     TwilioConfig twilioConfig;
+
 
     @PostConstruct
     public void initTwilio() {
@@ -41,24 +42,27 @@ public class OtpService {
         return otp;
     }
 
-    // Send OTP
-    public PwdResetResponse sendOtpPwdReset(PwdResetRequest pwdResetRequest) {
+    // Send OTP to phone
+    public OtpResponse sendOtpPwdReset(OtpRequest otpRequest) {
         try {
-            PhoneNumber to = new PhoneNumber(pwdResetRequest.getPhoneNumber());
+            PhoneNumber to = new PhoneNumber(otpRequest.getPhoneNumber());
             PhoneNumber from = new PhoneNumber(twilioConfig.getTrialNumber());
-            String otp = generateOtp(pwdResetRequest.getPhoneNumber());
+            String otp = generateOtp(otpRequest.getPhoneNumber());
             String message = "Dear Customer, Your OTP is : " + otp + ". Please do not share it with anyone.";
             Message.creator(to, from, message).create();
 
-            return new PwdResetResponse(OtpStatus.DELIVERED, "OTP sent successfully");
+            return new OtpResponse(OtpStatus.DELIVERED, "OTP sent successfully");
         } catch (Exception e) {
-            return new PwdResetResponse(OtpStatus.FAILED, "Error sending OTP: " + e.getMessage());
+            return new OtpResponse(OtpStatus.FAILED, "Error sending OTP: " + e.getMessage());
         }
     }
 
     // Verify OTP
     public boolean verifyOtp(String phoneNumber, String otp) {
         String storedOtp = redisTemplate.opsForValue().get(phoneNumber);
+        if (otp.equals(storedOtp)) {
+            deleteOtp(phoneNumber);
+        }
         return otp.equals(storedOtp);
     }
 
