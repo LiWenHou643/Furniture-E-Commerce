@@ -33,7 +33,7 @@ public class EmailService {
         String subject = "Account Verification";
         String otpCode = generateOtp(otpRequest.getEmail());
         String verificationLink = "http://localhost:8080/api/otp/verify?email=" + otpRequest.getEmail() + "&otp=" + otpCode;
-
+        String companyName = "Flora";
         // Load the HTML template
         String htmlContent = null;
         try (var inputStream = Objects.requireNonNull(EmailService.class.getResourceAsStream("/templates/email-otp-content.html"))) {
@@ -44,6 +44,7 @@ public class EmailService {
 
         htmlContent = htmlContent.replace("{{OTP_CODE}}", otpCode);
         htmlContent = htmlContent.replace("{{VERIFICATION_LINK}}", verificationLink);
+        htmlContent = htmlContent.replace("{{COMPANY_NAME}}", companyName);
 
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -52,10 +53,8 @@ public class EmailService {
             helper.setFrom(emailConfig.getUsername());
             helper.setTo(otpRequest.getEmail());
             helper.setSubject(subject);
-
-            helper.addInline("LOGO", new File("/home/levanhau/Desktop/logo.jpeg"));
-
             helper.setText(htmlContent, true); // true indicates HTML content
+            helper.addInline("LOGO", new File("/home/levanhau/Desktop/logo.jpg"));
             javaMailSender.send(message);
 
             return new OtpResponse(OtpStatus.DELIVERED,"Email sent successfully");
