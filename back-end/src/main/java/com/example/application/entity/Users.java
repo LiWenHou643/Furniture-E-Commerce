@@ -23,6 +23,9 @@ public class Users extends BaseEntity {
     @Column(unique = true)
     String email;
 
+    @Column(unique = true)
+    String phoneNumber;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 

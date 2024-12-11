@@ -19,9 +19,9 @@ public class JwtGenerator {
 
     public String generateAccessToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                                          .issuer("eyeglass")
+                                          .issuer("application")
                                           .issuedAt(Instant.now())
-                                          .expiresAt(Instant.now().plus(10, ChronoUnit.SECONDS))
+                                          .expiresAt(Instant.now().plus(100000, ChronoUnit.SECONDS))
                                           .subject(user.getEmail())
                                           .claim("scope", user.getRole().getRoleName())
                                           .build();
@@ -30,9 +30,9 @@ public class JwtGenerator {
 
     public String generatePaypalToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                                          .issuer("eyeglass")
+                                          .issuer("application")
                                           .issuedAt(Instant.now())
-                                          .expiresAt(Instant.now().plus(60, ChronoUnit.SECONDS))
+                                          .expiresAt(Instant.now().plus(1, ChronoUnit.MINUTES))
                                           .subject(user.getEmail())
                                           .claim("scope", user.getRole().getRoleName())
                                           .build();
@@ -41,7 +41,7 @@ public class JwtGenerator {
 
     public String generateRefreshToken(Users user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                                          .issuer("eyeglass")
+                                          .issuer("application")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(15, ChronoUnit.DAYS))
                                           .subject(user.getEmail())

@@ -15,6 +15,7 @@ public class UserDTO {
     Long userId;
     String username;
     String email;
+    String phoneNumber;
     Long roleId;
     String roleName;
     String password;

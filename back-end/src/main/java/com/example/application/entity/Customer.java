@@ -1,10 +1,8 @@
 package com.example.application.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.apache.catalina.User;
 
 import java.util.Set;
 
@@ -25,9 +23,6 @@ public class Customer extends BaseEntity {
     String firstName;
 
     String lastName;
-
-    @Column(unique = true)
-    String phoneNumber;
 
     String avatar;
 

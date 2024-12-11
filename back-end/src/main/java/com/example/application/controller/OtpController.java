@@ -1,43 +1,32 @@
 package com.example.application.controller;
 
+import com.example.application.dto.ApiResponse;
+import com.example.application.dto.PwdResetRequest;
+import com.example.application.dto.PwdResetResponse;
 import com.example.application.service.OtpService;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @RequestMapping("/api/otp")
 public class OtpController {
 
-    private final OtpService otpService;
-
-    public OtpController(OtpService otpService) {
-        this.otpService = otpService;
-    }
+    OtpService otpService;
 
     // Endpoint to send OTP
     @PostMapping("/send")
-    public ResponseEntity<?> sendOtp(@RequestParam String phoneNumber) {
-        try {
-            // Generate OTP and store it in Redis
-            String otp = otpService.generateOtp(phoneNumber);
-
-            // Integrate with SMS API (e.g., Twilio, Zalo, etc.) to send OTP
-            // For now, we will print it in the console (replace with actual API call)
-            System.out.println("OTP sent to " + phoneNumber + ": " + otp);
-
-            return ResponseEntity.ok("OTP sent successfully");
-        } catch (Exception e) {
-            // Handle exceptions if any (e.g., invalid phone number format, Redis issues, etc.)
-            return ResponseEntity.status(500).body("Error sending OTP: " + e.getMessage());
-        }
+    public ResponseEntity<ApiResponse<PwdResetResponse>> sendOtp(@RequestBody PwdResetRequest pwdResetRequest) {
+        var response = otpService.sendOtpPwdReset(pwdResetRequest);
+        return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", response));
     }
 
     // Endpoint to verify OTP
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyOtp(@RequestParam String phoneNumber, @RequestParam String otp) {
+    public ResponseEntity<?> verifyOtp(@RequestBody String phoneNumber, @RequestBody String otp) {
         try {
             boolean isVerified = otpService.verifyOtp(phoneNumber, otp);
 
