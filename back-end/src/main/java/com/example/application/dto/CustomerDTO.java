@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,11 +12,11 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerDTO {
-    Long id;
+    Long customerId;
     String firstName;
     String lastName;
-    String phoneNumber;
     String avatar;
     Set<AddressDTO> addresses;
 }

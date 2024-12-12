@@ -4,10 +4,15 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+@Setter
 @Getter
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class RegisterRequest {
 
+    @NotBlank(message = "First name is required")
+    String firstName;
+    @NotBlank(message = "Last name is required")
+    String lastName;
     @NotBlank(message = "Username is required")
     String username;
     @NotBlank(message = "Email is required")
@@ -16,6 +21,5 @@ public class RegisterRequest {
     String password;
     @NotBlank(message = "Phone number is required")
     String phoneNumber;
-
 
 }
