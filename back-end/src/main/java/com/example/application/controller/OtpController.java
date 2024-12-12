@@ -5,7 +5,6 @@ import com.example.application.dto.OtpRequest;
 import com.example.application.dto.OtpResponse;
 import com.example.application.service.EmailService;
 import com.example.application.service.PhoneService;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +31,13 @@ public class OtpController {
 
     // Endpoint to send OTP to email
     @PostMapping("/send-email")
-    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToEmail(@RequestBody OtpRequest otpRequest) throws MessagingException {
-        var response = emailService.sendVerificationEmail(otpRequest);
-        return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", response));
+    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToEmail(@RequestBody OtpRequest otpRequest) {
+        try {
+            emailService.sendToKafka(otpRequest);
+            return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ApiResponse<>("error", "Error sending OTP", null));
+        }
     }
 
     // Endpoint to verify OTP

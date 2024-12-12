@@ -1,80 +1,80 @@
 spring:
-    application:
-        name: ${SPRING_APP_NAME:app}
-    datasource:
-        url: ${DATABASE_URL:jdbc:mysql://localhost:3306/appdb}
-        username: ${DATABASE_USERNAME:root}
-        password: ${DATABASE_PASSWORD:root}
-    jpa:
-        hibernate:
-            ddl-auto: none
-        show-sql: ${JPA_SHOW_SQL:true}
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
-    web:
-        resources:
-            add-mappings: false
-    data:
-        redis:
-            host: localhost
-            port: 6379
-            timeout: 2000
-            lettuce:
-                pool:
-                    max-idle: 20
-                    min-idle: 2
-                    max-active: 20
-                    max-wait: 3000ms
-    security:
-      oauth2:
-        client:
-            registration:
-                google:
-                    client-id: ${GOOGLE_CLIENT_ID:GOOGLE_CLIENT_ID}
-                    client-secret: ${GOOGLE_CLIENT_SECRET:GOOGLE_CLIENT_SECRET}
-                facebook:
-                    client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
-                    client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
+  application:
+    name: ${SPRING_APP_NAME:app}
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/appdb}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  web:
+    resources:
+      add-mappings: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000
+      lettuce:
+        pool:
+          max-idle: 20
+          min-idle: 2
+          max-active: 20
+          max-wait: 3000ms
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET:GOOGLE_CLIENT_SECRET}
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
 
-    mail:
-        host: ${MAIL_HOST:smtp.gmail.com}
-        port: ${MAIL_PORT:587}
-        username: ${MAIL_USERNAME:MAIL_USERNAME}
-        password: ${MAIL_PASSWORD:MAIL_PASSWORD}
-        properties:
-            mail:
-                smtp:
-                    auth: true
-                    starttls:
-                        enable: true
-                    ssl:
-                        trust: smtp.gmail.com
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:MAIL_USERNAME}
+    password: ${MAIL_PASSWORD:MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
 
 logging:
-    level:
-        org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
-        org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
-        org.springframework.cache.interceptor.CacheInterceptor: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
-    pattern:
-        console: ${LOG_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+  level:
+    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+    org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
+    org.springframework.cache.interceptor.CacheInterceptor: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
 
 server:
-    servlet:
-        session:
-            timeout: ${SESSION_TIMEOUT:20m}
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:20m}
 
 jwt:
-    rsa-private-key: classpath:certs/privateKey.pem
-    rsa-public-key: classpath:certs/publicKey.pem
+  rsa-private-key: classpath:certs/privateKey.pem
+  rsa-public-key: classpath:certs/publicKey.pem
 
 twilio:
-    account-sid: ${TWILIO_ACCOUNT_SID:TWILIO_ACCOUNT_SID}
-    auth-token: ${TWILIO_AUTH_TOKEN:TWILIO_AUTH_TOKEN}
-    trial-number: ${TWILIO_TRIAL_NUMBER:TWILIO_TRIAL_NUMBER}
+  account-sid: ${TWILIO_ACCOUNT_SID:TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN:TWILIO_AUTH_TOKEN}
+  trial-number: ${TWILIO_TRIAL_NUMBER:TWILIO_TRIAL_NUMBER}
 
 paypal:
-    client:
-        id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
-        secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
-    mode: ${PAYPAL_MODE:sandbox}
+  client:
+    id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
+    secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
+  mode: ${PAYPAL_MODE:sandbox}

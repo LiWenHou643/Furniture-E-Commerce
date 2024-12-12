@@ -1,13 +1,14 @@
 package com.example.application.service;
 
 import com.example.application.config.EmailConfig;
-import com.example.application.constants.OtpStatus;
+import com.example.application.dto.NotificationEvent;
 import com.example.application.dto.OtpRequest;
-import com.example.application.dto.OtpResponse;
+import com.example.application.producer.MessageProducer;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,19 +22,31 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @Service
 public class EmailService {
     RedisTemplate<String, String> redisTemplate;
+    MessageProducer messageProducer;
     JavaMailSender javaMailSender;
     EmailConfig emailConfig;
 
-    public OtpResponse sendVerificationEmail(OtpRequest otpRequest) throws MessagingException {
+    public void sendToKafka(OtpRequest otpRequest){
+        NotificationEvent notificationEvent = NotificationEvent.builder().channel(
+                "EMAIL"
+        ).recipient(otpRequest.getEmail())
+                .subject("Welcome to my channel")
+                .body("Hello, " + otpRequest.getUsername()).build();
+
+        messageProducer.sendMessage("notification-delivery", notificationEvent);
+    }
+
+    public void sendVerificationEmail(NotificationEvent otpRequest) throws MessagingException {
         String subject = "Account Verification";
-        String otpCode = generateOtp(otpRequest.getEmail());
-        String verificationLink = "http://localhost:8080/api/otp/verify?email=" + otpRequest.getEmail() + "&otp=" + otpCode;
-        String companyName = "Flora";
+        String otpCode = generateOtp(otpRequest.getRecipient());
+        String verificationLink = "http://localhost:8080/api/otp/verify?email=" + otpRequest.getRecipient() + "&otp=" + otpCode;
+        String companyName = "LuxeHouse";
         // Load the HTML template
         String htmlContent = null;
         try (var inputStream = Objects.requireNonNull(EmailService.class.getResourceAsStream("/templates/email-otp-content.html"))) {
@@ -51,15 +64,13 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setFrom(emailConfig.getUsername());
-            helper.setTo(otpRequest.getEmail());
+            helper.setTo(otpRequest.getRecipient());
             helper.setSubject(subject);
             helper.setText(htmlContent, true); // true indicates HTML content
             helper.addInline("LOGO", new File("/home/levanhau/Desktop/logo.jpg"));
             javaMailSender.send(message);
-
-            return new OtpResponse(OtpStatus.DELIVERED,"Email sent successfully");
         } catch (MailException e) {
-            return new OtpResponse(OtpStatus.FAILED,"Error sending email: " + e.getMessage());
+            log.error("Error sending email: {}", e.getMessage());
         }
     }
 

@@ -2,6 +2,8 @@ package com.example.application.config;
 
 import com.example.application.config.Authentication.JwtFilter;
 import com.example.application.config.Authentication.JwtUtils;
+import com.example.application.config.Oauth2.FacebookOAuth2Properties;
+import com.example.application.config.Oauth2.GoogleOAuth2Properties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
