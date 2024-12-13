@@ -42,6 +42,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    // UserAlreadyExistsException Handler
+    @ExceptionHandler(DataExistedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUserAlreadyExists(DataExistedException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
     // MethodArgumentTypeMismatchException Handler (Invalid parameter type in a request)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Object>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {

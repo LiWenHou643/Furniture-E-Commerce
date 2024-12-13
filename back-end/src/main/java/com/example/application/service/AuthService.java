@@ -12,15 +12,17 @@ import com.example.application.entity.Customer;
 import com.example.application.entity.RefreshToken;
 import com.example.application.entity.Roles;
 import com.example.application.entity.Users;
+import com.example.application.exception.DataExistedException;
 import com.example.application.exception.ResourceNotFoundException;
-import com.example.application.exception.UserAlreadyExistsException;
 import com.example.application.mapper.CustomerMapper;
 import com.example.application.repository.CustomerRepository;
 import com.example.application.repository.RefreshTokenRepository;
 import com.example.application.repository.RolesRepository;
 import com.example.application.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -47,10 +50,18 @@ public class AuthService {
     RefreshTokenRepository refreshTokenRepository;
 
     public AuthDTO authenticate(LoginRequest request, HttpServletResponse response) {
-        Users user = userRepository
-                .findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", request.getUsername()));
+        Users user = null;
+        if (!(request.getEmail() == null)) {
+            user = userRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
+        } else if (!(request.getPhoneNumber() == null)) {
+            user = userRepository
+                .findByPhoneNumber(request.getPhoneNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "phone number", request.getPhoneNumber()));
+        }
 
+        assert user != null;
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!authenticated) throw new BadCredentialsException("Invalid username or password");
 
@@ -65,7 +76,7 @@ public class AuthService {
         int duration = jwtUtils.getDuration(jwt);
 
         return AuthDTO.builder().accessToken(token).accessTokenExpiry(duration)
-                      .tokenType(TokenType.Bearer).username(user.getUsername())
+                      .tokenType(TokenType.Bearer).phoneNumber(user.getPhoneNumber())
                       .email(user.getEmail()).role(user.getRole().getRoleName()).build();
     }
 
@@ -86,22 +97,21 @@ public class AuthService {
         response.addCookie(refreshTokenCookie);
     }
 
+    @Transactional
     public CustomerDTO register(RegisterRequest request) {
         Optional<Roles> role = rolesRepository.findByRoleName(AppConstants.ROLE_USER);
         if (role.isEmpty()) throw new ResourceNotFoundException("Role", "roleName", AppConstants.ROLE_USER);
 
-        request.setUsername(request.getUsername().trim());
         request.setFirstName(request.getFirstName().trim());
         request.setLastName(request.getLastName().trim());
         request.setEmail(request.getEmail().trim());
         request.setPassword(request.getPassword().trim());
 
-//        Optional<Users> existedUser = userRepository.findByEmail(request.getEmail());
-//        if (existedUser.isPresent()) throw new UserAlreadyExistsException(request.getEmail());
-        Boolean existedUser = userRepository.existsByEmail(request.getEmail());
-        if (existedUser) throw new UserAlreadyExistsException(request.getEmail());
+        Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
+        if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
+        Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
+        if (existedPhoneNumber) throw new DataExistedException("User", "phone number",request.getPhoneNumber());
         Users user = Users.builder()
-                          .username(request.getUsername())
                           .email(request.getEmail())
                           .phoneNumber(request.getPhoneNumber())
                           .password(passwordEncoder.encode(request.getPassword()))
@@ -116,39 +126,41 @@ public class AuthService {
         return CustomerMapper.INSTANCE.toDTO(isSaved);
     }
 
-//    public AuthenticationResponse refreshToken(HttpServletRequest request) {
-//        String refreshToken = getRefreshToken(request);
-//
-//        RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
-//                                                   .orElseThrow(() -> new AppException(
-//                                                           ErrorCode.REFRESH_TOKEN_INVALID));
-//        if (token.isRevoked()) {
-//            throw new AppException(ErrorCode.REFRESH_TOKEN_REVOKED);
-//        }
-//
-//        Person person = token.getPerson();
-//        String newAccessToken = jwtGenerator.generateAccessToken(person);
-//
-//        return AuthenticationResponse.builder().accessToken(newAccessToken).accessTokenExpiry(5 * 60)
-//                                     .tokenType(TokenType.Bearer).username(person.getEmail())
-//                                     .role(person.getRoles().getName()).build();
-//    }
-//
-//    private static String getRefreshToken(HttpServletRequest request) {
-//        Cookie[] cookies = request.getCookies();
-//        String refreshToken = null;
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (cookie.getName().equals("refresh_token")) {
-//                    refreshToken = cookie.getValue();
-//                    break;
-//                }
-//            }
-//        }
-//        if (refreshToken == null) {
-//            throw new AppException(ErrorCode.REFRESH_TOKEN_INVALID);
-//        }
-//        refreshToken = refreshToken.replace("Bearer ", "");
-//        return refreshToken;
-//    }
+    public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
+        String refreshToken = getRefreshToken(httpServletRequest);
+
+        RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
+                                                   .orElseThrow(() -> new ResourceNotFoundException("Refresh Token", "token", refreshToken));
+        if (token.getRevoked() == 1) {
+            throw new JwtException("Refresh token has been revoked");
+        }
+
+        Users user = token.getUser();
+        String newAccessToken = jwtGenerator.generateAccessToken(user);
+
+        Jwt jwt = jwtUtils.getToken(newAccessToken);
+        int duration = jwtUtils.getDuration(jwt);
+
+        return AuthDTO.builder().accessToken(newAccessToken).accessTokenExpiry(duration)
+                                     .tokenType(TokenType.Bearer).email(user.getEmail())
+                                     .role(user.getRole().getRoleName()).build();
+    }
+
+    private static String getRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh_token")) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if (refreshToken == null) {
+            throw new JwtException("Invalid refresh token");
+        }
+        refreshToken = refreshToken.replace("Bearer ", "");
+        return refreshToken;
+    }
 }

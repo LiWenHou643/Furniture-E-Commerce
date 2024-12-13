@@ -18,8 +18,6 @@ public class Users extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
-    String username;
-
     @Column(unique = true)
     String email;
 

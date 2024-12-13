@@ -14,7 +14,7 @@ public class AuthDTO {
     String accessToken;
     int accessTokenExpiry;
     TokenType tokenType;
-    String username;
     String email;
+    String phoneNumber;
     String role;
 }
