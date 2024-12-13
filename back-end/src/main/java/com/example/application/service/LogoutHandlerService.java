@@ -45,15 +45,17 @@ public class LogoutHandlerService implements LogoutHandler {
         }
 
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh_token")) {
-                refreshTokenRepository.findByRefreshToken(cookie.getValue())
-                                      .map(token -> {
-                                          token.setRevoked(1);
-                                          refreshTokenRepository.save(token);
-                                          return token;
-                                      })
-                                      .orElseThrow(() -> new BadJwtException("Invalid refresh token"));
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh_token")) {
+                    refreshTokenRepository.findByRefreshToken(cookie.getValue())
+                                          .map(token -> {
+                                              token.setRevoked(1);
+                                              refreshTokenRepository.save(token);
+                                              return token;
+                                          })
+                                          .orElseThrow(() -> new BadJwtException("Invalid refresh token"));
+                }
             }
         }
 
