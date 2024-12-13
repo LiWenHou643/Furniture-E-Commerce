@@ -1,4 +1,4 @@
-package com.example.application.config.Authentication;
+package com.example.application.config.Jwt;
 
 import com.example.application.dto.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**"
+            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/notify/**"
     };
 
     @Override

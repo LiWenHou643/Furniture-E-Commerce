@@ -1,9 +1,7 @@
 package com.example.application.service;
 
 import com.example.application.config.TwilioConfig;
-import com.example.application.constants.OtpStatus;
-import com.example.application.dto.OtpRequest;
-import com.example.application.dto.OtpResponse;
+import com.example.application.dto.OtpDTO;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -43,18 +41,13 @@ public class PhoneService {
     }
 
     // Send OTP to phone
-    public OtpResponse sendOtpPwdReset(OtpRequest otpRequest) {
-        try {
-            PhoneNumber to = new PhoneNumber(otpRequest.getPhoneNumber());
-            PhoneNumber from = new PhoneNumber(twilioConfig.getTrialNumber());
-            String otp = generateOtp(otpRequest.getPhoneNumber());
-            String message = "Dear Customer, Your OTP is : " + otp + ". Please do not share it with anyone.";
-            Message.creator(to, from, message).create();
-
-            return new OtpResponse(OtpStatus.DELIVERED, "OTP sent successfully");
-        } catch (Exception e) {
-            return new OtpResponse(OtpStatus.FAILED, "Error sending OTP: " + e.getMessage());
-        }
+    public void sendOtpPwdReset(OtpDTO otpDTO) {
+        PhoneNumber to = new PhoneNumber(otpDTO.getPhoneNumber());
+        PhoneNumber from = new PhoneNumber(twilioConfig.getTrialNumber());
+        String otp = generateOtp(otpDTO.getPhoneNumber());
+        String message = "Dear Customer, Your OTP is : " + otp + ". Please do not share it with anyone.";
+        Message.creator(to, from, message).create();
+        log.info("OTP sent successfully to " + otpDTO.getPhoneNumber());
     }
 
     // Verify OTP

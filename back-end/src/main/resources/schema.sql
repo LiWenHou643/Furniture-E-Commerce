@@ -80,19 +80,6 @@ CREATE TABLE products (
     FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id)
 );
 
-CREATE TABLE product_feedback (
-    feedback_id INT AUTO_INCREMENT PRIMARY KEY,  -- Unique feedback identifier
-    customer_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
-    product_id INT NOT NULL,  -- Reference to the product being reviewed
-    rating INT NOT NULL,  -- Product rating (e.g., 1-5 stars)
-    feedback_text TEXT,  -- Written feedback (optional)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),  -- Reference to customers table
-    FOREIGN KEY (product_id) REFERENCES products(product_id),  -- Reference to products table
-    CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)  -- Ensure rating is between 1 and 5
-);
-
 CREATE TABLE product_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
@@ -174,6 +161,7 @@ CREATE TABLE orders (
     shipping_address INT NOT NULL,  -- Reference to the shipping address
     shipping_method ENUM('standard', 'express', 'overnight') NOT NULL,  -- Shipping method
     notes TEXT,
+    leave_feedback TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
@@ -194,6 +182,21 @@ CREATE TABLE order_details (
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id),
     FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
+);
+
+CREATE TABLE product_feedback (
+	order_id INT NOT NULL, -- Reference to the order which finished
+    customer_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
+    product_id INT NOT NULL,  -- Reference to the product being reviewed
+    rating INT NOT NULL,  -- Product rating (e.g., 1-5 stars)
+    comment TEXT,  -- Written feedback (optional)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (order_id, customer_id, product_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),  -- Reference to orders table
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),  -- Reference to customers table
+    FOREIGN KEY (product_id) REFERENCES products(product_id),  -- Reference to products table
+    CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)  -- Ensure rating is between 1 and 5
 );
 
 CREATE TABLE payments (

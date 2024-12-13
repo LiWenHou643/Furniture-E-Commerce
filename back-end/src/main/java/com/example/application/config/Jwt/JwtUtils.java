@@ -1,4 +1,4 @@
-package com.example.application.config.Authentication;
+package com.example.application.config.Jwt;
 
 import com.example.application.config.RSAKeyRecord;
 import com.example.application.repository.InvalidatedTokenRepository;

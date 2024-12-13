@@ -1,6 +1,6 @@
 package com.example.application.producer;
 
-import com.example.application.dto.NotificationEvent;
+import com.example.application.dto.NotificationDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +14,7 @@ public class MessageProducer {
 
     KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendMessage(String topic, NotificationEvent notificationEvent) {
-        kafkaTemplate.send(topic, notificationEvent);
+    public void sendMessage(String topic, NotificationDTO notificationDTO) {
+        kafkaTemplate.send(topic, notificationDTO);
     }
 }

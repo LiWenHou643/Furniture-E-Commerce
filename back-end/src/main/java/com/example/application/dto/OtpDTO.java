@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OtpRequest {
+public class OtpDTO {
     private String phoneNumber;
     private String email;
     private String username;

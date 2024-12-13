@@ -1,8 +1,7 @@
 package com.example.application.controller;
 
 import com.example.application.dto.ApiResponse;
-import com.example.application.dto.OtpRequest;
-import com.example.application.dto.OtpResponse;
+import com.example.application.dto.OtpDTO;
 import com.example.application.service.EmailService;
 import com.example.application.service.PhoneService;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +23,12 @@ public class OtpController {
 
     // Endpoint to send OTP to phone
     @PostMapping("/send-phone")
-    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToPhone(@RequestBody OtpRequest otpRequest) {
-        var response = phoneService.sendOtpPwdReset(otpRequest);
-        return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", response));
-    }
-
-    // Endpoint to send OTP to email
-    @PostMapping("/send-email")
-    public ResponseEntity<ApiResponse<OtpResponse>> sendOtpToEmail(@RequestBody OtpRequest otpRequest) {
+    public ResponseEntity<ApiResponse<OtpDTO>> sendOtpToPhone(@RequestBody OtpDTO otpDTO) {
         try {
-            emailService.sendToKafka(otpRequest);
+            phoneService.sendOtpPwdReset(otpDTO);
             return ResponseEntity.ok(new ApiResponse<>("success", "OTP sent successfully", null));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ApiResponse<>("error", "Error sending OTP", null));
+            return ResponseEntity.status(500).body(new ApiResponse<>("error", e.getMessage(), null));
         }
     }
 

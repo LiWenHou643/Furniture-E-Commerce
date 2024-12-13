@@ -1,4 +1,4 @@
-package com.example.application.config.Authentication;
+package com.example.application.config.Jwt;
 
 import com.example.application.entity.Users;
 import lombok.RequiredArgsConstructor;

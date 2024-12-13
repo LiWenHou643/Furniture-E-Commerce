@@ -24,7 +24,7 @@ public class AuthController {
     private final LogoutHandlerService logoutHandlerService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthDTO>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<ApiResponse<AuthDTO>> login(@RequestBody AuthDTO loginRequest, HttpServletResponse httpServletResponse) {
         var response = authService.authenticate(loginRequest, httpServletResponse);
         log.info("User authenticated successfully");
         return ResponseEntity.ok(
@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<CustomerDTO>> register(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody @Valid AuthDTO request) {
         var response = authService.register(request);
         log.info("User registered successfully");
         return ResponseEntity.ok(

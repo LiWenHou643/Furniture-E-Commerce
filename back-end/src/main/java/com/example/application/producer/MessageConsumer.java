@@ -1,6 +1,6 @@
 package com.example.application.producer;
 
-import com.example.application.dto.NotificationEvent;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.service.EmailService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,9 @@ public class MessageConsumer {
     EmailService emailService;
 
     @KafkaListener(topics = "notification-delivery")
-    public void listen(NotificationEvent notificationEvent) throws MessagingException {
-        log.info("Message received is: {}", notificationEvent);
-        emailService.sendVerificationEmail(notificationEvent);
+    public void listen(NotificationDTO notificationDTO) throws MessagingException {
+        log.info("Message received is: {}", notificationDTO);
+        emailService.sendVerificationEmail(notificationDTO);
     }
 
 }

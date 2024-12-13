@@ -12,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NotificationEvent {
+public class NotificationDTO {
     String channel;
     String recipient;
     String templateCode;

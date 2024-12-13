@@ -1,6 +1,8 @@
 package com.example.application.exception;
+
 import com.example.application.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.mail.MessagingException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +69,8 @@ public class GlobalExceptionHandler {
     // BindException Handler (for validation errors in form submissions)
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ApiResponse<Object>> handleBindException(BindException ex) {
-        ApiResponse<Object> response = new ApiResponse<>("error", "Binding validation failed: " + ex.getMessage(), null);
+        ApiResponse<Object> response = new ApiResponse<>("error", "Binding validation failed: " + ex.getMessage(),
+                null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -107,7 +110,8 @@ public class GlobalExceptionHandler {
     // Handle HTTP request method not supported
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<Object>> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-        ApiResponse<Object> response = new ApiResponse<>("error", "Request method not supported: " + ex.getMethod(), null);
+        ApiResponse<Object> response = new ApiResponse<>("error", "Request method not supported: " + ex.getMethod(),
+                null);
         return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
@@ -131,5 +135,13 @@ public class GlobalExceptionHandler {
         ApiResponse<Object> response = new ApiResponse<>("error", "Bad request: " + ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    // Handle MessagingException
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMessagingException(MessagingException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("error", "Messaging error: " + ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
 

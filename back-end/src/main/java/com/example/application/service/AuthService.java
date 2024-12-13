@@ -1,20 +1,18 @@
 package com.example.application.service;
 
-import com.example.application.config.Authentication.JwtGenerator;
-import com.example.application.config.Authentication.JwtUtils;
+import com.example.application.config.Jwt.JwtGenerator;
+import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.constants.AppConstants;
 import com.example.application.constants.TokenType;
 import com.example.application.dto.AuthDTO;
-import com.example.application.dto.CustomerDTO;
-import com.example.application.dto.LoginRequest;
-import com.example.application.dto.RegisterRequest;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.entity.Customer;
 import com.example.application.entity.RefreshToken;
 import com.example.application.entity.Roles;
 import com.example.application.entity.Users;
 import com.example.application.exception.DataExistedException;
 import com.example.application.exception.ResourceNotFoundException;
-import com.example.application.mapper.CustomerMapper;
+import com.example.application.producer.MessageProducer;
 import com.example.application.repository.CustomerRepository;
 import com.example.application.repository.RefreshTokenRepository;
 import com.example.application.repository.RolesRepository;
@@ -46,8 +44,9 @@ public class AuthService {
     RolesRepository rolesRepository;
     CustomerRepository customerRepository;
     RefreshTokenRepository refreshTokenRepository;
+    MessageProducer messageProducer;
 
-    public AuthDTO authenticate(LoginRequest request, HttpServletResponse response) {
+    public AuthDTO authenticate(AuthDTO request, HttpServletResponse response) {
         Users user = null;
         if (!(request.getEmail() == null)) {
             user = userRepository
@@ -96,7 +95,7 @@ public class AuthService {
     }
 
     @Transactional
-    public CustomerDTO register(RegisterRequest request) {
+    public AuthDTO register(AuthDTO request) {
         Roles role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
                                     .orElseThrow(() -> new ResourceNotFoundException(
                                             "Role", "roleName", AppConstants.ROLE_USER));
@@ -120,10 +119,21 @@ public class AuthService {
                                     .user(user).build();
         Customer isSaved = customerRepository.save(customer);
 
+        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
+                                                                 "EMAIL"
+                                                         ).recipient(user.getEmail())
+                                                         .subject("Welcome to my channel")
+                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
+                                                         .build();
+
+        messageProducer.sendMessage("notification-delivery", notificationDTO);
 //        Cart cart = Cart.builder().user(isSaved).build();
 //        cartRepository.save(cart);
 
-        return CustomerMapper.INSTANCE.toDTO(isSaved);
+
+        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
+                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
+                      .lastName(isSaved.getLastName()).build();
     }
 
     public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
