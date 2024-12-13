@@ -32,4 +32,10 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse<>("success", "Product found", item));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> searchProducts(@RequestParam (name = "productName") String query) {
+        List<ProductDTO> items = productService.searchProducts(query);
+        return ResponseEntity.ok(new ApiResponse<>("success", "List products found", items));
+    }
+
 }

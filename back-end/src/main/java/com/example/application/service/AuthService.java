@@ -33,8 +33,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -53,12 +51,12 @@ public class AuthService {
         Users user = null;
         if (!(request.getEmail() == null)) {
             user = userRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
+                    .findByEmail(request.getEmail())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
         } else if (!(request.getPhoneNumber() == null)) {
             user = userRepository
-                .findByPhoneNumber(request.getPhoneNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "phone number", request.getPhoneNumber()));
+                    .findByPhoneNumber(request.getPhoneNumber())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "phone number", request.getPhoneNumber()));
         }
 
         assert user != null;
@@ -99,8 +97,9 @@ public class AuthService {
 
     @Transactional
     public CustomerDTO register(RegisterRequest request) {
-        Optional<Roles> role = rolesRepository.findByRoleName(AppConstants.ROLE_USER);
-        if (role.isEmpty()) throw new ResourceNotFoundException("Role", "roleName", AppConstants.ROLE_USER);
+        Roles role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
+                                    .orElseThrow(() -> new ResourceNotFoundException(
+                                            "Role", "roleName", AppConstants.ROLE_USER));
 
         request.setFirstName(request.getFirstName().trim());
         request.setLastName(request.getLastName().trim());
@@ -110,14 +109,15 @@ public class AuthService {
         Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
         if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
         Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
-        if (existedPhoneNumber) throw new DataExistedException("User", "phone number",request.getPhoneNumber());
+        if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
         Users user = Users.builder()
                           .email(request.getEmail())
                           .phoneNumber(request.getPhoneNumber())
                           .password(passwordEncoder.encode(request.getPassword()))
-                          .role(role.get())
+                          .role(role)
                           .build();
-        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName()).user(user).build();
+        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
+                                    .user(user).build();
         Customer isSaved = customerRepository.save(customer);
 
 //        Cart cart = Cart.builder().user(isSaved).build();
@@ -130,7 +130,9 @@ public class AuthService {
         String refreshToken = getRefreshToken(httpServletRequest);
 
         RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
-                                                   .orElseThrow(() -> new ResourceNotFoundException("Refresh Token", "token", refreshToken));
+                                                   .orElseThrow(
+                                                           () -> new ResourceNotFoundException("Refresh Token", "token",
+                                                                   refreshToken));
         if (token.getRevoked() == 1) {
             throw new JwtException("Refresh token has been revoked");
         }
@@ -142,8 +144,8 @@ public class AuthService {
         int duration = jwtUtils.getDuration(jwt);
 
         return AuthDTO.builder().accessToken(newAccessToken).accessTokenExpiry(duration)
-                                     .tokenType(TokenType.Bearer).email(user.getEmail())
-                                     .role(user.getRole().getRoleName()).build();
+                      .tokenType(TokenType.Bearer).email(user.getEmail())
+                      .role(user.getRole().getRoleName()).build();
     }
 
     private static String getRefreshToken(HttpServletRequest request) {

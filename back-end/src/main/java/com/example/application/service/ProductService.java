@@ -25,14 +25,13 @@ public class ProductService {
     private static final String PRODUCT_CACHE_KEY = "product";
 
     ProductRepository productRepository;
-    ProductMapper productMapper;
 
     // Cache the entire product list
     @Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY)
     public List<ProductDTO> getProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                       .map(productMapper::toDTO)
+                       .map(ProductMapper.INSTANCE::toDTO)
                        .collect(Collectors.toList());
     }
 
@@ -41,7 +40,7 @@ public class ProductService {
     public ProductDTO getProduct(Long id) {
         Product product = productRepository.findById(id)
                                            .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
-        return productMapper.toDTO(product);
+        return ProductMapper.INSTANCE.toDTO(product);
     }
 
     // Cache the individual product and evict the product list cache on add
@@ -51,9 +50,9 @@ public class ProductService {
     )
     @Transactional // Ensures the operation is atomic
     public ProductDTO addProduct(ProductDTO productDTO) {
-        Product product = productMapper.toProduct(productDTO);
+        Product product = ProductMapper.INSTANCE.toProduct(productDTO);
         productRepository.save(product);  // Save the new product
-        return productMapper.toDTO(product);  // Return the DTO
+        return ProductMapper.INSTANCE.toDTO(product);  // Return the DTO
     }
 
     // Cache the individual product and evict the product list cache on update
@@ -66,10 +65,19 @@ public class ProductService {
         Product product = productRepository.findById(id)
                                            .orElseThrow(() -> new IllegalArgumentException(
                                                    "Product with id " + id + " not found"));
-        productMapper.updateProductFromDto(productDTO, product);  // Update fields from DTO
+        ProductMapper.INSTANCE.updateProductFromDto(productDTO, product);  // Update fields from DTO
         productRepository.save(product);  // Save the updated product
-        return productMapper.toDTO(product);  // Return the updated DTO
+        return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
     }
 
+    public List<ProductDTO> searchProducts(String query) {
+        List<Product> products = productRepository.findByProductNameContaining(query)
+                                                  .orElseThrow(() -> new ResourceNotFoundException("Product", "query",
+                                                          query));
+
+        return products.stream()
+                       .map(ProductMapper.INSTANCE::toDTO)
+                       .collect(Collectors.toList());
+    }
 
 }
