@@ -9,10 +9,20 @@ CREATE TABLE roles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE admins(
+	username VARCHAR(255) PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id)
+);
+
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone_number VARCHAR(11) UNIQUE,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    avatar VARCHAR(255),
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
     user_status TINYINT(1) NOT NULL DEFAULT 1,  -- Account status
@@ -21,19 +31,9 @@ CREATE TABLE users (
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
-CREATE TABLE customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    avatar VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
 CREATE TABLE addresses (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
+    user_id INT NOT NULL,
     unit_number VARCHAR(50),  -- Optional for apartments or buildings
     street_number INT,        -- Numeric street number
     street_name VARCHAR(255) NOT NULL, -- Name of the street
@@ -44,7 +44,7 @@ CREATE TABLE addresses (
     country VARCHAR(100) NOT NULL DEFAULT 'Vietnam', -- Country, default is Vietnam
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE categories (
@@ -92,10 +92,10 @@ CREATE TABLE product_images (
 
 CREATE TABLE carts (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
+    user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE cart_items (
@@ -149,7 +149,7 @@ CREATE TABLE product_sales (
 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
+    user_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     amount DECIMAL(10, 2) NOT NULL,
     coupon_id INT,         -- Reference to the applied promotion
@@ -164,7 +164,7 @@ CREATE TABLE orders (
     leave_feedback TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id)
 );
 
@@ -186,15 +186,15 @@ CREATE TABLE order_details (
 
 CREATE TABLE product_feedback (
 	order_id INT NOT NULL, -- Reference to the order which finished
-    customer_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
+    user_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
     product_id INT NOT NULL,  -- Reference to the product being reviewed
     rating INT NOT NULL,  -- Product rating (e.g., 1-5 stars)
     comment TEXT,  -- Written feedback (optional)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (order_id, customer_id, product_id),
+    PRIMARY KEY (order_id, user_id, product_id),
     FOREIGN KEY (order_id) REFERENCES orders(order_id),  -- Reference to orders table
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),  -- Reference to customers table
+    FOREIGN KEY (user_id) REFERENCES users(user_id),  -- Reference to customers table
     FOREIGN KEY (product_id) REFERENCES products(product_id),  -- Reference to products table
     CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)  -- Ensure rating is between 1 and 5
 );

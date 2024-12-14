@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/notify/**"
+            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/notify/**", "/api/image-search/**"
     };
 
     @Override
