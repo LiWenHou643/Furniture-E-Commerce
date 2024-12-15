@@ -25,7 +25,7 @@ CREATE TABLE users (
     avatar VARCHAR(255),
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
-    user_status TINYINT(1) NOT NULL DEFAULT 1,  -- Account status
+    user_status BOOLEAN DEFAULT TRUE,  -- Account status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
@@ -35,10 +35,10 @@ CREATE TABLE addresses (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     unit_number VARCHAR(50),  -- Optional for apartments or buildings
-    street_number INT,        -- Numeric street number
+    street_number INT NOT NULL,        -- Numeric street number
     street_name VARCHAR(255) NOT NULL, -- Name of the street
-    ward_name VARCHAR(255),    -- Ward or Commune (optional)
-    district_name VARCHAR(255), -- District
+    ward_name VARCHAR(255) NOT NULL,    -- Ward or Commune (optional)
+    district_name VARCHAR(255) NOT NULL, -- District
     city_province VARCHAR(255) NOT NULL, -- City or Province
     postal_code VARCHAR(20) NOT NULL, -- Postal code
     country VARCHAR(100) NOT NULL DEFAULT 'Vietnam', -- Country, default is Vietnam
@@ -55,39 +55,100 @@ CREATE TABLE categories (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE sub_categories (
-    sub_category_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT NOT NULL,
-    sub_category_name VARCHAR(255) NOT NULL,
-    sub_category_description TEXT,
+CREATE TABLE materials (
+    material_id INT AUTO_INCREMENT PRIMARY KEY,
+    material_name VARCHAR(255) NOT NULL,
+    material_description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE brands(
+	brand_id INT AUTO_INCREMENT PRIMARY KEY,
+    brand_name VARCHAR(255) NOT NULL,
+    brand_description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
     product_description TEXT,
-    product_price DECIMAL(10, 2) DEFAULT 0,
+    category_id INT NOT NULL,
+    brand_id INT NOT NULL,
+    material_id INT NOT NULL,
     average_rating DECIMAL(3, 2) DEFAULT 0,
-    quantity SMALLINT DEFAULT 0,
     rating_count INT DEFAULT 0,
-    sub_category_id INT NOT NULL,
-    product_status TINYINT(1) NOT NULL DEFAULT 1,
+    product_status BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id)
+    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+    FOREIGN KEY (brand_id) REFERENCES brands(brand_id),
+    FOREIGN KEY (material_id) REFERENCES materials(material_id)
+);
+
+CREATE TABLE areas (
+	area_id INT AUTO_INCREMENT PRIMARY KEY,
+    area_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE products_areas (
+	area_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (area_id) REFERENCES areas(area_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+CREATE TABLE product_colors (
+	color_id INT AUTO_INCREMENT PRIMARY KEY,
+    color_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE product_item (
+    product_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT,
+	sku VARCHAR(100) UNIQUE NOT NULL,
+    original_price DECIMAL(10, 2) NOT NULL,
+    sale_price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (color_id) REFERENCES product_colors(color_id)
 );
 
 CREATE TABLE product_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT,
+    product_item_id INT,
     image_url VARCHAR(255) NOT NULL,
-    is_main_image TINYINT(1) DEFAULT 0,
+    is_main_image BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
+    FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
+);
+
+CREATE TABLE coupons (
+    coupon_id INT PRIMARY KEY,
+    coupon_code VARCHAR(50) UNIQUE NOT NULL,   -- Coupon code (e.g., BLACKFRIDAY2024)
+    discount_type ENUM('percentage', 'fixed') NOT NULL,  -- Type of discount
+    discount_value DECIMAL(10, 2) NOT NULL, -- Discount amount or percentage
+    min_order_value DECIMAL(10, 2),  -- Minimum order value for coupon to apply
+    max_discount_value DECIMAL(10, 2), -- Maximum money amount to discount
+    valid_from DATE,  -- Coupon validity start
+    valid_until DATE,    -- Coupon validity end
+    usage_limit INT,  -- How many times a coupon can be used
+    usage_count INT DEFAULT 0, -- How many times the coupon has been used
+    coupon_status BOOLEAN DEFAULT TRUE,  -- If the coupon is active or not
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE carts (
@@ -101,50 +162,12 @@ CREATE TABLE carts (
 CREATE TABLE cart_items (
     cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
     cart_id INT NOT NULL,
-    product_id INT NOT NULL,
+    product_item_id INT NOT NULL,
     quantity INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (cart_id) REFERENCES carts(cart_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
-
-CREATE TABLE coupons (
-    coupon_id INT PRIMARY KEY,
-    coupon_code VARCHAR(50) UNIQUE NOT NULL,   -- Coupon code (e.g., BLACKFRIDAY2024)
-    discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of discount
-    discount_value DECIMAL(10, 2) NOT NULL, -- Discount amount or percentage
-    min_order_value DECIMAL(10, 2),  -- Minimum order value for coupon to apply
-    max_discount_value DECIMAL(10, 2), -- Maximum money amount to discount
-    valid_from DATE,  -- Coupon validity start
-    valid_until DATE,    -- Coupon validity end
-    usage_limit INT,  -- How many times a coupon can be used
-    usage_count INT DEFAULT 0, -- How many times the coupon has been used
-    coupon_status TINYINT(1) NOT NULL DEFAULT 1,  -- If the coupon is active or not
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE sales (
-    sale_id INT PRIMARY KEY,
-    sale_description VARCHAR(255) NOT NULL,     -- e.g., "Black Friday Sale"
-    start_date DATE,                -- When the sale starts
-    end_date DATE,                  -- When the sale ends
-    discount_type ENUM('percentage', 'flat') NOT NULL,  -- Type of sale discount
-    discount_value DECIMAL(10, 2) NOT NULL,  -- Discount percentage or amount
-    sale_status TINYINT(1) NOT NULL DEFAULT 1,     -- If the sale is active or not
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE product_sales (
-    product_id INT,
-    sale_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (product_id, sale_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
+    FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
 );
 
 CREATE TABLE orders (
@@ -161,7 +184,7 @@ CREATE TABLE orders (
     shipping_address INT NOT NULL,  -- Reference to the shipping address
     shipping_method ENUM('standard', 'express', 'overnight') NOT NULL,  -- Shipping method
     notes TEXT,
-    leave_feedback TINYINT(1) DEFAULT 0,
+    leave_feedback INT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
@@ -171,17 +194,15 @@ CREATE TABLE orders (
 CREATE TABLE order_details (
     order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
-    product_id INT NOT NULL,
+    product_item_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
-    sale_id INT,  -- Sale associated with this product (if applicable)
     total_discount DECIMAL(10, 2) DEFAULT 0.00,  -- The discount applied due to the sale (if applicable)
     total_price DECIMAL(10, 2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
+    FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
 );
 
 CREATE TABLE product_feedback (
@@ -212,8 +233,7 @@ CREATE TABLE payments (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
-CREATE TABLE invalidated_tokens
-(
+CREATE TABLE invalidated_tokens (
 	token_id INT AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(512) NOT NULL,
     expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -222,32 +242,7 @@ CREATE TABLE invalidated_tokens
 CREATE TABLE refresh_tokens (
 	refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
     refresh_token VARCHAR(512) NOT NULL,
-    revoked TINYINT(1) NOT NULL DEFAULT 0,
+    revoked INT(1) NOT NULL DEFAULT 0,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
--- CREATE TABLE product_colors (
--- 	color_id INT AUTO_INCREMENT PRIMARY KEY,
---     color_name BOOLEAN DEFAULT FALSE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- CREATE TABLE product_item (
---     product_item_id INT AUTO_INCREMENT PRIMARY KEY,
---     product_id INT NOT NULL,
---     original_price DECIMAL(10, 2) NOT NULL,
---     sale_price DECIMAL(10, 2) NOT NULL,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (product_id) REFERENCES products(product_id)
--- );
-
--- CREATE TABLE product_variation (
--- 	variation_id INT AUTO_INCREMENT PRIMARY KEY,
---     product_item_id INT NOT NULL,
---     product_color_id INT NOT NULL,
---     quantity INT DEFAULT 0,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id),
--- 	FOREIGN KEY (product_color_id) REFERENCES product_colors(color_id)
--- );
