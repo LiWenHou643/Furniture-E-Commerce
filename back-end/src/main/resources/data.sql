@@ -172,39 +172,180 @@ VALUES
     (49, '149', 49, 'Chrysanthemum Street', 'Ward 48', 'District 3', 'Hanoi', '100048', 'Vietnam'),
     (50, '150', 50, 'Geranium Road', 'Ward 49', 'District 4', 'Hanoi', '100049', 'Vietnam');
 
+INSERT INTO categories (category_name, category_description)
+VALUES 
+    ('Seating', 'Furniture designed primarily for sitting, including sofas, chairs, armchairs, and benches.'),
+    ('Table', 'Furniture primarily used for placing items, including dining tables, coffee tables, side tables, and desks.'),
+    ('Bed', 'Furniture designed for sleeping, including beds, bunk beds, and platform beds.'),
+    ('Storage', 'Furniture focused on storage, such as bookshelves, wardrobes, and cabinets.'),
+    ('Decor', 'Items used to enhance the aesthetic appeal of a space, such as vases, wall art, rugs, mirrors, and decorative lighting.');
 
-INSERT INTO categories (category_name, category_description, created_at, updated_at) VALUES
-('Flowers', 'A wide range of flowers for gardens, decoration, and gifting', NOW(), NOW()),
-('Vegetables', 'Fresh vegetables for home gardening and cooking', NOW(), NOW()),
-('Fruits', 'Delicious fruits for planting or harvesting in your garden', NOW(), NOW());
+INSERT INTO areas (area_name)
+VALUES 
+    ('Living Room'),
+    ('Bedroom'),
+    ('Dining Room'),
+    ('Office'),
+    ('Kitchen'),
+    ('Hallway'),
+    ('Outdoor');
 
-INSERT INTO sub_categories (category_id, sub_category_name, sub_category_description, created_at, updated_at) VALUES
-(1, 'Indoor Flowers', 'Beautiful flowers for indoor decoration', NOW(), NOW()),
-(1, 'Outdoor Flowers', 'Flowers for garden planting and outdoor decoration', NOW(), NOW()),
-(2, 'Leafy Vegetables', 'Leafy greens such as lettuce, spinach, kale, etc.', NOW(), NOW()),
-(2, 'Root Vegetables', 'Root vegetables like carrots, potatoes, onions, etc.', NOW(), NOW()),
-(3, 'Citrus Fruits', 'Fruits like oranges, lemons, limes, etc.', NOW(), NOW()),
-(3, 'Berry Fruits', 'Berries like strawberries, blueberries, raspberries, etc.', NOW(), NOW());
+INSERT INTO materials (material_name, material_description)
+VALUES 
+    ('Wood', 'Natural wood used in furniture making, known for durability and a classic look.'),
+    ('Metal', 'Strong and durable metal materials, often used for frames and accents in furniture.'),
+    ('Fabric', 'Soft materials like cotton, linen, or polyester used for upholstery in sofas and chairs.'),
+    ('Leather', 'Premium upholstery material offering a luxurious look and feel, commonly used for sofas and chairs.'),
+    ('Glass', 'Transparent material used for tabletops and decorative furniture pieces.');
 
-INSERT INTO products (product_name, product_description, product_price, average_rating, quantity, rating_count, sub_category_id, product_status, created_at, updated_at) VALUES
-('Indoor Orchid', 'A beautiful indoor orchid, perfect for home decor or as a gift. Requires minimal sunlight.', 19.99, 4.5, 100, 120, 1, 1, NOW(), NOW()),
-('Rose Bouquet', 'A bouquet of fresh roses, ideal for gifts, decoration, or special occasions.', 29.99, 4.7, 50, 85, 2, 1, NOW(), NOW()),
-('Lettuce Plant', 'A fresh and healthy lettuce plant for your indoor garden.', 9.99, 4.2, 200, 150, 3, 1, NOW(), NOW()),
-('Carrot Seeds', 'Pack of organic carrot seeds for home gardening.', 4.99, 4.8, 500, 300, 4, 1, NOW(), NOW()),
-('Orange Tree', 'A small citrus orange tree, perfect for home gardening.', 39.99, 4.3, 30, 50, 5, 1, NOW(), NOW()),
-('Blueberry Bush', 'A compact blueberry bush for growing delicious berries in your garden.', 24.99, 4.6, 70, 120, 6, 1, NOW(), NOW());
+INSERT INTO brands (brand_name, brand_description)
+VALUES 
+    ('Ikea', 'A global leader in ready-to-assemble furniture, offering affordable and stylish products for every room.'),
+    ('Ashley Furniture', 'Known for its high-quality furniture, Ashley offers a wide range of designs for all home styles.'),
+    ('La-Z-Boy', 'Famous for their recliners and comfortable seating, La-Z-Boy combines style with relaxation.'),
+    ('West Elm', 'A modern furniture brand focused on sustainable materials and innovative designs.'),
+    ('Herman Miller', 'Renowned for its ergonomic and functional office furniture, Herman Miller is a staple for workplace comfort.');
 
-INSERT INTO product_images (product_id, image_url, is_main_image, created_at, updated_at) VALUES
-(1, 'https://example.com/images/indoor_orchid_main.jpg', 1, NOW(), NOW()),
-(1, 'https://example.com/images/indoor_orchid_2.jpg', 0, NOW(), NOW()),
-(2, 'https://example.com/images/rose_bouquet_main.jpg', 1, NOW(), NOW()),
-(2, 'https://example.com/images/rose_bouquet_2.jpg', 0, NOW(), NOW()),
-(3, 'https://example.com/images/lettuce_plant_main.jpg', 1, NOW(), NOW()),
-(3, 'https://example.com/images/lettuce_plant_2.jpg', 0, NOW(), NOW()),
-(4, 'https://example.com/images/carrot_seeds_main.jpg', 1, NOW(), NOW()),
-(4, 'https://example.com/images/carrot_seeds_2.jpg', 0, NOW(), NOW()),
-(5, 'https://example.com/images/orange_tree_main.jpg', 1, NOW(), NOW()),
-(5, 'https://example.com/images/orange_tree_2.jpg', 0, NOW(), NOW()),
-(6, 'https://example.com/images/blueberry_bush_main.jpg', 1, NOW(), NOW()),
-(6, 'https://example.com/images/blueberry_bush_2.jpg', 0, NOW(), NOW());
+-- Seating Category
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Luxury Reclining Sofa', 'A luxury reclining sofa made with premium leather, offering multiple reclining positions for ultimate comfort.', 1, 1, 4, 4.9, 300, TRUE),
+    ('Chesterfield Sofa', 'A timeless chesterfield sofa with deep button tufting and luxurious leather upholstery, perfect for any living room.', 1, 3, 4, 4.8, 220, TRUE),
+    ('Swivel Chair', 'A versatile swivel chair with padded arms and back, perfect for offices or living rooms.', 1, 2, 3, 4.7, 180, TRUE),
+    ('Outdoor Hammock Chair', 'A comfortable outdoor hammock chair with a sturdy frame, ideal for relaxing on patios or in the garden.', 1, 5, 3, 4.5, 140, TRUE),
+    ('Armchair with Ottoman', 'A comfortable armchair with a matching ottoman, perfect for reading or watching TV in style.', 1, 2, 1, 4.6, 160, TRUE),
+    ('Adjustable Lounge Chair', 'An adjustable lounge chair with memory foam cushioning and a durable fabric cover, perfect for sunbathing or reading.', 1, 4, 3, 4.4, 110, TRUE);
 
+-- Table Category
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Marble Dining Table', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 5, 4.8, 320, TRUE),
+    ('Solid Wood Coffee Table', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.7, 250, TRUE),
+    ('Glass Dining Table with Chairs', 'A sleek glass dining table set with 6 high-back chairs, ideal for family gatherings and dinner parties.', 2, 2, 5, 4.6, 270, TRUE),
+    ('Modern Office Desk', 'A modern office desk with ample storage and a minimalistic design, made from high-quality wood and metal.', 2, 5, 1, 4.5, 210, TRUE),
+    ('Wooden End Table', 'A small, yet stylish wooden end table with a drawer for convenient storage, perfect for living rooms and bedrooms.', 2, 4, 1, 4.4, 180, TRUE),
+    ('Foldable Dining Table', 'A space-saving foldable dining table that can easily be stored when not in use, ideal for small apartments.', 2, 3, 1, 4.3, 120, TRUE);
+
+-- Bed Category
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Memory Foam Bed', 'A luxurious memory foam bed with dual-layer construction, offering superior comfort and support for a restful night’s sleep.', 3, 1, 1, 4.9, 400, TRUE),
+    ('Bunk Bed with Desk', 'Space-saving bunk bed with a built-in desk and shelves, perfect for kids or guest rooms.', 3, 2, 1, 4.7, 270, TRUE),
+    ('King Size Adjustable Bed', 'A king-size adjustable bed with independent head and foot elevation, designed for maximum comfort and convenience.', 3, 3, 1, 4.8, 320, TRUE),
+    ('Twin Size Bed', 'A compact twin-size bed with a sturdy wooden frame, perfect for children’s rooms or guest rooms.', 3, 4, 1, 4.6, 150, TRUE),
+    ('Platform Bed with Storage', 'A modern platform bed with built-in storage drawers, perfect for maximizing space in small bedrooms.', 3, 5, 1, 4.7, 250, TRUE),
+    ('Futon Bed', 'A convertible futon that functions as both a bed and a sofa, ideal for studio apartments and guest rooms.', 3, 2, 1, 4.5, 200, TRUE);
+
+-- Storage Category
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Wardrobe with Sliding Doors', 'A modern wardrobe with sliding doors and multiple compartments, perfect for storing clothes and accessories.', 4, 3, 1, 4.8, 330, TRUE),
+    ('Shoe Rack Organizer', 'A multi-tier shoe rack organizer made from durable wood, designed to store shoes neatly and efficiently.', 4, 1, 1, 4.7, 210, TRUE),
+    ('Metal Filing Cabinet', 'A sturdy metal filing cabinet with 4 drawers, ideal for organizing office documents and files.', 4, 2, 2, 4.6, 180, TRUE),
+    ('Corner Storage Cabinet', 'A compact corner storage cabinet with adjustable shelves, perfect for small spaces and living rooms.', 4, 4, 1, 4.5, 150, TRUE),
+    ('Bookshelf with Ladder', 'A stylish wooden bookshelf with a ladder design, perfect for displaying books and decor items in your living room.', 4, 5, 1, 4.7, 200, TRUE),
+    ('Storage Bench with Cushion', 'A multi-functional storage bench with a comfortable cushion on top, ideal for entryways and hallways.', 4, 3, 1, 4.4, 170, TRUE);
+
+-- Decor Category
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Wall Mirror with Gold Frame', 'A stylish wall mirror with a gold frame, perfect for brightening up any room in your home.', 5, 4, 1, 4.9, 420, TRUE),
+    ('Decorative Floor Vase', 'A tall decorative floor vase made from ceramic, perfect for adding elegance to any corner of your living room or hallway.', 5, 3, 1, 4.8, 350, TRUE),
+    ('Modern Wall Clock', 'A modern wall clock with a sleek, minimalist design, perfect for any contemporary living or office space.', 5, 1, 5, 4.7, 300, TRUE),
+    ('Abstract Art Painting', 'An abstract art painting with vibrant colors, designed to bring life and energy to any room.', 5, 2, 1, 4.6, 280, TRUE),
+    ('Decorative Throw Pillows', 'A set of decorative throw pillows with intricate patterns, perfect for adding a pop of color to your sofa or bed.', 5, 4, 3, 4.7, 250, TRUE),
+    ('Table Lamp with Fabric Shade', 'A stylish table lamp with a fabric shade, perfect for reading or adding ambiance to your living room or bedroom.', 5, 2, 3, 4.5, 220, TRUE),
+    ('Area Rug with Geometric Pattern', 'A plush area rug with a bold geometric pattern, perfect for adding warmth and style to your living room.', 5, 5, 3, 4.8, 270, TRUE),
+    ('Candle Holder Set', 'A set of elegant candle holders made from brass, ideal for creating a cozy and inviting atmosphere.', 5, 3, 2, 4.6, 230, TRUE);
+
+-- Linking products to areas
+
+-- Seating Products
+INSERT INTO products_areas (area_id, product_id)
+VALUES
+    (1, 1),  -- Luxury Reclining Sofa (Living Room)
+    (1, 2),  -- Chesterfield Sofa (Living Room)
+    (2, 3),  -- Swivel Chair (Office)
+    (5, 4),  -- Outdoor Hammock Chair (Outdoor)
+    (1, 5),  -- Armchair with Ottoman (Living Room)
+    (5, 6);  -- Adjustable Lounge Chair (Outdoor)
+
+-- Table Products
+INSERT INTO products_areas (area_id, product_id)
+VALUES
+    (1, 7),  -- Marble Dining Table (Living Room)
+    (3, 8),  -- Solid Wood Coffee Table (Dining Room)
+    (3, 9),  -- Glass Dining Table with Chairs (Dining Room)
+    (4, 10), -- Modern Office Desk (Office)
+    (1, 11), -- Wooden End Table (Living Room)
+    (3, 12); -- Foldable Dining Table (Dining Room)
+
+-- Bed Products
+INSERT INTO products_areas (area_id, product_id)
+VALUES
+    (2, 13), -- Memory Foam Bed (Bedroom)
+    (2, 14), -- Bunk Bed with Desk (Bedroom)
+    (2, 15), -- King Size Adjustable Bed (Bedroom)
+    (2, 16), -- Twin Size Bed (Bedroom)
+    (2, 17), -- Platform Bed with Storage (Bedroom)
+    (2, 18); -- Futon Bed (Bedroom)
+
+-- Storage Products
+INSERT INTO products_areas (area_id, product_id)
+VALUES
+    (2, 19), -- Wardrobe with Sliding Doors (Bedroom)
+    (5, 20), -- Shoe Rack Organizer (Kitchen)
+    (4, 21), -- Metal Filing Cabinet (Office)
+    (1, 22), -- Corner Storage Cabinet (Living Room)
+    (1, 23), -- Bookshelf with Ladder (Living Room)
+    (5, 24); -- Storage Bench with Cushion (Outdoor)
+
+-- Decor Products
+INSERT INTO products_areas (area_id, product_id)
+VALUES
+    (1, 25), -- Wall Mirror with Gold Frame (Living Room)
+    (2, 26), -- Decorative Floor Vase (Bedroom)
+    (1, 27), -- Modern Wall Clock (Living Room)
+    (1, 28), -- Abstract Art Painting (Living Room)
+    (1, 29), -- Decorative Throw Pillows (Living Room)
+    (2, 30), -- Table Lamp with Fabric Shade (Bedroom)
+    (1, 31), -- Area Rug with Geometric Pattern (Living Room)
+    (1, 32); -- Candle Holder Set (Living Room)
+
+-- Insert some colors into the product_colors table
+INSERT INTO product_colors (color_name)
+VALUES
+    ('Red'),
+    ('Blue'),
+    ('Green'),
+    ('Black'),
+    ('White'),
+    ('Grey');
+
+-- Insert product variants for the Seating Category (Example: Swivel Chair, Chesterfield Sofa)
+-- Swivel Chair
+INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
+VALUES
+    (3, 1, 'SWC-RED-001', 200.00, 180.00, 50), -- Red Swivel Chair
+    (3, 2, 'SWC-BLUE-001', 200.00, 180.00, 40), -- Blue Swivel Chair
+    (3, 3, 'SWC-GREEN-001', 200.00, 180.00, 30), -- Green Swivel Chair
+    (3, 4, 'SWC-BLACK-001', 200.00, 180.00, 25), -- Black Swivel Chair
+    (3, 5, 'SWC-WHITE-001', 200.00, 180.00, 20); -- White Swivel Chair
+
+-- Chesterfield Sofa
+INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
+VALUES
+    (2, 1, 'CHS-RED-001', 800.00, 750.00, 10), -- Red Chesterfield Sofa
+    (2, 2, 'CHS-BLUE-001', 800.00, 750.00, 8), -- Blue Chesterfield Sofa
+    (2, 3, 'CHS-GREEN-001', 800.00, 750.00, 5), -- Green Chesterfield Sofa
+    (2, 4, 'CHS-BLACK-001', 800.00, 750.00, 7), -- Black Chesterfield Sofa
+    (2, 5, 'CHS-WHITE-001', 800.00, 750.00, 4); -- White Chesterfield Sofa
+
+-- Marble Dining Table (Products in the Table Category)
+-- Dining Table
+INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
+VALUES
+    (7, 1, 'MDT-RED-001', 1500.00, 1400.00, 12), -- Red Marble Dining Table
+    (7, 2, 'MDT-BLUE-001', 1500.00, 1400.00, 8), -- Blue Marble Dining Table
+    (7, 4, 'MDT-BLACK-001', 1500.00, 1400.00, 15), -- Black Marble Dining Table
+    (7, 6, 'MDT-GREY-001', 1500.00, 1400.00, 20); -- Grey Marble Dining Table
