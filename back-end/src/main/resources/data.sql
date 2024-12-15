@@ -196,7 +196,8 @@ VALUES
     ('Metal', 'Strong and durable metal materials, often used for frames and accents in furniture.'),
     ('Fabric', 'Soft materials like cotton, linen, or polyester used for upholstery in sofas and chairs.'),
     ('Leather', 'Premium upholstery material offering a luxurious look and feel, commonly used for sofas and chairs.'),
-    ('Glass', 'Transparent material used for tabletops and decorative furniture pieces.');
+    ('Glass', 'Transparent material used for tabletops and decorative furniture pieces.'),
+    ('Marble', 'Hard and strong material, often use for making beautiful tables and chairs');
 
 INSERT INTO brands (brand_name, brand_description)
 VALUES 
@@ -212,15 +213,18 @@ VALUES
     ('Luxury Reclining Sofa', 'A luxury reclining sofa made with premium leather, offering multiple reclining positions for ultimate comfort.', 1, 1, 4, 4.9, 300, TRUE),
     ('Chesterfield Sofa', 'A timeless chesterfield sofa with deep button tufting and luxurious leather upholstery, perfect for any living room.', 1, 3, 4, 4.8, 220, TRUE),
     ('Swivel Chair', 'A versatile swivel chair with padded arms and back, perfect for offices or living rooms.', 1, 2, 3, 4.7, 180, TRUE),
-    ('Outdoor Hammock Chair', 'A comfortable outdoor hammock chair with a sturdy frame, ideal for relaxing on patios or in the garden.', 1, 5, 3, 4.5, 140, TRUE),
-    ('Armchair with Ottoman', 'A comfortable armchair with a matching ottoman, perfect for reading or watching TV in style.', 1, 2, 1, 4.6, 160, TRUE),
-    ('Adjustable Lounge Chair', 'An adjustable lounge chair with memory foam cushioning and a durable fabric cover, perfect for sunbathing or reading.', 1, 4, 3, 4.4, 110, TRUE);
-
+    ('Wood Rattan Cane Chair', 'Use of Mango Wood as primary material gives this Dining Chair a solid & sturdy look. Secondary material is used as Rattan Cane at back side & Fabrics(Used in Seat).', 1, 3, 1, 4.8, 180, TRUE),
+    ('Wood Heirloom Chair', 'These heirloom quality chairs are crafted to compliment your Modular Table and complete your dining set. American-made and solid hardwood. Upholstered seating available on specified models.', 1, 4, 1, 4.9, 140, TRUE),
+	('Hobro Armchair Sofa', 'Hobro sofa is designed with a solid structure, along with good bearing capacity thanks to the solid characteristics of rubber wood such as toughness, hardness, not soft and water... thereby helping the product to be durable. Soak and use for a long time.', 1, 1, 3, 4.8, 146, TRUE),
+	('Hobro Don Sofa', 'The sofa mattress is made of polyester fabric that is dust-proof, mold-resistant and the mattress cover can be easily removed for cleaning. Gray sofa cushions create a modern beauty, but no less luxurious and gentle', 1, 5, 3, 4.8, 178, TRUE);
+    
 -- Table Category
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
-    ('Marble Dining Table', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 5, 4.8, 320, TRUE),
-    ('Solid Wood Coffee Table', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.7, 250, TRUE),
+    ('Round Marble Dining Table Type 1', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 6, 4.8, 320, TRUE),
+    ('Round Marble Dining Table Type 2', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 6, 4.9, 280, TRUE),
+    ('Round Wood Coffee Table Type 1', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.7, 250, TRUE),
+	('Round Wood Coffee Table Type 2', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.8, 220, TRUE),
     ('Glass Dining Table with Chairs', 'A sleek glass dining table set with 6 high-back chairs, ideal for family gatherings and dinner parties.', 2, 2, 5, 4.6, 270, TRUE),
     ('Modern Office Desk', 'A modern office desk with ample storage and a minimalistic design, made from high-quality wood and metal.', 2, 5, 1, 4.5, 210, TRUE),
     ('Wooden End Table', 'A small, yet stylish wooden end table with a drawer for convenient storage, perfect for living rooms and bedrooms.', 2, 4, 1, 4.4, 180, TRUE),
