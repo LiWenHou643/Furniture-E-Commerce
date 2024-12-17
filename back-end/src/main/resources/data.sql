@@ -2,175 +2,56 @@
 INSERT INTO roles (role_name) VALUES ('admin');
 INSERT INTO roles (role_name) VALUES ('user');
 
--- Insert admin users
-INSERT INTO users (email, password, role_id) 
-VALUES 
-    ('admin1@example.com', '{bcrypt}$2y$10$Pg8Vxn560H2/nJl9DrTveuRyVGsmOzPnaKC3UXu1xbCpQh87PE6d6', 1), 
-    ('admin2@example.com', '{bcrypt}$2y$10$Pg8Vxn560H2/nJl9DrTveuRyVGsmOzPnaKC3UXu1xbCpQh87PE6d6', 1), 
-    ('admin3@example.com', '{bcrypt}$2y$10$Pg8Vxn560H2/nJl9DrTveuRyVGsmOzPnaKC3UXu1xbCpQh87PE6d6', 1);
+-- Insert admin -- pwd: admin
+INSERT INTO admins (username, password, role_id) 
+VALUES ('admin', '{bcrypt}$2a$12$D79WRzamHQ2atDk4QvOUhumU4EGKNrhTaTjBKdN.Y6Wb.k/yT8ymK', 1);
 
--- Insert customer users
-INSERT INTO users (email, phone_number, password, role_id)
+-- Insert users -- pwd: user@123
+INSERT INTO users (email, phone_number, first_name, last_name, avatar, password, role_id)
 VALUES
-    ('customer1@example.com', '0123456789', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer2@example.com', '0123456790', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer3@example.com', '0123456791', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer4@example.com', '0123456792', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer5@example.com', '0123456793', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer6@example.com', '0123456794', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer7@example.com', '0123456795', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer8@example.com', '0123456796', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer9@example.com', '0123456797', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer10@example.com', '0123456798', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer11@example.com', '0123456799', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer12@example.com', '0123456800', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer13@example.com', '0123456801', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer14@example.com', '0123456802', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer15@example.com', '0123456803', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer16@example.com', '0123456804', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer17@example.com', '0123456805', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer18@example.com', '0123456806', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer19@example.com', '0123456807', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer20@example.com', '0123456808', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer21@example.com', '0123456809', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer22@example.com', '0123456810', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer23@example.com', '0123456811', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer24@example.com', '0123456812', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer25@example.com', '0123456813', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer26@example.com', '0123456814', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer27@example.com', '0123456815', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer28@example.com', '0123456816', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer29@example.com', '0123456817', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer30@example.com', '0123456818', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer31@example.com', '0123456819', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer32@example.com', '0123456820', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer33@example.com', '0123456821', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer34@example.com', '0123456822', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer35@example.com', '0123456823', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer36@example.com', '0123456824', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer37@example.com', '0123456825', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer38@example.com', '0123456826', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer39@example.com', '0123456827', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer40@example.com', '0123456828', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer41@example.com', '0123456829', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer42@example.com', '0123456830', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer43@example.com', '0123456831', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer44@example.com', '0123456832', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer45@example.com', '0123456833', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer46@example.com', '0123456834', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer47@example.com', '0123456835', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer48@example.com', '0123456836', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer49@example.com', '0123456837', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2),
-    ('customer50@example.com', '0123456838', '{bcrypt}$2y$10$Ng5.Up8JB4R6w7AirThSGOX8NwIJMXwae68Pge0ogg/UnxF5dtaFW', 2);
+('user1@example.com', '0931234567', 'Nguyen', 'Anh Tu', 'https://example.com/avatar1.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user2@example.com', '0912345678', 'Tran', 'Thi Mai', 'https://example.com/avatar2.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user3@example.com', '0982345679', 'Pham', 'Minh Chien', 'https://example.com/avatar3.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user4@example.com', '0973456780', 'Le', 'Thi Lan', 'https://example.com/avatar4.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user5@example.com', '0904567891', 'Hoang', 'Quoc An', 'https://example.com/avatar5.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user6@example.com', '0945678902', 'Doan', 'Ngoc Bich', 'https://example.com/avatar6.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user7@example.com', '0956789013', 'Nguyen', 'Hong Son', 'https://example.com/avatar7.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user8@example.com', '0937890124', 'Bui', 'Thi Thanh', 'https://example.com/avatar8.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user9@example.com', '0988901235', 'Vu', 'Quang Hieu', 'https://example.com/avatar9.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user10@example.com', '0979012346', 'Trinh', 'Ngoc Lan', 'https://example.com/avatar10.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user11@example.com', '0910123457', 'Phan', 'Thi Minh', 'https://example.com/avatar11.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user12@example.com', '0981234568', 'Le', 'Thi Bao', 'https://example.com/avatar12.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user13@example.com', '0902345679', 'Tran', 'Minh Hoang', 'https://example.com/avatar13.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user14@example.com', '0943456780', 'Ngo', 'Thi Lan', 'https://example.com/avatar14.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user15@example.com', '0934567891', 'Nguyen', 'Thi Huong', 'https://example.com/avatar15.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user16@example.com', '0975678902', 'Tran', 'Hieu Duong', 'https://example.com/avatar16.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user17@example.com', '0906789013', 'Nguyen', 'Mai Hoang', 'https://example.com/avatar17.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user18@example.com', '0947890124', 'Pham', 'Mai Linh', 'https://example.com/avatar18.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user19@example.com', '0938901235', 'Bui', 'Hien Anh', 'https://example.com/avatar19.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
+('user20@example.com', '0989012346', 'Ho', 'Minh Hieu', 'https://example.com/avatar20.jpg', '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2);
 
-
--- Insert customer profiles
-INSERT INTO customers (user_id, first_name, last_name, avatar) 
-VALUES 
-    (4, 'John', 'Doe', 'avatar1.jpg'),
-    (5, 'Jane', 'Smith', 'avatar2.jpg'),
-    (6, 'Alice', 'Johnson', 'avatar3.jpg'),
-    (7, 'Michael', 'Williams', 'avatar4.jpg'),
-    (8, 'Sarah', 'Miller', 'avatar5.jpg'),
-    (9, 'David', 'Davis', 'avatar6.jpg'),
-    (10, 'Mary', 'Garcia', 'avatar7.jpg'),
-    (11, 'James', 'Martinez', 'avatar8.jpg'),
-    (12, 'Patricia', 'Hernandez', 'avatar9.jpg'),
-    (13, 'Robert', 'Lopez', 'avatar10.jpg'),
-    (14, 'Linda', 'Gonzalez', 'avatar11.jpg'),
-    (15, 'William', 'Wilson', 'avatar12.jpg'),
-    (16, 'Elizabeth', 'Anderson', 'avatar13.jpg'),
-    (17, 'Joseph', 'Thomas', 'avatar14.jpg'),
-    (18, 'Helen', 'Jackson', 'avatar15.jpg'),
-    (19, 'Charles', 'White', 'avatar16.jpg'),
-    (20, 'Margaret', 'Harris', 'avatar17.jpg'),
-    (21, 'Christopher', 'Clark', 'avatar18.jpg'),
-    (22, 'Betty', 'Lewis', 'avatar19.jpg'),
-    (23, 'George', 'Walker', 'avatar20.jpg'),
-    (24, 'Dorothy', 'Allen', 'avatar21.jpg'),
-    (25, 'Thomas', 'Young', 'avatar22.jpg'),
-    (26, 'Ruth', 'King', 'avatar23.jpg'),
-    (27, 'Steven', 'Scott', 'avatar24.jpg'),
-    (28, 'Nancy', 'Adams', 'avatar25.jpg'),
-    (29, 'Kenneth', 'Baker', 'avatar26.jpg'),
-    (30, 'Donna', 'Nelson', 'avatar27.jpg'),
-    (31, 'Paul', 'Carter', 'avatar28.jpg'),
-    (32, 'Carol', 'Mitchell', 'avatar29.jpg'),
-    (33, 'Jerry', 'Perez', 'avatar30.jpg'),
-    (34, 'Shirley', 'Roberts', 'avatar31.jpg'),
-    (35, 'Edward', 'Turner', 'avatar32.jpg'),
-    (36, 'Margaret', 'Phillips', 'avatar33.jpg'),
-    (37, 'Frank', 'Evans', 'avatar34.jpg'),
-    (38, 'Barbara', 'Gonzalez', 'avatar35.jpg'),
-    (39, 'Larry', 'Morris', 'avatar36.jpg'),
-    (40, 'Jessica', 'Rogers', 'avatar37.jpg'),
-    (41, 'Kevin', 'Reed', 'avatar38.jpg'),
-    (42, 'Michelle', 'Cook', 'avatar39.jpg'),
-    (43, 'Richard', 'Morgan', 'avatar40.jpg'),
-    (44, 'Susan', 'Bell', 'avatar41.jpg'),
-    (45, 'Thomas', 'Murphy', 'avatar42.jpg'),
-    (46, 'Laura', 'Bailey', 'avatar43.jpg'),
-    (47, 'Daniel', 'Rivera', 'avatar44.jpg'),
-    (48, 'Cynthia', 'Cooper', 'avatar45.jpg'),
-    (49, 'Andrew', 'Richardson', 'avatar46.jpg'),
-    (50, 'Rebecca', 'Wood', 'avatar47.jpg'),
-    (51, 'Joshua', 'Watson', 'avatar48.jpg'),
-    (52, 'Amy', 'Brooks', 'avatar49.jpg'),
-    (53, 'Nicholas', 'Kelly', 'avatar50.jpg');
-
--- Insert addresses for customers 1 to 50
-INSERT INTO addresses (customer_id, unit_number, street_number, street_name, ward_name, district_name, city_province, postal_code, country) 
-VALUES 
-    (1, '101', 1, 'Main Street', 'Ward 1', 'District 1', 'Hanoi', '100000', 'Vietnam'),
-    (2, '102', 2, 'Baker Street', 'Ward 2', 'District 1', 'Hanoi', '100001', 'Vietnam'),
-    (3, '103', 3, 'Elm Street', 'Ward 3', 'District 2', 'Hanoi', '100002', 'Vietnam'),
-    (4, '104', 4, 'Pine Avenue', 'Ward 1', 'District 3', 'Hanoi', '100003', 'Vietnam'),
-    (5, '105', 5, 'Maple Road', 'Ward 4', 'District 2', 'Hanoi', '100004', 'Vietnam'),
-    (6, '106', 6, 'Oak Boulevard', 'Ward 5', 'District 4', 'Hanoi', '100005', 'Vietnam'),
-    (7, '107', 7, 'Cedar Lane', 'Ward 6', 'District 1', 'Hanoi', '100006', 'Vietnam'),
-    (8, '108', 8, 'Birch Street', 'Ward 7', 'District 3', 'Hanoi', '100007', 'Vietnam'),
-    (9, '109', 9, 'Cherry Street', 'Ward 8', 'District 5', 'Hanoi', '100008', 'Vietnam'),
-    (10, '110', 10, 'Willow Road', 'Ward 9', 'District 6', 'Hanoi', '100009', 'Vietnam'),
-    (11, '111', 11, 'Ash Avenue', 'Ward 10', 'District 1', 'Hanoi', '100010', 'Vietnam'),
-    (12, '112', 12, 'Cypress Boulevard', 'Ward 11', 'District 2', 'Hanoi', '100011', 'Vietnam'),
-    (13, '113', 13, 'Redwood Lane', 'Ward 12', 'District 3', 'Hanoi', '100012', 'Vietnam'),
-    (14, '114', 14, 'Sequoia Road', 'Ward 13', 'District 4', 'Hanoi', '100013', 'Vietnam'),
-    (15, '115', 15, 'Spruce Street', 'Ward 14', 'District 5', 'Hanoi', '100014', 'Vietnam'),
-    (16, '116', 16, 'Fir Road', 'Ward 15', 'District 6', 'Hanoi', '100015', 'Vietnam'),
-    (17, '117', 17, 'Juniper Lane', 'Ward 16', 'District 1', 'Hanoi', '100016', 'Vietnam'),
-    (18, '118', 18, 'Hickory Avenue', 'Ward 17', 'District 2', 'Hanoi', '100017', 'Vietnam'),
-    (19, '119', 19, 'Mahogany Street', 'Ward 18', 'District 3', 'Hanoi', '100018', 'Vietnam'),
-    (20, '120', 20, 'Teak Road', 'Ward 19', 'District 4', 'Hanoi', '100019', 'Vietnam'),
-    (21, '121', 21, 'Chestnut Boulevard', 'Ward 20', 'District 5', 'Hanoi', '100020', 'Vietnam'),
-    (22, '122', 22, 'Acacia Lane', 'Ward 21', 'District 6', 'Hanoi', '100021', 'Vietnam'),
-    (23, '123', 23, 'Eucalyptus Street', 'Ward 22', 'District 1', 'Hanoi', '100022', 'Vietnam'),
-    (24, '124', 24, 'Palm Avenue', 'Ward 23', 'District 2', 'Hanoi', '100023', 'Vietnam'),
-    (25, '125', 25, 'Alder Road', 'Ward 24', 'District 3', 'Hanoi', '100024', 'Vietnam'),
-    (26, '126', 26, 'Olive Street', 'Ward 25', 'District 4', 'Hanoi', '100025', 'Vietnam'),
-    (27, '127', 27, 'Bamboo Lane', 'Ward 26', 'District 5', 'Hanoi', '100026', 'Vietnam'),
-    (28, '128', 28, 'Linden Road', 'Ward 27', 'District 6', 'Hanoi', '100027', 'Vietnam'),
-    (29, '129', 29, 'Elm Avenue', 'Ward 28', 'District 1', 'Hanoi', '100028', 'Vietnam'),
-    (30, '130', 30, 'Sandalwood Street', 'Ward 29', 'District 2', 'Hanoi', '100029', 'Vietnam'),
-    (31, '131', 31, 'Rosewood Road', 'Ward 30', 'District 3', 'Hanoi', '100030', 'Vietnam'),
-    (32, '132', 32, 'Ivy Lane', 'Ward 31', 'District 4', 'Hanoi', '100031', 'Vietnam'),
-    (33, '133', 33, 'Clementine Boulevard', 'Ward 32', 'District 5', 'Hanoi', '100032', 'Vietnam'),
-    (34, '134', 34, 'Magnolia Street', 'Ward 33', 'District 6', 'Hanoi', '100033', 'Vietnam'),
-    (35, '135', 35, 'Honeysuckle Avenue', 'Ward 34', 'District 1', 'Hanoi', '100034', 'Vietnam'),
-    (36, '136', 36, 'Jasmine Road', 'Ward 35', 'District 2', 'Hanoi', '100035', 'Vietnam'),
-    (37, '137', 37, 'Daffodil Lane', 'Ward 36', 'District 3', 'Hanoi', '100036', 'Vietnam'),
-    (38, '138', 38, 'Lavender Street', 'Ward 37', 'District 4', 'Hanoi', '100037', 'Vietnam'),
-    (39, '139', 39, 'Sunflower Road', 'Ward 38', 'District 5', 'Hanoi', '100038', 'Vietnam'),
-    (40, '140', 40, 'Tulip Boulevard', 'Ward 39', 'District 6', 'Hanoi', '100039', 'Vietnam'),
-    (41, '141', 41, 'Orchid Lane', 'Ward 40', 'District 1', 'Hanoi', '100040', 'Vietnam'),
-    (42, '142', 42, 'Lilac Avenue', 'Ward 41', 'District 2', 'Hanoi', '100041', 'Vietnam'),
-    (43, '143', 43, 'Petunia Road', 'Ward 42', 'District 3', 'Hanoi', '100042', 'Vietnam'),
-    (44, '144', 44, 'Violet Street', 'Ward 43', 'District 4', 'Hanoi', '100043', 'Vietnam'),
-    (45, '145', 45, 'Heather Lane', 'Ward 44', 'District 5', 'Hanoi', '100044', 'Vietnam'),
-    (46, '146', 46, 'Fuchsia Boulevard', 'Ward 45', 'District 6', 'Hanoi', '100045', 'Vietnam'),
-    (47, '147', 47, 'Poppy Road', 'Ward 46', 'District 1', 'Hanoi', '100046', 'Vietnam'),
-    (48, '148', 48, 'Hibiscus Avenue', 'Ward 47', 'District 2', 'Hanoi', '100047', 'Vietnam'),
-    (49, '149', 49, 'Chrysanthemum Street', 'Ward 48', 'District 3', 'Hanoi', '100048', 'Vietnam'),
-    (50, '150', 50, 'Geranium Road', 'Ward 49', 'District 4', 'Hanoi', '100049', 'Vietnam');
+INSERT INTO addresses (user_id, unit_number, street_number, street_name, ward_name, district_name, city_province, postal_code, country)
+VALUES
+(1, NULL, 10, 'Nguyen Thi Minh Khai', 'Ben Thanh', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(2, NULL, 25, 'Pham Ngoc Thach', 'Phu My', 'District 3', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(3, NULL, 12, 'Le Lai', 'Bui Thi Xuan', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(4, NULL, 45, 'Tran Quoc Toan', 'Tan Dinh', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(5, NULL, 8, 'Le Duan', 'Ben Nghe', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(6, NULL, 3, 'Bui Vien', 'Pham Ngu Lao', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(7, NULL, 18, 'Nguyen Hue', 'Ben Nghe', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(8, NULL, 33, 'Cach Mang Thang Tam', 'Hiep Thanh', 'District 10', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(9, NULL, 27, 'Xo Viet Nghe Tinh', 'Nhon Loc', 'Binh Thanh', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(10, NULL, 54, 'Hong Bang', 'Phu Tho Hoa', 'District 11', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(11, NULL, 61, 'Nguyen Thi Minh Khai', 'Cau Kho', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(12, NULL, 23, 'Cach Mang Thang Tam', 'Tan Son Hoa', 'Tan Binh', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(13, NULL, 15, 'Cong Hoa', 'Tan Quoi', 'Tan Phu', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(14, NULL, 77, 'Nguyen Tuan', 'Thanh My Loi', 'District 2', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(15, NULL, 9, 'Le Thi Rieng', 'Ben Thanh', 'District 1', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(16, NULL, 66, 'Hoang Hoa Tham', 'Hiep Tan', 'Tan Phu', 'Ho Chi Minh City', '700000', 'Vietnam'),
+(17, NULL, 4, 'Nguyen Chi Thanh', 'Lang Ha', 'Ba Dinh', 'Hanoi', '100000', 'Vietnam'),
+(18, NULL, 28, 'Dai La', 'Dai Kim', 'Hoang Mai', 'Hanoi', '100000', 'Vietnam'),
+(19, NULL, 72, 'Xuan Thuy', 'My Dinh', 'Nam Tu Liem', 'Hanoi', '100000', 'Vietnam'),
+(20, NULL, 56, 'To Hieu', 'Thach Ban', 'Long Bien', 'Hanoi', '100000', 'Vietnam');
 
 INSERT INTO categories (category_name, category_description)
 VALUES 
@@ -190,6 +71,14 @@ VALUES
     ('Hallway'),
     ('Outdoor');
 
+INSERT INTO brands (brand_name, brand_description)
+VALUES 
+    ('Ikea', 'A global leader in ready-to-assemble furniture, offering affordable and stylish products for every room.'),
+    ('Ashley Furniture', 'Known for its high-quality furniture, Ashley offers a wide range of designs for all home styles.'),
+    ('La-Z-Boy', 'Famous for their recliners and comfortable seating, La-Z-Boy combines style with relaxation.'),
+    ('West Elm', 'A modern furniture brand focused on sustainable materials and innovative designs.'),
+    ('Herman Miller', 'Renowned for its ergonomic and functional office furniture, Herman Miller is a staple for workplace comfort.');
+    
 INSERT INTO materials (material_name, material_description)
 VALUES 
     ('Wood', 'Natural wood used in furniture making, known for durability and a classic look.'),
@@ -199,68 +88,84 @@ VALUES
     ('Glass', 'Transparent material used for tabletops and decorative furniture pieces.'),
     ('Marble', 'Hard and strong material, often use for making beautiful tables and chairs');
 
-INSERT INTO brands (brand_name, brand_description)
-VALUES 
-    ('Ikea', 'A global leader in ready-to-assemble furniture, offering affordable and stylish products for every room.'),
-    ('Ashley Furniture', 'Known for its high-quality furniture, Ashley offers a wide range of designs for all home styles.'),
-    ('La-Z-Boy', 'Famous for their recliners and comfortable seating, La-Z-Boy combines style with relaxation.'),
-    ('West Elm', 'A modern furniture brand focused on sustainable materials and innovative designs.'),
-    ('Herman Miller', 'Renowned for its ergonomic and functional office furniture, Herman Miller is a staple for workplace comfort.');
-
--- Seating Category
+-- Seating Category: 11 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
-    ('Luxury Reclining Sofa', 'A luxury reclining sofa made with premium leather, offering multiple reclining positions for ultimate comfort.', 1, 1, 4, 4.9, 300, TRUE),
     ('Chesterfield Sofa', 'A timeless chesterfield sofa with deep button tufting and luxurious leather upholstery, perfect for any living room.', 1, 3, 4, 4.8, 220, TRUE),
+    ('Hobro Don Sofa', 'The sofa mattress is made of polyester fabric that is dust-proof, mold-resistant and the mattress cover can be easily removed for cleaning. Gray sofa cushions create a modern beauty, but no less luxurious and gentle', 1, 5, 3, 4.8, 178, TRUE),
+    ('Egg Chair Type 1', 'Add a touch of modern elegance to any room with the Egg Chair Type 1. Designed for ultimate comfort, its ergonomic shape cradles your body, while the soft upholstery and sturdy swivel base provide both style and support. Ideal for lounging, reading, or simply relaxing, this iconic chair is perfect for any contemporary space.', 1, 1, 3, 4.9, 123, TRUE),
+    ('Egg Chair Type 2', 'Add a touch of modern elegance to any room with the Egg Chair Type 1. Designed for ultimate comfort, its ergonomic shape cradles your body, while the soft upholstery and sturdy swivel base provide both style and support. Ideal for lounging, reading, or simply relaxing, this iconic chair is perfect for any contemporary space.', 1, 1, 3, 4.8, 128, TRUE),
+    ('Hobro Armchair Sofa', 'Hobro sofa is designed with a solid structure, along with good bearing capacity thanks to the solid characteristics of rubber wood such as toughness, hardness, not soft and water... thereby helping the product to be durable. Soak and use for a long time.', 1, 1, 3, 4.8, 146, TRUE),
+    ('Modular Sectional Sofa', 'Create a customized, comfortable seating area with the Modular Sectional Sofa. Designed to fit your space and style, this sofa features interchangeable pieces that allow you to arrange it however you like. The soft cushions and durable fabric provide long-lasting comfort, while the sleek, modern design complements any living room or lounge area.', 1, 2, 3, 4.7, 149, TRUE),
+    ('Papasan Chair', "Relax in style with the Papasan Chair, a cozy and iconic piece of furniture perfect for any room. With its wide, cushioned seat and sturdy frame, this chair offers a comfortable, cradling experience for ultimate relaxation. Whether you're reading, lounging, or just unwinding, the Papasan Chair adds a touch of charm and comfort to your space.", 1, 3, 3, 4.7, 144, TRUE),
+	('Parsons Chair', 'The Parsons Chair combines sleek design with timeless elegance. Featuring clean lines, a sturdy frame, and comfortable upholstery, this chair is perfect for any dining room, office, or living space. Its versatile style complements both modern and traditional interiors, offering both function and sophistication.', 1, 3, 3, 4.8, 140, TRUE),
     ('Swivel Chair', 'A versatile swivel chair with padded arms and back, perfect for offices or living rooms.', 1, 2, 3, 4.7, 180, TRUE),
     ('Wood Rattan Cane Chair', 'Use of Mango Wood as primary material gives this Dining Chair a solid & sturdy look. Secondary material is used as Rattan Cane at back side & Fabrics(Used in Seat).', 1, 3, 1, 4.8, 180, TRUE),
-    ('Wood Heirloom Chair', 'These heirloom quality chairs are crafted to compliment your Modular Table and complete your dining set. American-made and solid hardwood. Upholstered seating available on specified models.', 1, 4, 1, 4.9, 140, TRUE),
-	('Hobro Armchair Sofa', 'Hobro sofa is designed with a solid structure, along with good bearing capacity thanks to the solid characteristics of rubber wood such as toughness, hardness, not soft and water... thereby helping the product to be durable. Soak and use for a long time.', 1, 1, 3, 4.8, 146, TRUE),
-	('Hobro Don Sofa', 'The sofa mattress is made of polyester fabric that is dust-proof, mold-resistant and the mattress cover can be easily removed for cleaning. Gray sofa cushions create a modern beauty, but no less luxurious and gentle', 1, 5, 3, 4.8, 178, TRUE);
+    ('Wood Heirloom Chair', 'These heirloom quality chairs are crafted to compliment your Modular Table and complete your dining set. American-made and solid hardwood. Upholstered seating available on specified models.', 1, 4, 1, 4.9, 140, TRUE);
     
--- Table Category
+-- Table Category: 10 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
-    ('Round Marble Dining Table Type 1', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 6, 4.8, 320, TRUE),
-    ('Round Marble Dining Table Type 2', 'A sophisticated marble dining table with a polished finish, designed for modern homes and elegant dining experiences.', 2, 1, 6, 4.9, 280, TRUE),
-    ('Round Wood Coffee Table Type 1', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.7, 250, TRUE),
-	('Round Wood Coffee Table Type 2', 'A sturdy solid wood coffee table with rustic appeal, perfect for any living room or den.', 2, 3, 1, 4.8, 220, TRUE),
-    ('Glass Dining Table with Chairs', 'A sleek glass dining table set with 6 high-back chairs, ideal for family gatherings and dinner parties.', 2, 2, 5, 4.6, 270, TRUE),
-    ('Modern Office Desk', 'A modern office desk with ample storage and a minimalistic design, made from high-quality wood and metal.', 2, 5, 1, 4.5, 210, TRUE),
-    ('Wooden End Table', 'A small, yet stylish wooden end table with a drawer for convenient storage, perfect for living rooms and bedrooms.', 2, 4, 1, 4.4, 180, TRUE),
-    ('Foldable Dining Table', 'A space-saving foldable dining table that can easily be stored when not in use, ideal for small apartments.', 2, 3, 1, 4.3, 120, TRUE);
+	('Glass Table Type 1', 'Add a touch of sophistication to your space with the Glass Table Type 1. Featuring a sleek glass top and a sturdy base, this table offers a modern, minimalist design that enhances any room. Perfect for dining, working, or as a statement piece, it combines elegance with functionality.', 2, 2, 5, 4.9, 330, TRUE),
+    ('Glass Table Type 2', 'Add a touch of sophistication to your space with the Glass Table Type 2. Featuring a sleek glass top and a sturdy base, this table offers a modern, minimalist design that enhances any room. Perfect for dining, working, or as a statement piece, it combines elegance with functionality.', 2, 2, 5, 4.9, 330, TRUE),
+    ('Nested Table', 'Maximize space and style with the Nested Table. Featuring a set of smaller tables that tuck neatly together, this versatile design offers flexibility for any room. Whether used as individual accent tables or stacked together for a modern look, the Nested Table adds both function and elegance to your home.', 2, 3, 1, 4.9, 330, TRUE),
+    ('Round Marble Table Type 1', 'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.', 2, 1, 6, 4.9, 330, TRUE),
+    ('Round Marble Table Type 2', 'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.', 2, 1, 6, 4.7, 230, TRUE),
+    ('Round Marble Table Type 3', 'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.', 2, 1, 6, 4.8, 310, TRUE),
+    ('Round Wood Table Type 1', 'The Round Wood Table combines natural beauty with timeless design. Crafted from high-quality wood, this table features a smooth, round surface and sturdy legs, making it a perfect addition to any dining room, kitchen, or living space. Its versatile design complements a variety of styles, from rustic to modern.', 2, 3, 1, 4.8, 350, TRUE),
+    ('Round Wood Table Type 2', 'The Round Wood Table combines natural beauty with timeless design. Crafted from high-quality wood, this table features a smooth, round surface and sturdy legs, making it a perfect addition to any dining room, kitchen, or living space. Its versatile design complements a variety of styles, from rustic to modern.', 2, 3, 1, 4.7, 235, TRUE),
+    ('Square Wood Table', 'The Square Wood Table offers a blend of durability and style, featuring a smooth wooden surface and sturdy construction. Its clean, square design makes it a versatile addition to dining rooms, kitchens, or workspaces. Perfect for both modern and traditional interiors, this table brings warmth and functionality to any room.', 2, 3, 1, 4.6, 335, TRUE),
+    ('Convertible Wood Table', 'The Convertible Wood Table offers versatile functionality with its innovative design. Crafted from durable wood, this table easily transforms from a compact size to a larger surface, perfect for both everyday use and hosting gatherings. Its stylish look and practical functionality make it a great addition to any modern home.', 2, 3, 1, 4.5, 300, TRUE);
+    
+-- Bed Category: 10 products
+INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
+VALUES 
+    ('Luxury Modern Bed 1', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 1, 1, 4.9, 222, TRUE),
+    ('Luxury Modern Bed 2', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 1, 1, 4.9, 232, TRUE),
+    ('Luxury Modern Bed 3', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 2, 1, 4.8, 242, TRUE),
+    ('Luxury Modern Bed 4', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 2, 1, 4.7, 252, TRUE),
+    ('Luxury Modern Bed 5', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 3, 1, 4.8, 262, TRUE),
+    ('Luxury Modern Bed 6', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 3, 1, 4.7, 272, TRUE),
+    ('Luxury Modern Bed 7', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 4, 1, 4.8, 282, TRUE),
+    ('Luxury Modern Bed 8', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 4, 1, 4.7, 292, TRUE),
+    ('Luxury Modern Bed 9', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 5, 1, 4.9, 202, TRUE),
+    ('Luxury Modern Bed 10', 'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.', 3, 5, 1, 4.8, 212, TRUE);
 
--- Bed Category
+-- Storage Category: 15 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
-    ('Memory Foam Bed', 'A luxurious memory foam bed with dual-layer construction, offering superior comfort and support for a restful night’s sleep.', 3, 1, 1, 4.9, 400, TRUE),
-    ('Bunk Bed with Desk', 'Space-saving bunk bed with a built-in desk and shelves, perfect for kids or guest rooms.', 3, 2, 1, 4.7, 270, TRUE),
-    ('King Size Adjustable Bed', 'A king-size adjustable bed with independent head and foot elevation, designed for maximum comfort and convenience.', 3, 3, 1, 4.8, 320, TRUE),
-    ('Twin Size Bed', 'A compact twin-size bed with a sturdy wooden frame, perfect for children’s rooms or guest rooms.', 3, 4, 1, 4.6, 150, TRUE),
-    ('Platform Bed with Storage', 'A modern platform bed with built-in storage drawers, perfect for maximizing space in small bedrooms.', 3, 5, 1, 4.7, 250, TRUE),
-    ('Futon Bed', 'A convertible futon that functions as both a bed and a sofa, ideal for studio apartments and guest rooms.', 3, 2, 1, 4.5, 200, TRUE);
-
--- Storage Category
-INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
-VALUES 
-    ('Wardrobe with Sliding Doors', 'A modern wardrobe with sliding doors and multiple compartments, perfect for storing clothes and accessories.', 4, 3, 1, 4.8, 330, TRUE),
-    ('Shoe Rack Organizer', 'A multi-tier shoe rack organizer made from durable wood, designed to store shoes neatly and efficiently.', 4, 1, 1, 4.7, 210, TRUE),
-    ('Metal Filing Cabinet', 'A sturdy metal filing cabinet with 4 drawers, ideal for organizing office documents and files.', 4, 2, 2, 4.6, 180, TRUE),
-    ('Corner Storage Cabinet', 'A compact corner storage cabinet with adjustable shelves, perfect for small spaces and living rooms.', 4, 4, 1, 4.5, 150, TRUE),
-    ('Bookshelf with Ladder', 'A stylish wooden bookshelf with a ladder design, perfect for displaying books and decor items in your living room.', 4, 5, 1, 4.7, 200, TRUE),
-    ('Storage Bench with Cushion', 'A multi-functional storage bench with a comfortable cushion on top, ideal for entryways and hallways.', 4, 3, 1, 4.4, 170, TRUE);
+    ('Luxury Modern Drawer NightStand Type 1', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 1, 1, 4.9, 130, TRUE),
+    ('Luxury Modern Drawer NightStand Type 2', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 1, 1, 4.7, 133, TRUE),
+    ('Luxury Modern Drawer NightStand Type 3', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 2, 1, 4.8, 135, TRUE),
+    ('Luxury Modern Drawer NightStand Type 4', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 2, 1, 4.9, 136, TRUE),
+    ('Luxury Modern Drawer NightStand Type 5', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 3, 1, 4.8, 138, TRUE),
+    ('Luxury Modern Drawer NightStand Type 6', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 3, 1, 4.7, 139, TRUE),
+    ('Luxury Modern Drawer NightStand Type 7', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 4, 1, 4.9, 130, TRUE),
+    ('Luxury Modern Drawer NightStand Type 8', 'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.', 4, 4, 1, 4.8, 140, TRUE),
+    ('Luxury Modern Shelf Type 1', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 1, 2, 4.9, 130, TRUE),
+    ('Luxury Modern Shelf Type 2', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 1, 2, 4.8, 140, TRUE),
+    ('Luxury Modern Shelf Type 3', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 2, 1, 4.9, 150, TRUE),
+    ('Luxury Modern Shelf Type 4', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 2, 1, 4.8, 160, TRUE),
+    ('Luxury Modern Shelf Type 5', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 2, 1, 4.9, 170, TRUE),
+    ('Luxury Modern Shelf Type 6', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 2, 1, 4.9, 170, TRUE),
+    ('Luxury Modern Shelf Type 7', 'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.', 4, 1, 2, 4.8, 180, TRUE);
 
 -- Decor Category
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
-    ('Wall Mirror with Gold Frame', 'A stylish wall mirror with a gold frame, perfect for brightening up any room in your home.', 5, 4, 1, 4.9, 420, TRUE),
-    ('Decorative Floor Vase', 'A tall decorative floor vase made from ceramic, perfect for adding elegance to any corner of your living room or hallway.', 5, 3, 1, 4.8, 350, TRUE),
-    ('Modern Wall Clock', 'A modern wall clock with a sleek, minimalist design, perfect for any contemporary living or office space.', 5, 1, 5, 4.7, 300, TRUE),
-    ('Abstract Art Painting', 'An abstract art painting with vibrant colors, designed to bring life and energy to any room.', 5, 2, 1, 4.6, 280, TRUE),
-    ('Decorative Throw Pillows', 'A set of decorative throw pillows with intricate patterns, perfect for adding a pop of color to your sofa or bed.', 5, 4, 3, 4.7, 250, TRUE),
-    ('Table Lamp with Fabric Shade', 'A stylish table lamp with a fabric shade, perfect for reading or adding ambiance to your living room or bedroom.', 5, 2, 3, 4.5, 220, TRUE),
-    ('Area Rug with Geometric Pattern', 'A plush area rug with a bold geometric pattern, perfect for adding warmth and style to your living room.', 5, 5, 3, 4.8, 270, TRUE),
-    ('Candle Holder Set', 'A set of elegant candle holders made from brass, ideal for creating a cozy and inviting atmosphere.', 5, 3, 2, 4.6, 230, TRUE);
+	('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 1, 6, 4.7, 150, TRUE),
+    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 2, 1, 4.8, 120, TRUE),
+    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 3, 6, 4.9, 130, TRUE),
+    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 4, 1, 4.8, 140, TRUE),
+    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 1, 1, 4.7, 150, TRUE),
+    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 2, 1, 4.8, 130, TRUE),
+    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 3, 6, 4.6, 120, TRUE),
+    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 4, 6, 4.7, 110, TRUE),
+    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE);
 
 -- Linking products to areas
 
@@ -317,14 +222,22 @@ VALUES
     (1, 32); -- Candle Holder Set (Living Room)
 
 -- Insert some colors into the product_colors table
-INSERT INTO product_colors (color_name)
+INSERT INTO product_colors (color_name, hex_code)
 VALUES
-    ('Red'),
-    ('Blue'),
-    ('Green'),
-    ('Black'),
-    ('White'),
-    ('Grey');
+('Antique Taupe', '#d4c1b1'),
+('Antique Coffee', '#141112'),
+('Smooth White', '#f0f0f2'),
+('Natural', '#9f7544'),
+('Sage Green', '#7c8e76'),
+('Mineral', '#a49e92'),
+('Caramel Brown', '#65350F'),
+('Cadet Blue', '#587a84'),
+('Walnut', '#69452e'),
+('White Oak', '#b38546'),
+('Black Oak', '#28282d'),
+('Amber', '#ba3c11'),
+('Navy Blue', '#1d2933'),
+('Cream', '#ccc7bc');
 
 -- Insert product variants for the Seating Category (Example: Swivel Chair, Chesterfield Sofa)
 -- Swivel Chair
