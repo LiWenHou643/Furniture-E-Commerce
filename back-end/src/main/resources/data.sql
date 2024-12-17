@@ -66,9 +66,7 @@ VALUES
     ('Living Room'),
     ('Bedroom'),
     ('Dining Room'),
-    ('Office'),
     ('Kitchen'),
-    ('Hallway'),
     ('Outdoor');
 
 INSERT INTO brands (brand_name, brand_description)
@@ -86,7 +84,8 @@ VALUES
     ('Fabric', 'Soft materials like cotton, linen, or polyester used for upholstery in sofas and chairs.'),
     ('Leather', 'Premium upholstery material offering a luxurious look and feel, commonly used for sofas and chairs.'),
     ('Glass', 'Transparent material used for tabletops and decorative furniture pieces.'),
-    ('Marble', 'Hard and strong material, often use for making beautiful tables and chairs');
+    ('Marble', 'Hard and strong material, often use for making beautiful tables and chairs'),
+    ('Ceramic', 'Popular for its versatility and range of finishes (glazed, matte, etc.), ceramic vases can be both decorative and functional.');
 
 -- Seating Category: 11 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
@@ -154,72 +153,193 @@ VALUES
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating, rating_count, product_status)
 VALUES 
 	('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 1, 6, 4.7, 150, TRUE),
-    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 2, 1, 4.8, 120, TRUE),
-    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 3, 6, 4.9, 130, TRUE),
-    ('Beautiful Picture Frame Type 1', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 4, 1, 4.8, 140, TRUE),
+    ('Beautiful Picture Frame Type 2', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 2, 1, 4.8, 120, TRUE),
+    ('Beautiful Picture Frame Type 3', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 3, 6, 4.9, 130, TRUE),
+    ('Beautiful Picture Frame Type 4', 'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.', 5, 4, 1, 4.8, 140, TRUE),
     ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 1, 1, 4.7, 150, TRUE),
-    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 2, 1, 4.8, 130, TRUE),
-    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 3, 6, 4.6, 120, TRUE),
-    ('Vintage Luxe Mirror Type 1', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 4, 6, 4.7, 110, TRUE),
-    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
-    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
-    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
-    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE),
-    ('Room Decor Vase Type 1', '', 5, 1, 6, 4.7, 150, TRUE);
+    ('Vintage Luxe Mirror Type 2', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 2, 1, 4.8, 130, TRUE),
+    ('Vintage Luxe Mirror Type 3', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 3, 6, 4.6, 120, TRUE),
+    ('Vintage Luxe Mirror Type 4', 'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.', 5, 4, 6, 4.7, 110, TRUE),
+    ('Room Decor Vase Type 1', 'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.', 5, 1, 7, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 2', 'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.', 5, 1, 7, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 3', 'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.', 5, 1, 7, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 4', 'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.', 5, 1, 7, 4.7, 150, TRUE),
+    ('Room Decor Vase Type 5', 'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.', 5, 1, 7, 4.7, 150, TRUE);
 
 -- Linking products to areas
+-- 1: Living room
+-- 2: Bedroom
+-- 3: Dining Room
+-- 4: Kitchen
+-- 5: Outdoor
 
 -- Seating Products
 INSERT INTO products_areas (area_id, product_id)
 VALUES
-    (1, 1),  -- Luxury Reclining Sofa (Living Room)
-    (1, 2),  -- Chesterfield Sofa (Living Room)
-    (2, 3),  -- Swivel Chair (Office)
-    (5, 4),  -- Outdoor Hammock Chair (Outdoor)
-    (1, 5),  -- Armchair with Ottoman (Living Room)
-    (5, 6);  -- Adjustable Lounge Chair (Outdoor)
-
+	(1, 1),
+    (1, 2),
+    (2, 2),
+    (5, 3),
+    (5, 4),
+    (1, 5),
+    (1, 6),
+    (5, 7),
+    (1, 8),
+    (2, 8),
+    (3, 8),
+    (4, 8),
+    (1, 9),
+    (2, 9),
+    (1, 10),
+    (2, 10),
+    (3, 10),
+    (4, 10),
+    (5, 10),
+    (1, 11),
+    (2, 11),
+    (3, 11),
+    (4, 11),
+    (5, 11);
+    
 -- Table Products
 INSERT INTO products_areas (area_id, product_id)
 VALUES
-    (1, 7),  -- Marble Dining Table (Living Room)
-    (3, 8),  -- Solid Wood Coffee Table (Dining Room)
-    (3, 9),  -- Glass Dining Table with Chairs (Dining Room)
-    (4, 10), -- Modern Office Desk (Office)
-    (1, 11), -- Wooden End Table (Living Room)
-    (3, 12); -- Foldable Dining Table (Dining Room)
+    (1, 12),
+    (1, 13),
+    (1, 14),
+    (2, 14),
+    (3, 14),
+    (4, 14),
+    (3, 15),
+    (4, 15),
+    (3, 16),
+    (4, 16),
+    (3, 17),
+    (4, 17),
+    (3, 18),
+    (4, 18),
+    (3, 19),
+    (4, 19),
+    (3, 20),
+    (4, 20),
+    (3, 21),
+    (4, 21);
 
 -- Bed Products
 INSERT INTO products_areas (area_id, product_id)
 VALUES
-    (2, 13), -- Memory Foam Bed (Bedroom)
-    (2, 14), -- Bunk Bed with Desk (Bedroom)
-    (2, 15), -- King Size Adjustable Bed (Bedroom)
-    (2, 16), -- Twin Size Bed (Bedroom)
-    (2, 17), -- Platform Bed with Storage (Bedroom)
-    (2, 18); -- Futon Bed (Bedroom)
+    (2, 22),
+    (2, 23),
+    (2, 24),
+    (2, 25),
+    (2, 26),
+    (2, 27),
+    (2, 28),
+    (2, 29),
+    (2, 30),
+    (2, 31);
 
 -- Storage Products
 INSERT INTO products_areas (area_id, product_id)
 VALUES
-    (2, 19), -- Wardrobe with Sliding Doors (Bedroom)
-    (5, 20), -- Shoe Rack Organizer (Kitchen)
-    (4, 21), -- Metal Filing Cabinet (Office)
-    (1, 22), -- Corner Storage Cabinet (Living Room)
-    (1, 23), -- Bookshelf with Ladder (Living Room)
-    (5, 24); -- Storage Bench with Cushion (Outdoor)
-
+	(1, 32),
+    (2, 32),
+    (3, 32),
+    (4, 32),
+    (1, 33),
+    (2, 33),
+    (3, 33),
+    (4, 33),
+    (1, 34),
+    (2, 34),
+    (3, 34),
+    (4, 34),
+    (1, 35),
+    (2, 35),
+    (3, 35),
+    (4, 35),
+    (1, 36),
+    (2, 36),
+    (3, 36),
+    (4, 36),
+    (1, 37),
+    (2, 37),
+    (3, 37),
+    (4, 37),
+    (1, 38),
+    (2, 38),
+    (3, 38),
+    (4, 38),
+    (1, 39),
+    (2, 39),
+    (3, 39),
+    (4, 39),
+    (1, 40),
+    (2, 40),
+    (1, 41),
+    (2, 41),
+    (4, 41),
+    (1, 42),
+    (2, 42),
+    (4, 42),
+    (1, 43),
+    (2, 43),
+    (4, 43),
+    (1, 44),
+    (2, 44),
+    (4, 44),
+    (1, 45),
+    (2, 45),
+    (4, 45),
+    (1, 46),
+    (2, 46),
+    (4, 46);
+    
 -- Decor Products
 INSERT INTO products_areas (area_id, product_id)
 VALUES
-    (1, 25), -- Wall Mirror with Gold Frame (Living Room)
-    (2, 26), -- Decorative Floor Vase (Bedroom)
-    (1, 27), -- Modern Wall Clock (Living Room)
-    (1, 28), -- Abstract Art Painting (Living Room)
-    (1, 29), -- Decorative Throw Pillows (Living Room)
-    (2, 30), -- Table Lamp with Fabric Shade (Bedroom)
-    (1, 31), -- Area Rug with Geometric Pattern (Living Room)
-    (1, 32); -- Candle Holder Set (Living Room)
+    (1, 47),
+    (2, 47),
+    (3, 47),
+    (4, 47),
+    (1, 48),
+    (2, 48),
+    (3, 48),
+    (4, 48),
+    (1, 49),
+    (2, 49),
+    (3, 49),
+    (4, 49),
+    (1, 50),
+    (2, 50),
+    (1, 51),
+    (3, 51),
+    (1, 52),
+    (3, 52),
+    (1, 53),
+    (3, 53),
+    (1, 54),
+    (3, 54),
+    (1, 55),
+    (2, 55),
+    (3, 55),
+    (4, 55),
+    (1, 56),
+    (2, 56),
+    (3, 56),
+    (4, 56),
+    (1, 57),
+    (2, 57),
+    (3, 57),
+    (4, 57),
+    (1, 58),
+    (2, 58),
+    (3, 58),
+    (4, 58),
+    (1, 59),
+    (2, 59),
+    (3, 59),
+    (4, 59);
 
 -- Insert some colors into the product_colors table
 INSERT INTO product_colors (color_name, hex_code)
@@ -237,32 +357,68 @@ VALUES
 ('Black Oak', '#28282d'),
 ('Amber', '#ba3c11'),
 ('Navy Blue', '#1d2933'),
-('Cream', '#ccc7bc');
+('Cream', '#ccc7bc'),
+('Forest Green', '#228B22'),
+('Nevada Gray', '#666A6D');
 
 -- Insert product variants for the Seating Category (Example: Swivel Chair, Chesterfield Sofa)
--- Swivel Chair
 INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
 VALUES
-    (3, 1, 'SWC-RED-001', 200.00, 180.00, 50), -- Red Swivel Chair
-    (3, 2, 'SWC-BLUE-001', 200.00, 180.00, 40), -- Blue Swivel Chair
-    (3, 3, 'SWC-GREEN-001', 200.00, 180.00, 30), -- Green Swivel Chair
-    (3, 4, 'SWC-BLACK-001', 200.00, 180.00, 25), -- Black Swivel Chair
-    (3, 5, 'SWC-WHITE-001', 200.00, 180.00, 20); -- White Swivel Chair
+    (1, 12, 'SEAT01AMBER', 200.00, 180.00, 5), 
+    (1, 15, 'SEAT01FOREST', 200.00, 190.00, 5),
+    (2, 1, 'SEAT02', 100.00, 190.00, 50),
+    (3, 3, 'SEAT03', 100.00, 150.00, 50),
+	(4, 3, 'SEAT04', 100.00, 140.00, 50),
+    (5, 1, 'SEAT05', 500.00, 480.00, 10),
+    (6, 6, 'SEAT06', 500.00, 490.00, 10),
+    (7, 8, 'SEAT07CADET', 50.00, 40.00, 20),
+    (7, 12, 'SEAT07AMBER', 50.00, 40.00, 20),
+    (7, 14, 'SEAT07CREAM', 50.00, 40.00, 20),
+    (8, 3, 'SEAT08', 50.00, 40.00, 50),
+    (9, 2, 'SEAT09BLACK', 50.00, 50.00, 50),
+    (9, 3, 'SEAT09WHITE', 50.00, 50.00, 50),
+    (10, 4, 'SEAT10', 30.00, 30.00, 50),
+    (11, 2, 'SEAT11BLACK', 40.00, 35.00, 50),
+    (11, 14, 'SEAT11CREAM', 40.00, 36.00, 50),
+    (11, 12, 'SEAT11AMBER', 40.00, 37.00, 50);
+    
+-- Insert product variants for the Table Category
+INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
+VALUES
+	(12, NULL, 'TABLE01', 100.00, 90.00, 30),
+    (13, NULL, 'TABLE02', 100.00, 90.00, 30),
+    (14, NULL, 'TABLE03NATURAL', 100.00, 90.00, 30),
+    (14, NULL, 'TABLE03CREAM', 100.00, 90.00, 30),
+    (15, NULL, 'TABLE04', 200.00, 190.00, 30),
+    (16, NULL, 'TABLE05', 200.00, 190.00, 30),
+    (17, NULL, 'TABLE06', 200.00, 190.00, 30),
+    (18, 4, 'TABLE07', 200.00, 190.00, 30),
+    (19, 2, 'TABLE08', 200.00, 190.00, 30),
+    (20, 4, 'TABLE09', 80.00, 60.00, 30),
+    (21, 4, 'TABLE10', 150.00, 140.00, 10);
+    
+-- Insert product variants for the Bed Category
+INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
+VALUES
+	(22, 3, 'BED01', 300.00, 290.00, 10),
+    (23, 3, 'BED02', 300.00, 290.00, 10),
+    (24, 16, 'BED03', 350.00, 320.00, 10),
+    (25, 16, 'BED04', 290.00, 290.00, 10),
+    (26, 16, 'BED05', 320.00, 300.00, 10),
+    (27, 4, 'BED06', 300.00, 290.00, 10),
+    (28, 3, 'BED07', 280.00, 270.00, 10),
+    (29, 12, 'BED08AMBER', 300.00, 270.00, 10),
+	(29, 3, 'BED08WHITE', 300.00, 260.00, 10),
+    (30, 13, 'BED09NAVY', 300.00, 290.00, 10),
+    (30, 14, 'BED09CREAM', 300.00, 280.00, 10),
+    (31, 14, 'BED10CREAM', 300.00, 290.00, 10),
+    (31, 3, 'BED10WHITE', 300.00, 270.00, 10),
+    (31, 16, 'BED10GRAY', 300.00, 270.00, 10);
 
--- Chesterfield Sofa
+-- Insert product variants for the Storage Category
 INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
 VALUES
-    (2, 1, 'CHS-RED-001', 800.00, 750.00, 10), -- Red Chesterfield Sofa
-    (2, 2, 'CHS-BLUE-001', 800.00, 750.00, 8), -- Blue Chesterfield Sofa
-    (2, 3, 'CHS-GREEN-001', 800.00, 750.00, 5), -- Green Chesterfield Sofa
-    (2, 4, 'CHS-BLACK-001', 800.00, 750.00, 7), -- Black Chesterfield Sofa
-    (2, 5, 'CHS-WHITE-001', 800.00, 750.00, 4); -- White Chesterfield Sofa
-
--- Marble Dining Table (Products in the Table Category)
--- Dining Table
-INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
-VALUES
-    (7, 1, 'MDT-RED-001', 1500.00, 1400.00, 12), -- Red Marble Dining Table
-    (7, 2, 'MDT-BLUE-001', 1500.00, 1400.00, 8), -- Blue Marble Dining Table
-    (7, 4, 'MDT-BLACK-001', 1500.00, 1400.00, 15), -- Black Marble Dining Table
-    (7, 6, 'MDT-GREY-001', 1500.00, 1400.00, 20); -- Grey Marble Dining Table
+	(32, 2, 'DRAWER01BLACK', 100.00, 90.00, 10),
+    (32, 1, 'DRAWER01TAUPE', 100.00, 100.00, 10),
+    (32, 5, 'DRAWER01SAGE', 100.00, 95.00, 10),
+    (32, 3, 'DRAWER01WHITE', 100.00, 90.00, 10);
