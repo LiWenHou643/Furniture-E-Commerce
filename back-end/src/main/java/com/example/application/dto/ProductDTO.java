@@ -1,28 +1,22 @@
 package com.example.application.dto;
 
-import com.example.application.entity.Product;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@NoArgsConstructor
-@AllArgsConstructor
 public class ProductDTO {
     Long productId;
     String productName;
     String productDescription;
-    double productPrice;
+    CategoryDTO productCategory;
+    BrandDTO productBrand;
+    MaterialDTO productMaterial;
     double averageRating;
     int ratingCount;
-    CategoryDTO productCategory;
-    SubCategoryDTO productSubCategory;
-    int quantity;
-    List<ProductImageDTO> productImages;
-    int productStatus;
+    boolean productStatus;
 }

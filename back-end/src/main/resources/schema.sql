@@ -104,7 +104,7 @@ CREATE TABLE products_areas (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
-CREATE TABLE product_colors (
+CREATE TABLE colors (
 	color_id INT AUTO_INCREMENT PRIMARY KEY,
     color_name VARCHAR(255) NOT NULL,
     hex_code CHAR(7) NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE product_item (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (color_id) REFERENCES product_colors(color_id)
+    FOREIGN KEY (color_id) REFERENCES colors(color_id)
 );
 
 CREATE TABLE product_images (
@@ -185,7 +185,7 @@ CREATE TABLE orders (
     shipping_address INT NOT NULL,  -- Reference to the shipping address
     shipping_method ENUM('standard', 'express', 'overnight') NOT NULL,  -- Shipping method
     notes TEXT,
-    leave_feedback INT(1) DEFAULT 0,
+    leave_feedback BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
@@ -206,7 +206,7 @@ CREATE TABLE order_details (
     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
 );
 
-CREATE TABLE product_feedback (
+CREATE TABLE feedbacks (
 	order_id INT NOT NULL, -- Reference to the order which finished
     user_id INT NOT NULL,  -- Reference to the customer who submitted the feedback
     product_id INT NOT NULL,  -- Reference to the product being reviewed
@@ -237,13 +237,17 @@ CREATE TABLE payments (
 CREATE TABLE invalidated_tokens (
 	token_id INT AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(512) NOT NULL,
-    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE refresh_tokens (
 	refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
     refresh_token VARCHAR(512) NOT NULL,
-    revoked INT(1) NOT NULL DEFAULT 0,
+    revoked BOOLEAN NOT NULL DEFAULT FALSE,
     user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

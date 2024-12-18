@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,6 +21,12 @@ public class Users extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
+    String firstName;
+
+    String lastName;
+
+    String avatar;
+
     @Column(unique = true)
     String email;
 
@@ -27,13 +36,14 @@ public class Users extends BaseEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Address> addresses = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "roleId")
     Roles role;
 
     @Builder.Default
-    int userStatus = 1;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    Customer customer;
+    boolean userStatus = true;
 }

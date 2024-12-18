@@ -13,9 +13,7 @@ public interface ProductMapper {
 
     Product toProduct(ProductDTO productDTO);
 
-    @Mapping(target = "productCategory", source = "subCategory.category")
-    @Mapping(target = "productSubCategory", source = "subCategory")
-    @Mapping(target = "productImages",  source = "productImages")
+    @Mapping(target = "productCategory", source = "category")
     ProductDTO toDTO(Product product);
 
     void updateProductFromDto(ProductDTO productDTO, @MappingTarget Product product);

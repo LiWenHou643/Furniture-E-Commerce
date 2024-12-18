@@ -1,12 +1,10 @@
 package com.example.application.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,11 +16,13 @@ public class ProductImage extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long imageId;
-    Long productId;
-    String imageUrl;
-    int isMainImage;
 
     @ManyToOne
-    @JoinColumn(name = "productId", insertable = false, updatable = false)
-    Product product;
+    @JoinColumn(name = "productItemId")
+    ProductItem productItem;
+
+    String imageUrl;
+
+    @Builder.Default
+    boolean isMainImage = false;
 }

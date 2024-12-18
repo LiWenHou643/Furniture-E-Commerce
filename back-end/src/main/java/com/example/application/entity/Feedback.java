@@ -13,10 +13,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductFeedback extends BaseEntity {
+public class Feedback extends BaseEntity {
 
     @EmbeddedId
-    private ProductFeedbackPK id;
+    private FeedbackPK id;
 
     @Column(name = "rating")
     private Integer rating;

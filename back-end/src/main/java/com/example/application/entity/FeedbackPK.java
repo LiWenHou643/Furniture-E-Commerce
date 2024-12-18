@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ProductFeedbackPK implements Serializable {
+public class FeedbackPK implements Serializable {
     private Long orderId;
     private Long customerId;
     private Long productId;

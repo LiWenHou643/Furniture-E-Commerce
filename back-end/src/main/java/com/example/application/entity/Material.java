@@ -5,24 +5,23 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Data
-@Builder
+@Table(name = "materials")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "refresh_tokens")
-public class RefreshToken extends BaseEntity{
+@Builder
+public class Material extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long refreshTokenId;
+    Long materialId;
 
-    @Column(nullable = false)
-    String refreshToken;
+    String materialName;
 
-    @Builder.Default
-    boolean revoked = false;
+    String materialDescription;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    Users user;
+//    @Builder.Default
+//    @OneToMany(mappedBy = "material")
+//    Set<Product> products = new HashSet<>();
 }

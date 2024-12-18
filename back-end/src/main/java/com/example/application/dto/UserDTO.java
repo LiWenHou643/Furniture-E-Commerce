@@ -1,23 +1,27 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     Long userId;
-    String username;
+    String firstName;
+    String lastName;
+    String avatar;
     String email;
     String phoneNumber;
-    Long roleId;
-    String roleName;
+    RoleDTO role;
+    AddressDTO address;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
-    int userStatus;
+    boolean userStatus;
 }

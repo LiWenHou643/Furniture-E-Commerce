@@ -6,8 +6,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AddressDTO {
     Long addressId;

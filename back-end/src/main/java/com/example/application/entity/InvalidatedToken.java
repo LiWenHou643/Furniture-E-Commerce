@@ -17,7 +17,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "invalidated_tokens")
-public class InvalidatedToken {
+public class InvalidatedToken extends BaseEntity{
     @Id
     String token;
     Date expiration;

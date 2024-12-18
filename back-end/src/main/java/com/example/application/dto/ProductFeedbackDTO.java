@@ -1,12 +1,12 @@
 package com.example.application.dto;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Setter
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductFeedbackDTO {
     Long orderId;
     Long customerId;

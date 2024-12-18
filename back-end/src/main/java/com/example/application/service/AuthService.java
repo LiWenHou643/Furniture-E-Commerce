@@ -6,7 +6,6 @@ import com.example.application.constants.AppConstants;
 import com.example.application.constants.TokenType;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.NotificationDTO;
-import com.example.application.entity.Customer;
 import com.example.application.entity.RefreshToken;
 import com.example.application.entity.Roles;
 import com.example.application.entity.Users;

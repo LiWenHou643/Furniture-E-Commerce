@@ -5,28 +5,26 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "areas")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class Category extends BaseEntity {
-
+public class Area extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long categoryId;
-
-    @Column(name = "category_name", nullable = false)
-    String categoryName;
-
-    @Column(name = "category_description")
-    String categoryDescription;
+    Long areaId;
+    String areaName;
 
 //    @Builder.Default
-//    @OneToMany(mappedBy = "category")
+//    @ManyToMany
+//    @JoinTable(
+//            name = "area_products",
+//            joinColumns = @JoinColumn(name = "area_id"),
+//            inverseJoinColumns = @JoinColumn(name = "product_id")
+//    )
 //    Set<Product> products = new HashSet<>();
 
 }
-

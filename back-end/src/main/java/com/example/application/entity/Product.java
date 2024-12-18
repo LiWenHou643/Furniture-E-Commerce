@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -25,21 +26,30 @@ public class Product extends BaseEntity {
 
     String productDescription;
 
-    double productPrice = 0.0;
-
     double averageRating = 0.0;
-
-    int quantity = 0;
 
     int ratingCount = 0;
 
     @Builder.Default
-    int productStatus = 1;  // 1 - Active, 0 - Inactive
+    boolean productStatus = true;
 
     @ManyToOne
-    @JoinColumn(name = "sub_category_id", nullable = false)
-    SubCategory subCategory;  // Many products belong to one sub-category
+    @JoinColumn(name = "category_id", nullable = false)
+    Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id", nullable = false)
+    Brand brand;
+
+    @ManyToOne
+    @JoinColumn(name = "material_id", nullable = false)
+    Material material;
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "products")
+    Set<Area> areas = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
-    List<ProductImage> productImages;
+    Set<ProductItem> productItems = new HashSet<>();
+
 }
