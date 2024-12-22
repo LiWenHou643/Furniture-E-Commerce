@@ -136,22 +136,6 @@ CREATE TABLE product_images (
     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
 );
 
-CREATE TABLE coupons (
-    coupon_id INT PRIMARY KEY,
-    coupon_code VARCHAR(50) UNIQUE NOT NULL,   -- Coupon code (e.g., BLACKFRIDAY2024)
-    discount_type ENUM('percentage', 'fixed') NOT NULL,  -- Type of discount
-    discount_value DECIMAL(10, 2) NOT NULL, -- Discount amount or percentage
-    min_order_value DECIMAL(10, 2),  -- Minimum order value for coupon to apply
-    max_discount_value DECIMAL(10, 2), -- Maximum money amount to discount
-    valid_from DATE,  -- Coupon validity start
-    valid_until DATE,    -- Coupon validity end
-    usage_limit INT,  -- How many times a coupon can be used
-    usage_count INT DEFAULT 0, -- How many times the coupon has been used
-    coupon_status BOOLEAN DEFAULT TRUE,  -- If the coupon is active or not
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
 CREATE TABLE carts (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -175,10 +159,6 @@ CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    amount DECIMAL(10, 2) NOT NULL,
-    coupon_id INT,         -- Reference to the applied promotion
-    coupon_value DECIMAL(10, 2), -- Value at time order created
-    total_discount DECIMAL(10, 2),
     total_amount DECIMAL(10, 2) NOT NULL,
     order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') NOT NULL,
     shipping_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date when the order was shipped
@@ -198,14 +178,13 @@ CREATE TABLE order_details (
     product_item_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
-    total_discount DECIMAL(10, 2) DEFAULT 0.00,  -- The discount applied due to the sale (if applicable)
     total_price DECIMAL(10, 2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_item_id) REFERENCES product_item(product_item_id)
 );
-
+																																
 CREATE TABLE feedbacks (
 	order_id INT NOT NULL, -- Reference to the order which finished
     user_id INT NOT NULL,  -- Reference to the customer who submitted the feedback

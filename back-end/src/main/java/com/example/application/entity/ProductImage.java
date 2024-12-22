@@ -3,6 +3,7 @@ package com.example.application.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.UuidGenerator;
 
 @Builder
 @AllArgsConstructor
@@ -14,8 +15,8 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "product_images")
 public class ProductImage extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long imageId;
+    @UuidGenerator
+    String imageId;
 
     @ManyToOne
     @JoinColumn(name = "productItemId")

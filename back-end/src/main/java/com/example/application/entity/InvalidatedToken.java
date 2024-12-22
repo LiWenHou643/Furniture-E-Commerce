@@ -1,8 +1,6 @@
 package com.example.application.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,8 +15,10 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "invalidated_tokens")
-public class InvalidatedToken extends BaseEntity{
+public class InvalidatedToken extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    String tokenId;
     String token;
     Date expiration;
 }

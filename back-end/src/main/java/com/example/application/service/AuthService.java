@@ -5,14 +5,12 @@ import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.constants.AppConstants;
 import com.example.application.constants.TokenType;
 import com.example.application.dto.AuthDTO;
-import com.example.application.dto.NotificationDTO;
 import com.example.application.entity.RefreshToken;
 import com.example.application.entity.Roles;
 import com.example.application.entity.Users;
 import com.example.application.exception.DataExistedException;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.producer.MessageProducer;
-import com.example.application.repository.CustomerRepository;
 import com.example.application.repository.RefreshTokenRepository;
 import com.example.application.repository.RolesRepository;
 import com.example.application.repository.UserRepository;
@@ -41,7 +39,6 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     RolesRepository rolesRepository;
-    CustomerRepository customerRepository;
     RefreshTokenRepository refreshTokenRepository;
     MessageProducer messageProducer;
 
@@ -80,7 +77,7 @@ public class AuthService {
         var refreshTokenEntity = RefreshToken.builder()
                                              .user(user)
                                              .refreshToken(refreshToken)
-                                             .revoked(0)
+                                             .revoked(true)
                                              .build();
         refreshTokenRepository.save(refreshTokenEntity);
     }
@@ -114,25 +111,27 @@ public class AuthService {
                           .password(passwordEncoder.encode(request.getPassword()))
                           .role(role)
                           .build();
-        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
-                                    .user(user).build();
-        Customer isSaved = customerRepository.save(customer);
+//        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
+//                                    .user(user).build();
+//        Customer isSaved = customerRepository.save(customer);
+//
+//        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
+//                                                                 "EMAIL"
+//                                                         ).recipient(user.getEmail())
+//                                                         .subject("Welcome to my channel")
+//                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
+//                                                         .build();
 
-        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
-                                                                 "EMAIL"
-                                                         ).recipient(user.getEmail())
-                                                         .subject("Welcome to my channel")
-                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
-                                                         .build();
-
-        messageProducer.sendMessage("notification-delivery", notificationDTO);
+//        messageProducer.sendMessage("notification-delivery", notificationDTO);
 //        Cart cart = Cart.builder().user(isSaved).build();
 //        cartRepository.save(cart);
 
 
-        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
-                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
-                      .lastName(isSaved.getLastName()).build();
+//        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
+//                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
+//                      .lastName(isSaved.getLastName()).build();
+
+        return null;
     }
 
     public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
@@ -142,7 +141,7 @@ public class AuthService {
                                                    .orElseThrow(
                                                            () -> new ResourceNotFoundException("Refresh Token", "token",
                                                                    refreshToken));
-        if (token.getRevoked() == 1) {
+        if (token.isRevoked()) {
             throw new JwtException("Refresh token has been revoked");
         }
 

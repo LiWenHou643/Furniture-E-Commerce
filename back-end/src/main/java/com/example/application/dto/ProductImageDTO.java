@@ -10,5 +10,5 @@ import lombok.experimental.FieldDefaults;
 public class ProductImageDTO {
     Long imageId;
     String imageUrl;
-    int isMainImage;
+    boolean isMainImage;
 }
