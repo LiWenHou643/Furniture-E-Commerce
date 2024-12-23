@@ -9,21 +9,11 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ApiResponse<T> {
     @Builder.Default
     String status = "success";
     String message;
     T data;
-
-    public ApiResponse(String status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    public ApiResponse(String status, String message, T data) {
-        this.status = status;
-        this.message = message;
-        this.data = data;
-    }
 }
