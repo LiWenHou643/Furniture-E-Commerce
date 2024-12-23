@@ -1,6 +1,5 @@
 -- Insert roles (admin, customer)
-INSERT INTO roles (role_name) VALUES ('admin');
-INSERT INTO roles (role_name) VALUES ('user');
+INSERT INTO roles (role_name) VALUES ('admin'), ('user');
 
 -- Insert admin -- pwd: admin
 INSERT INTO admins (username, password, role_id) 

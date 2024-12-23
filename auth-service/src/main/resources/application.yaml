@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${SPRING_APP_NAME:products-service}
+    name: ${SPRING_APP_NAME:auth-service}
   datasource:
     url: ${DATABASE_URL:jdbc:mysql://localhost:4000/auth}
     username: ${DATABASE_USERNAME:root}
@@ -14,13 +14,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: ${JPA_FORMAT_SQL:true}
 
-  security:
-    oauth2:
-      authorization:
-        oidc:
-          client-id: ${OIDC_CLIENT_ID:luxehouseapi}
-          client-secret: ${OIDC_CLIENT_SECRET:$2y$10$SbUNTg7IjlTIEZ4Zl20rweq.e7n61F6rdJlmuV2ieGc8Z0UjHOILi} # b-scrypt luxehouseapi
-
 server:
   port: ${SERVER_PORT:9000}
 
@@ -31,3 +24,7 @@ logging:
     org.springframework.cache.interceptor.CacheInterceptor: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
   pattern:
     console: ${LOG_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+
+jwt:
+  rsa-private-key: classpath:certs/privateKey.pem
+  rsa-public-key: classpath:certs/publicKey.pem

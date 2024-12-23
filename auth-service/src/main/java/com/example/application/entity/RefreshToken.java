@@ -1,5 +1,6 @@
 package com.example.application.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,12 +14,19 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class InvalidatedToken extends BaseEntity{
+@Builder
+public class RefreshToken extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long tokenId;
+    Long refreshTokenId;
 
-    String token;
+    String refreshToken;
+
+    boolean revoked;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 
     Date expiryTime;
 }
