@@ -53,17 +53,27 @@ public class AuthService {
     public AuthResponse authenticate(AuthRequest request, HttpServletResponse response) {
         Optional<User> user;
         if (request.isAdmin()) {
-            user = userRepository.findByUsername(request.getUsername());
+            user = userRepository.findByEmail(request.getUsername());
+
+            if (user.isEmpty()) {
+                throw new ResourceNotFoundException("Admin", "username", request.getUsername());
+            }
+            if (!user.get().getRole().getRoleName().equals("admin")) {
+                throw new BadCredentialsException("Invalid credentials");
+            }
         } else {
             if (isPhoneNumber(request.getUsername())) {
                 user = userRepository.findByPhoneNumber(request.getUsername());
             } else {
-                user = userRepository.findByUsername(request.getUsername());
+                user = userRepository.findByEmail(request.getUsername());
             }
-        }
 
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException("User", "username", request.getUsername());
+            if (user.isEmpty()) {
+                throw new ResourceNotFoundException("User", "email or phone", request.getUsername());
+            }
+            if (!user.get().getRole().getRoleName().equals("user")) {
+                throw new BadCredentialsException("Invalid credentials");
+            }
         }
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.get().getPassword());
@@ -72,7 +82,9 @@ public class AuthService {
 
         var token = jwtUtils.generateAccessToken(user.get());
 
-        createRefreshTokenCookie(response, jwtUtils.generateRefreshToken(user.get()));
+        if (request.isRememberMe()) {
+            createRefreshTokenCookie(response, jwtUtils.generateRefreshToken(user.get()));
+        }
 
         return AuthResponse.builder().token(token).build();
     }

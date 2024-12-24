@@ -12,5 +12,4 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthResponse {
     String token;
-    Date expiryTime;
 }

@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String id;
+    String userId;
 
     String email;
     String phoneNumber;

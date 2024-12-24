@@ -19,29 +19,24 @@ public class JwtUtils {
     InvalidatedTokenRepository invalidatedTokenRepository;
     RSAKeyRecord rsaKeyRecord;
     JwtEncoder jwtEncoder;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateAccessToken(User user) {
-        String subject = (user.getRole().getRoleName().equals("admin")) ? user.getUsername() : user.getEmail();
-
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("luxehouse")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(100000, ChronoUnit.SECONDS))
-                                          .subject(subject)
+                                          .subject(user.getEmail())
                                           .claim("scope", user.getRole().getRoleName())
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
     public String generateRefreshToken(User user) {
-        String subject = (user.getRole().getRoleName().equals("admin")) ? user.getUsername() : user.getEmail();
-
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("luxehouse")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
-                                          .subject(subject)
+                                          .subject(user.getEmail())
                                           .claim("scope", "REFRESH_TOKEN")
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

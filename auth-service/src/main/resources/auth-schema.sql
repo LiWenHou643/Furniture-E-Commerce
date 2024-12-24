@@ -9,17 +9,10 @@ CREATE TABLE roles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE admins(
-	username VARCHAR(255) PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
-    role_id INT NOT NULL,
-    FOREIGN KEY (role_id) REFERENCES roles(role_id)
-);
-
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    phone_number VARCHAR(11) UNIQUE,
+    phone_number VARCHAR(11) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
     role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
     user_status BOOLEAN DEFAULT TRUE,  -- Account status

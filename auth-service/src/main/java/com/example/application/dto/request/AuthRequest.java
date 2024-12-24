@@ -1,5 +1,6 @@
 package com.example.application.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,9 +11,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthRequest {
     String username;
-    String email;
-    String phoneNumber;
     String password;
-    boolean rememberMe;
-    boolean isAdmin;
+    @Builder.Default
+    boolean rememberMe = false;
+    @Builder.Default
+    boolean isAdmin = false;
+
+    @JsonSetter
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 }
