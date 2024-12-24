@@ -25,7 +25,8 @@ public class JwtUtils {
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(100000, ChronoUnit.SECONDS))
                                           .subject(user.getEmail())
-                                          .claim("scope", user.getRole().getRoleName())
+                                          .claim("scope", "ROLE_" + user.getRole().getRoleName()
+                                                                        .toUpperCase())
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
@@ -36,7 +37,8 @@ public class JwtUtils {
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
                                           .subject(user.getEmail())
-                                          .claim("scope", "REFRESH_TOKEN")
+                                          .claim("scope", "ROLE_" + user.getRole().getRoleName()
+                                                                        .toUpperCase())
                                           .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }

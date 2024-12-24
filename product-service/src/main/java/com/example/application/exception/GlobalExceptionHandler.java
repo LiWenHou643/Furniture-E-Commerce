@@ -5,13 +5,14 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     // General Exception Handler
@@ -102,7 +103,13 @@ public class GlobalExceptionHandler {
     // Handle Authorization Exceptions (e.g., access denied)
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
-        ApiResponse<Object> response = new ApiResponse<>("error", "Access denied: " + ex.getMessage(), null);
+        ApiResponse<Object> response = new ApiResponse<>("error", "Access denied!", null);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("error", "Access denied!", null);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 

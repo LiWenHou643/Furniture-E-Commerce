@@ -6,6 +6,7 @@ import com.example.application.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductDTO>> getItemById(@PathVariable Long id) {
         ProductDTO item = productService.getProduct(id);
         ApiResponse<ProductDTO> response = ApiResponse.<ProductDTO>builder().message("Product found").data(item).build();

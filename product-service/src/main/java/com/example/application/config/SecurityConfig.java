@@ -22,8 +22,6 @@ public class SecurityConfig {
             "/products/**",
     };
 
-    private final RSAKeyRecord rsaKeyRecord;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
@@ -54,6 +52,6 @@ public class SecurityConfig {
 
     @Bean
     JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
+        return new CustomJwtDecoder();
     }
 }
