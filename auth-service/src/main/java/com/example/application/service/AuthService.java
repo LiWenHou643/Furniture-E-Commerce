@@ -38,12 +38,13 @@ public class AuthService {
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
         boolean isValid = true;
+        try {
+            Jwt jwt = jwtUtils.decode(token);
 
-        var jwt = jwtUtils.decode(token);
-        if (jwtUtils.isExpired(jwt)) {
-            isValid = false;
-        }
-        if (jwtUtils.isInvalidated(jwt)) {
+            if (jwtUtils.isExpired(jwt) || jwtUtils.isInvalidated(jwt)) {
+                isValid = false;
+            }
+        } catch (JwtException e) {
             isValid = false;
         }
 
