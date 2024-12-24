@@ -45,3 +45,6 @@ server:
   servlet:
     session:
       timeout: ${SESSION_TIMEOUT:20m}
+
+jwt:
+  rsa-public-key: classpath:certs/publicKey.pem

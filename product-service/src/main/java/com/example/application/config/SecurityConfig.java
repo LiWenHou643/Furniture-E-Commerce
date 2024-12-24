@@ -1,12 +1,14 @@
 package com.example.application.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,10 +16,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/products/**",
     };
+
+    private final RSAKeyRecord rsaKeyRecord;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -26,12 +31,13 @@ public class SecurityConfig {
                                                              .anyRequest()
                                                              .authenticated());
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                    .sessionManagement(
-                            (sessionManagement) -> sessionManagement.sessionCreationPolicy(
-                                    SessionCreationPolicy.STATELESS));
-//                    .oauth2Login(Customizer.withDefaults());
-        //                .addFilterBefore(new JwtFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+                                                                  .decoder(jwtDecoder())
+                                                                  .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                                          .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+
         return httpSecurity.build();
     }
 
@@ -46,4 +52,8 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
+    @Bean
+    JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
+    }
 }

@@ -2,7 +2,6 @@ package com.example.application.config;
 
 import com.example.application.entity.User;
 import com.example.application.repository.InvalidatedTokenRepository;
-import com.example.application.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.oauth2.jwt.*;
@@ -58,6 +57,8 @@ public class JwtUtils {
     }
 
     public boolean isInvalidated(Jwt jwtToken) {
+        boolean invalidToken = invalidatedTokenRepository.existsByToken(jwtToken.getTokenValue());
+
         return invalidatedTokenRepository.existsByToken(jwtToken.getTokenValue());
     }
 }

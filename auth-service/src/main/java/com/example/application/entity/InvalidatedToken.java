@@ -3,7 +3,6 @@ package com.example.application.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
@@ -13,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "invalidated_tokens")
 public class InvalidatedToken extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
