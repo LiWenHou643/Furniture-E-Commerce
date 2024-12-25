@@ -92,7 +92,7 @@ public class AuthService {
 
 //    @Transactional
 //    public AuthDTO register(AuthDTO request) {
-//        Roles role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
+//        Role role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
 //                                    .orElseThrow(() -> new ResourceNotFoundException(
 //                                            "Role", "roleName", AppConstants.ROLE_USER));
 //

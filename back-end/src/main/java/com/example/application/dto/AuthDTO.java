@@ -1,6 +1,7 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,10 @@ public class AuthDTO {
     String username;
     @NotNull(message = "Password is required")
     String password;
+
+    @JsonProperty("persistent")
     boolean persistent;
+
+    @JsonProperty("isAdmin")
     boolean isAdmin;
 }

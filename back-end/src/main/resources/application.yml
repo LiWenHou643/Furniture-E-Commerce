@@ -73,11 +73,6 @@ jwt:
   rsa-private-key: classpath:certs/privateKey.pem
   rsa-public-key: classpath:certs/publicKey.pem
 
-twilio:
-  account-sid: ${TWILIO_ACCOUNT_SID:TWILIO_ACCOUNT_SID}
-  auth-token: ${TWILIO_AUTH_TOKEN:TWILIO_AUTH_TOKEN}
-  trial-number: ${TWILIO_TRIAL_NUMBER:TWILIO_TRIAL_NUMBER}
-
 paypal:
   client:
     id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}

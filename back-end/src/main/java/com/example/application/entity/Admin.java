@@ -20,5 +20,5 @@ public class Admin extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "roleId")
-    Roles role;
+    Role role;
 }

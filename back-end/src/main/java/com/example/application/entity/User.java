@@ -36,13 +36,12 @@ public class User extends BaseEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
-    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Address> addresses = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "roleId")
-    Roles role;
+    @JoinColumn(name = "role_id", nullable = false)
+    Role role;
 
     @Builder.Default
     boolean userStatus = true;

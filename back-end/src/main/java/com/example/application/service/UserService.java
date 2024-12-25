@@ -8,11 +8,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @Service
 public class UserService {
     UserRepository userRepository;
+
+    public List<UserDTO> getAllUsers() {
+        var x=userRepository.findAll().stream().map(UserMapper.INSTANCE::toDTO).toList();
+
+        return userRepository.findAll().stream().map(UserMapper.INSTANCE::toDTO).collect(Collectors.toList());
+    }
 
     public UserDTO getUserById(Long userId) {
         var user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));

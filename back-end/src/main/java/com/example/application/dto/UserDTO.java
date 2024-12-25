@@ -1,9 +1,10 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,8 +20,7 @@ public class UserDTO {
     String avatar;
     String email;
     String phoneNumber;
+    Set<AddressDTO> addresses;
     RoleDTO role;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    String password;
     boolean userStatus;
 }
