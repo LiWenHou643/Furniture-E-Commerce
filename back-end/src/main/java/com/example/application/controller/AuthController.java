@@ -2,10 +2,13 @@ package com.example.application.controller;
 
 import com.example.application.dto.ApiResponse;
 import com.example.application.dto.AuthDTO;
+import com.example.application.dto.CreateUserRequest;
+import com.example.application.dto.UserDTO;
 import com.example.application.service.AuthService;
 import com.example.application.service.LogoutHandlerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,13 +34,19 @@ public class AuthController {
                 new ApiResponse<>("success", "User authenticated successfully", response));
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody @Valid AuthDTO request) {
-//        var response = authService.register(request);
-//        log.info("User registered successfully");
-//        return ResponseEntity.ok(
-//                new ApiResponse<>("success", "User registered successfully", response));
-//    }
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody @Valid CreateUserRequest request) {
+        try {
+            var user = authService.register(request);
+            log.info("User registered successfully");
+            return ResponseEntity.ok(
+                    new ApiResponse<>("success", "User registered successfully", user));
+        } catch (Exception e) {
+            log.error("Error occurred while registering user", e);
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>("error", e.getMessage(), null));
+        }
+    }
 
     @GetMapping("/refresh-token")
     public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(HttpServletRequest httpServletRequest) {

@@ -2,9 +2,15 @@ package com.example.application.service;
 
 import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.dto.AuthDTO;
+import com.example.application.dto.CreateUserRequest;
+import com.example.application.dto.UserDTO;
+import com.example.application.entity.Address;
 import com.example.application.entity.RefreshToken;
+import com.example.application.entity.Role;
 import com.example.application.entity.User;
+import com.example.application.exception.DataExistedException;
 import com.example.application.exception.ResourceNotFoundException;
+import com.example.application.mapper.UserMapper;
 import com.example.application.producer.MessageProducer;
 import com.example.application.repository.RefreshTokenRepository;
 import com.example.application.repository.RolesRepository;
@@ -12,6 +18,7 @@ import com.example.application.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +28,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+
+import static com.example.application.constants.AppConstants.ROLE_USER;
 
 
 @Service
@@ -90,49 +101,50 @@ public class AuthService {
         response.addCookie(refreshTokenCookie);
     }
 
-//    @Transactional
-//    public AuthDTO register(AuthDTO request) {
-//        Role role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
-//                                    .orElseThrow(() -> new ResourceNotFoundException(
-//                                            "Role", "roleName", AppConstants.ROLE_USER));
-//
-//        request.setFirstName(request.getFirstName().trim());
-//        request.setLastName(request.getLastName().trim());
-//        request.setEmail(request.getEmail().trim());
-//        request.setPassword(request.getPassword().trim());
-//
-//        Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
-//        if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
-//        Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
-//        if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
-//        User user = User.builder()
-//                        .email(request.getEmail())
-//                        .phoneNumber(request.getPhoneNumber())
-//                        .password(passwordEncoder.encode(request.getPassword()))
-//                        .role(role)
-//                        .build();
-////        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
-////                                    .user(user).build();
-////        Customer isSaved = customerRepository.save(customer);
-////
-////        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
-////                                                                 "EMAIL"
-////                                                         ).recipient(user.getEmail())
-////                                                         .subject("Welcome to my channel")
-////                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
-////                                                         .build();
-//
-////        messageProducer.sendMessage("notification-delivery", notificationDTO);
-////        Cart cart = Cart.builder().user(isSaved).build();
-////        cartRepository.save(cart);
-//
-//
-////        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
-////                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
-////                      .lastName(isSaved.getLastName()).build();
-//
-//        return null;
-//    }
+    @Transactional
+    public UserDTO register(CreateUserRequest request) {
+        Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
+        if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
+        Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
+        if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
+
+        Role roleUser = rolesRepository.findByRoleName(ROLE_USER)
+                                   .orElseThrow(() -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
+
+        Address address = Address.builder()
+                                 .streetAddress(request.getAddress().getStreetAddress())
+                                 .ward(request.getAddress().getWard())
+                                 .district(request.getAddress().getDistrict())
+                                 .city(request.getAddress().getCity())
+                                 .build();
+
+        User user = User.builder()
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .avatar(request.getAvatar())
+                        .email(request.getEmail())
+                        .addresses(Set.of(address))
+                        .phoneNumber(request.getPhoneNumber())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .role(roleUser)
+                        .build();
+
+        address.setUser(user);
+        User isSaved = userRepository.save(user);
+
+//        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
+//                                                                 "EMAIL"
+//                                                         ).recipient(user.getEmail())
+//                                                         .subject("Welcome to my channel")
+//                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
+//                                                         .build();
+
+//        messageProducer.sendMessage("notification-delivery", notificationDTO);
+//        Cart cart = Cart.builder().user(isSaved).build();
+//        cartRepository.save(cart);
+
+        return UserMapper.INSTANCE.toDTO(isSaved);
+    }
 
     public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
         String refreshToken = getRefreshTokenFromCookie(httpServletRequest);
