@@ -3,6 +3,7 @@ package com.example.application.service;
 import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.UserDTO;
 import com.example.application.entity.Address;
 import com.example.application.entity.RefreshToken;
@@ -109,7 +110,8 @@ public class AuthService {
         if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
 
         Role roleUser = rolesRepository.findByRoleName(ROLE_USER)
-                                   .orElseThrow(() -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
+                                       .orElseThrow(
+                                               () -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
 
         Address address = Address.builder()
                                  .streetAddress(request.getAddress().getStreetAddress())
@@ -132,14 +134,14 @@ public class AuthService {
         address.setUser(user);
         User isSaved = userRepository.save(user);
 
-//        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
-//                                                                 "EMAIL"
-//                                                         ).recipient(user.getEmail())
-//                                                         .subject("Welcome to my channel")
-//                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
-//                                                         .build();
+        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
+                                                                 "EMAIL"
+                                                         ).recipient(user.getEmail())
+                                                         .subject("Welcome to LuxeHouse")
+                                                         .build();
 
-//        messageProducer.sendMessage("notification-delivery", notificationDTO);
+        messageProducer.sendMessage("notification-delivery", notificationDTO);
+
 //        Cart cart = Cart.builder().user(isSaved).build();
 //        cartRepository.save(cart);
 

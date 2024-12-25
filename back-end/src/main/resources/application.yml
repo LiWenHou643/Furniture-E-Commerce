@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${SPRING_APP_NAME:app}
+    name: ${SPRING_APP_NAME:LuxeHouse}
   datasource:
     url: ${DATABASE_URL:jdbc:mysql://localhost:3306/db}
     username: ${DATABASE_USERNAME:root}
@@ -41,6 +41,7 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
+    company: ${MAIL_COMPANY:LuxeHouse}
     username: ${MAIL_USERNAME:MAIL_USERNAME}
     password: ${MAIL_PASSWORD:MAIL_PASSWORD}
     properties:

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -17,9 +19,12 @@ public class MessageConsumer {
     EmailService emailService;
 
     @KafkaListener(topics = "notification-delivery")
-    public void listen(NotificationDTO notificationDTO) throws MessagingException {
+    public void listen(NotificationDTO notificationDTO) throws MessagingException, IOException {
         log.info("Message received is: {}", notificationDTO);
-        emailService.sendVerificationEmail(notificationDTO);
+
+        if (notificationDTO.getChannel().equalsIgnoreCase("email")) {
+            emailService.sendEmailAfterRegisterUser(notificationDTO);
+        }
     }
 
 }
