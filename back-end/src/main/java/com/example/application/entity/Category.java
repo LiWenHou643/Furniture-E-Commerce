@@ -18,10 +18,8 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long categoryId;
 
-    @Column(name = "category_name", nullable = false)
     String categoryName;
 
-    @Column(name = "category_description")
     String categoryDescription;
 
 //    @Builder.Default

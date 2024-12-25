@@ -1,19 +1,12 @@
-CREATE DATABASE IF NOT EXISTS appdb;
-USE appdb;
+CREATE DATABASE IF NOT EXISTS db;
+USE db;
 SET time_zone = 'Asia/Bangkok';
 
 CREATE TABLE roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE,  -- Example: 'admin', 'customer', etc.
+    role_name VARCHAR(50) NOT NULL UNIQUE, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE admins(
-	username VARCHAR(255) PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
-    role_id INT NOT NULL,
-    FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
 CREATE TABLE users (
@@ -23,28 +16,12 @@ CREATE TABLE users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     avatar VARCHAR(255),
-    password VARCHAR(255) NOT NULL,  -- Store password securely (hashed in the app)
-    role_id INT NOT NULL,  -- Reference to the roles table (admin, customer)
+    password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
     user_status BOOLEAN DEFAULT TRUE,  -- Account status
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
-);
-
-CREATE TABLE addresses (
-    address_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    unit_number VARCHAR(50),  -- Optional for apartments or buildings
-    street_number INT NOT NULL,        -- Numeric street number
-    street_name VARCHAR(255) NOT NULL, -- Name of the street
-    ward_name VARCHAR(255) NOT NULL,    -- Ward or Commune (optional)
-    district_name VARCHAR(255) NOT NULL, -- District
-    city_province VARCHAR(255) NOT NULL, -- City or Province
-    postal_code VARCHAR(20) NOT NULL, -- Postal code
-    country VARCHAR(100) NOT NULL DEFAULT 'Vietnam', -- Country, default is Vietnam
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE categories (

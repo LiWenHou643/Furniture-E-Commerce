@@ -1,7 +1,7 @@
 package com.example.application.mapper;
 
 import com.example.application.dto.UserDTO;
-import com.example.application.entity.Users;
+import com.example.application.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    UserDTO toDTO(Users user);
+    UserDTO toDTO(User user);
 
-    Users toEntity(UserDTO userDTO);
+    User toEntity(UserDTO userDTO);
 }

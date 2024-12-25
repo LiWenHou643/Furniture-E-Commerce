@@ -25,5 +25,5 @@ public class RefreshToken extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    Users user;
+    User user;
 }

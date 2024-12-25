@@ -2,16 +2,17 @@ spring:
   application:
     name: ${SPRING_APP_NAME:app}
   datasource:
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/appdb}
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/db}
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:root}
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: ${JPA_SHOW_SQL:true}
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
   web:
     resources:
       add-mappings: false
@@ -53,11 +54,15 @@ spring:
 
 logging:
   level:
-    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
-    org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
-    org.springframework.cache.interceptor.CacheInterceptor: ${SPRING_CACHE_LOG_LEVEL:DEBUG}
+    root: INFO
+    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:DEBUG} # Security logs
+    org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}      # Cache logs
+    org.springframework.cache.interceptor.CacheInterceptor: ${CACHE_INTERCEPTOR_LOG_LEVEL:TRACE} # Detailed cache logging
+    com.example.application.service: INFO                                         # Application services
+    com.example.application.repository: DEBUG                                     # Application repository
+    com.example.application.controller: DEBUG                                     # Application controller
   pattern:
-    console: ${LOG_PATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+    console: ${LOG_PATTERN_CONSOLE:%magenta(%d{HH:mm:ss}) %blue(%-5level) %red([%thread]) %cyan(%logger{15}) - %msg%n}
 
 server:
   servlet:

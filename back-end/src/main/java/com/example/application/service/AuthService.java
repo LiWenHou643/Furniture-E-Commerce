@@ -1,14 +1,9 @@
 package com.example.application.service;
 
-import com.example.application.config.Jwt.JwtGenerator;
 import com.example.application.config.Jwt.JwtUtils;
-import com.example.application.constants.AppConstants;
-import com.example.application.constants.TokenType;
 import com.example.application.dto.AuthDTO;
 import com.example.application.entity.RefreshToken;
-import com.example.application.entity.Roles;
-import com.example.application.entity.Users;
-import com.example.application.exception.DataExistedException;
+import com.example.application.entity.User;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.producer.MessageProducer;
 import com.example.application.repository.RefreshTokenRepository;
@@ -17,7 +12,6 @@ import com.example.application.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,7 +29,6 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
     JwtUtils jwtUtils;
-    JwtGenerator jwtGenerator;
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     RolesRepository rolesRepository;
@@ -43,37 +36,44 @@ public class AuthService {
     MessageProducer messageProducer;
 
     public AuthDTO authenticate(AuthDTO request, HttpServletResponse response) {
-        Users user = null;
-        if (!(request.getEmail() == null)) {
-            user = userRepository
-                    .findByEmail(request.getEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
-        } else if (!(request.getPhoneNumber() == null)) {
-            user = userRepository
-                    .findByPhoneNumber(request.getPhoneNumber())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "phone number", request.getPhoneNumber()));
+        User user;
+        if (isPhoneNumber(request.getUsername())) {
+            user = userRepository.findByPhoneNumber(request.getUsername())
+                                 .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+        } else {
+            user = userRepository.findByEmail(request.getUsername())
+                                 .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
         }
 
-        assert user != null;
+        if (request.isAdmin()) {
+            // If user is not an admin, throw an exception
+            if (!user.getRole().getRoleName().equals("ADMIN")) {
+                throw new BadCredentialsException("Invalid username or password");
+            }
+        } else {
+            // If user is an admin, throw an exception
+            if (user.getRole().getRoleName().equals("ADMIN")) {
+                throw new BadCredentialsException("Invalid username or password");
+            }
+        }
+
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!authenticated) throw new BadCredentialsException("Invalid username or password");
 
-        String token = jwtGenerator.generateAccessToken(user);
-        String refreshToken = jwtGenerator.generateRefreshToken(user);
+        String token = jwtUtils.generateAccessToken(user);
+        String refreshToken = jwtUtils.generateRefreshToken(user);
 
         saveUserRefreshToken(user, refreshToken);
-        int persistent = request.getPersistent();
-        if (persistent == 1) createRefreshTokenCookie(response, refreshToken);
+        boolean persistent = request.isPersistent();
+        if (persistent) createRefreshTokenCookie(response, refreshToken);
 
-        Jwt jwt = jwtUtils.getToken(token);
+        Jwt jwt = jwtUtils.decode(token);
         int duration = jwtUtils.getDuration(jwt);
 
-        return AuthDTO.builder().accessToken(token).accessTokenExpiry(duration)
-                      .tokenType(TokenType.Bearer).phoneNumber(user.getPhoneNumber())
-                      .email(user.getEmail()).role(user.getRole().getRoleName()).build();
+        return AuthDTO.builder().accessToken(token).accessTokenExpiry(duration).build();
     }
 
-    private void saveUserRefreshToken(Users user, String refreshToken) {
+    private void saveUserRefreshToken(User user, String refreshToken) {
         var refreshTokenEntity = RefreshToken.builder()
                                              .user(user)
                                              .refreshToken(refreshToken)
@@ -90,52 +90,52 @@ public class AuthService {
         response.addCookie(refreshTokenCookie);
     }
 
-    @Transactional
-    public AuthDTO register(AuthDTO request) {
-        Roles role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
-                                    .orElseThrow(() -> new ResourceNotFoundException(
-                                            "Role", "roleName", AppConstants.ROLE_USER));
-
-        request.setFirstName(request.getFirstName().trim());
-        request.setLastName(request.getLastName().trim());
-        request.setEmail(request.getEmail().trim());
-        request.setPassword(request.getPassword().trim());
-
-        Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
-        if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
-        Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
-        if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
-        Users user = Users.builder()
-                          .email(request.getEmail())
-                          .phoneNumber(request.getPhoneNumber())
-                          .password(passwordEncoder.encode(request.getPassword()))
-                          .role(role)
-                          .build();
-//        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
-//                                    .user(user).build();
-//        Customer isSaved = customerRepository.save(customer);
+//    @Transactional
+//    public AuthDTO register(AuthDTO request) {
+//        Roles role = rolesRepository.findByRoleName(AppConstants.ROLE_USER)
+//                                    .orElseThrow(() -> new ResourceNotFoundException(
+//                                            "Role", "roleName", AppConstants.ROLE_USER));
 //
-//        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
-//                                                                 "EMAIL"
-//                                                         ).recipient(user.getEmail())
-//                                                         .subject("Welcome to my channel")
-//                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
-//                                                         .build();
-
-//        messageProducer.sendMessage("notification-delivery", notificationDTO);
-//        Cart cart = Cart.builder().user(isSaved).build();
-//        cartRepository.save(cart);
-
-
-//        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
-//                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
-//                      .lastName(isSaved.getLastName()).build();
-
-        return null;
-    }
+//        request.setFirstName(request.getFirstName().trim());
+//        request.setLastName(request.getLastName().trim());
+//        request.setEmail(request.getEmail().trim());
+//        request.setPassword(request.getPassword().trim());
+//
+//        Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
+//        if (existedEmail) throw new DataExistedException("User", "email", request.getEmail());
+//        Boolean existedPhoneNumber = userRepository.existsByPhoneNumber(request.getPhoneNumber());
+//        if (existedPhoneNumber) throw new DataExistedException("User", "phone number", request.getPhoneNumber());
+//        User user = User.builder()
+//                        .email(request.getEmail())
+//                        .phoneNumber(request.getPhoneNumber())
+//                        .password(passwordEncoder.encode(request.getPassword()))
+//                        .role(role)
+//                        .build();
+////        Customer customer = Customer.builder().firstName(request.getFirstName()).lastName(request.getLastName())
+////                                    .user(user).build();
+////        Customer isSaved = customerRepository.save(customer);
+////
+////        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
+////                                                                 "EMAIL"
+////                                                         ).recipient(user.getEmail())
+////                                                         .subject("Welcome to my channel")
+////                                                         .body("Hello, " + customer.getFirstName() + customer.getLastName())
+////                                                         .build();
+//
+////        messageProducer.sendMessage("notification-delivery", notificationDTO);
+////        Cart cart = Cart.builder().user(isSaved).build();
+////        cartRepository.save(cart);
+//
+//
+////        return AuthDTO.builder().email(user.getEmail()).phoneNumber(user.getPhoneNumber())
+////                      .role(user.getRole().getRoleName()).firstName(isSaved.getFirstName())
+////                      .lastName(isSaved.getLastName()).build();
+//
+//        return null;
+//    }
 
     public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
-        String refreshToken = getRefreshToken(httpServletRequest);
+        String refreshToken = getRefreshTokenFromCookie(httpServletRequest);
 
         RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
                                                    .orElseThrow(
@@ -145,18 +145,16 @@ public class AuthService {
             throw new JwtException("Refresh token has been revoked");
         }
 
-        Users user = token.getUser();
-        String newAccessToken = jwtGenerator.generateAccessToken(user);
+        User user = token.getUser();
+        String newAccessToken = jwtUtils.generateAccessToken(user);
 
-        Jwt jwt = jwtUtils.getToken(newAccessToken);
+        Jwt jwt = jwtUtils.decode(newAccessToken);
         int duration = jwtUtils.getDuration(jwt);
 
-        return AuthDTO.builder().accessToken(newAccessToken).accessTokenExpiry(duration)
-                      .tokenType(TokenType.Bearer).email(user.getEmail())
-                      .role(user.getRole().getRoleName()).build();
+        return AuthDTO.builder().accessToken(newAccessToken).accessTokenExpiry(duration).build();
     }
 
-    private static String getRefreshToken(HttpServletRequest request) {
+    private static String getRefreshTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
         if (cookies != null) {
@@ -172,5 +170,9 @@ public class AuthService {
         }
         refreshToken = refreshToken.replace("Bearer ", "");
         return refreshToken;
+    }
+
+    private boolean isPhoneNumber(String phoneNumber) {
+        return phoneNumber.matches("^\\+?[0-9]{10,11}$");
     }
 }

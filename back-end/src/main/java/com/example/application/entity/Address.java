@@ -28,5 +28,5 @@ public class Address extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    Users user;
+    User user;
 }

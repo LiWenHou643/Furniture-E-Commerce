@@ -1,11 +1,11 @@
 package com.example.application.controller;
 
-import com.example.application.dto.*;
+import com.example.application.dto.ApiResponse;
+import com.example.application.dto.AuthDTO;
 import com.example.application.service.AuthService;
 import com.example.application.service.LogoutHandlerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     AuthService authService;
     private final LogoutHandlerService logoutHandlerService;
@@ -31,13 +31,13 @@ public class AuthController {
                 new ApiResponse<>("success", "User authenticated successfully", response));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody @Valid AuthDTO request) {
-        var response = authService.register(request);
-        log.info("User registered successfully");
-        return ResponseEntity.ok(
-                new ApiResponse<>("success", "User registered successfully", response));
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<ApiResponse<AuthDTO>> register(@RequestBody @Valid AuthDTO request) {
+//        var response = authService.register(request);
+//        log.info("User registered successfully");
+//        return ResponseEntity.ok(
+//                new ApiResponse<>("success", "User registered successfully", response));
+//    }
 
     @GetMapping("/refresh-token")
     public ResponseEntity<ApiResponse<AuthDTO>> refreshToken(HttpServletRequest httpServletRequest) {

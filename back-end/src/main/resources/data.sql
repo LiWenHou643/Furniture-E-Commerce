@@ -1,10 +1,10 @@
 -- Insert roles (admin, customer)
-INSERT INTO roles (role_name) VALUES ('admin');
-INSERT INTO roles (role_name) VALUES ('user');
+INSERT INTO roles (role_name) VALUES ('ADMIN');
+INSERT INTO roles (role_name) VALUES ('USER');
 
 -- Insert admin -- pwd: admin
-INSERT INTO admins (username, password, role_id) 
-VALUES ('admin', '{bcrypt}$2a$12$D79WRzamHQ2atDk4QvOUhumU4EGKNrhTaTjBKdN.Y6Wb.k/yT8ymK', 1);
+INSERT INTO users (email, phone_number, first_name, last_name, avatar, password, role_id)
+VALUES ('admin123@gmail.com', '0933000111', 'Shop', 'Admin', 'https://example.com/avatar0.jpg', '{bcrypt}$2a$12$D79WRzamHQ2atDk4QvOUhumU4EGKNrhTaTjBKdN.Y6Wb.k/yT8ymK', 1);
 
 -- Insert users -- pwd: user@123
 INSERT INTO users (email, phone_number, first_name, last_name, avatar, password, role_id)

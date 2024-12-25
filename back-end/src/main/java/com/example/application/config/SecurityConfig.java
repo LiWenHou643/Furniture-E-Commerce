@@ -1,7 +1,6 @@
 package com.example.application.config;
 
-import com.example.application.config.Jwt.JwtFilter;
-import com.example.application.config.Jwt.JwtUtils;
+import com.example.application.config.Jwt.JwtAuthenticationEntryPoint;
 import com.example.application.config.Oauth2.FacebookOAuth2Properties;
 import com.example.application.config.Oauth2.GoogleOAuth2Properties;
 import com.nimbusds.jose.jwk.JWK;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,8 +27,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -46,47 +45,43 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
     RSAKeyRecord rsaKeyRecord;
-    JwtUtils jwtUtils;
-
     GoogleOAuth2Properties googleOAuth2Properties;
     FacebookOAuth2Properties facebookOAuth2Properties;
+
+    String[] PUBLIC_ENDPOINTS = {
+            "/auth/**", "/error", "/favicon.ico", "/products/**", "/notify/**", "/image-search/**"
+    };
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .anyRequest().permitAll())
-                .oauth2Login(Customizer.withDefaults())
-                .addFilterBefore(new JwtFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll().anyRequest().authenticated());
+
+        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+                                                                  .decoder(jwtDecoder())
+                                                                  .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                                          .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+
         return httpSecurity.build();
     }
 
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
-//    @Bean
-//    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.authorizeHttpRequests((requests) -> requests.requestMatchers("/secure").authenticated()
-//                                                                 .anyRequest().permitAll())
-//                    .formLogin(Customizer.withDefaults())
-//                    .oauth2Login(
-//                            (oauth2Login) -> oauth2Login.defaultSuccessUrl("/profile", true)
-//                                                        .successHandler((request, response, authentication) -> {
-//                                                            String continueUrl = (String) request.getSession()
-//                                                                                                 .getAttribute(
-//                                                                                                         "continueUrl");
-//                                                            if (continueUrl != null && !continueUrl.isEmpty()) {
-//                                                                response.sendRedirect(
-//                                                                        continueUrl); // Redirect to original URL
-//                                                            } else {
-//                                                                response.sendRedirect(
-//                                                                        "/profile"); // Default page after login
-//                                                            }
-//                                                        }));
-//        return httpSecurity.build();
-//    }
-//
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
+
 //    @Bean
 //    public UserDetailsService userDetailsManager() {
 //

@@ -1,9 +1,9 @@
 package com.example.application.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +20,7 @@ import java.util.Set;
 public class Product extends BaseEntity {
 
     @Id
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String productId;
 
     String productName;

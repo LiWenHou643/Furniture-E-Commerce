@@ -1,4 +1,4 @@
-package com.example.application.config;
+package com.example.application.config.Jwt;
 
 import com.example.application.dto.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

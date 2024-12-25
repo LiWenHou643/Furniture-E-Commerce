@@ -6,6 +6,7 @@ import com.example.application.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,12 +16,13 @@ import static lombok.AccessLevel.PRIVATE;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-@RequestMapping("/api/products")
+@RequestMapping("/products")
 public class ProductController {
 
     ProductService productService;
 
     @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getProducts() {
         List<ProductDTO> items = productService.getProducts();
         return ResponseEntity.ok(new ApiResponse<>("success", "List products found", items));

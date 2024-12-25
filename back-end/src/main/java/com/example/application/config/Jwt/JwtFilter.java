@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/error", "/favicon.ico", "/api/products/**", "/api/categories/**", "/api/notify/**", "/api/image-search/**"
+            "/auth/**", "/error", "/favicon.ico", "/products/**", "/notify/**", "/image-search/**"
     };
 
     @Override
@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String token = authorizationHeader.substring(7);
 
-            Jwt jwt = jwtUtils.getToken(token);
+            Jwt jwt = jwtUtils.decode(token);
             boolean isExpired = jwtUtils.isExpired(jwt);
             boolean isInvalidated = jwtUtils.isInvalidated(jwt);
 
