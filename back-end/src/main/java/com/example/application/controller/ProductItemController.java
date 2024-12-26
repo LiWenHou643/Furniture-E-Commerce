@@ -37,5 +37,15 @@ public class ProductItemController {
         );
     }
 
+    @PutMapping("/update-product-item")
+    public ResponseEntity<ApiResponse<ProductItemDTO>> updateProductItem(@RequestBody ProductItemDTO productItemDTO) {
+        return ResponseEntity.ok(
+                ApiResponse.<ProductItemDTO>builder()
+                           .status("success")
+                           .message("Product item updated successfully")
+                           .data(productItemService.updateProductItem(productItemDTO))
+                           .build()
+        );
+    }
 
 }

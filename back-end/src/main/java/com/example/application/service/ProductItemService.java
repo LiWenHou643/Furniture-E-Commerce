@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,28 @@ public class ProductItemService {
                                              .build();
 
         productImageList.forEach(productImage -> productImage.setProductItem(productItem));
+        return ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
+    }
+
+    public ProductItemDTO updateProductItem(ProductItemDTO productItemDTO) {
+        ProductItem productItem = productItemRepository.findById(productItemDTO.getProductItemId()).orElseThrow(
+                () -> new ResourceNotFoundException("ProductItem", "id", productItemDTO.getProductItemId()));
+
+        Product product = productRepository.findById(productItemDTO.getProductId()).orElseThrow(
+                () -> new ResourceNotFoundException("Product", "id", productItemDTO.getProductId()));
+
+
+        Color color = colorRepository.findById(productItemDTO.getColorId()).orElseThrow(
+                () -> new ResourceNotFoundException("Color", "id", productItemDTO.getColorId()));
+
+        productItem.setProduct(product);
+        productItem.setColor(color);
+        productItem.setSku(productItemDTO.getSku());
+        productItem.setOriginalPrice(productItemDTO.getOriginalPrice());
+        productItem.setSalePrice(productItemDTO.getSalePrice());
+        productItem.setStockQuantity(productItemDTO.getStockQuantity());
+        // No update for productImages in this service
+
         return ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
     }
 }
