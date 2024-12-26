@@ -19,6 +19,8 @@ public class Area extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long areaId;
+
+    @Column(nullable = false)
     String areaName;
 
     @Builder.Default

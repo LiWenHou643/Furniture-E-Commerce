@@ -1,6 +1,5 @@
 package com.example.application.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,9 +17,16 @@ public class Address extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long addressId;
 
+    @Column(nullable = false)
     String streetAddress;
+
+    @Column(nullable = false)
     String ward;
+
+    @Column(nullable = false)
     String district;
+
+    @Column(nullable = false)
     String city;
 
     @ManyToOne

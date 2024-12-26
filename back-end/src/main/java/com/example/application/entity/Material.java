@@ -17,6 +17,7 @@ public class Material extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long materialId;
 
+    @Column(nullable = false)
     String materialName;
 
     String materialDescription;

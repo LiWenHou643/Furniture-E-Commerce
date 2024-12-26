@@ -16,14 +16,19 @@ import lombok.experimental.FieldDefaults;
 public class ProductImage extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String imageId;
+    Long imageId;
 
     @ManyToOne
-    @JoinColumn(name = "productItemId")
+    @JoinColumn(name = "productItemId", nullable = false)
     ProductItem productItem;
 
+    @Column(nullable = false)
     String imageUrl;
 
     @Builder.Default
     boolean isMainImage = false;
+
+    public ProductImage(boolean isMainImage) {
+        this.isMainImage = isMainImage;
+    }
 }

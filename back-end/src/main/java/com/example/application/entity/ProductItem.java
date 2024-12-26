@@ -28,17 +28,19 @@ public class ProductItem extends BaseEntity{
     @JoinColumn(name = "color_id")
     Color color;
 
+    @Column(unique = true, nullable = false)
     String sku;
 
+    @Column(nullable = false)
     double originalPrice;
 
-    double sale_price;
+    @Column(nullable = false)
+    double salePrice;
 
-    int quantity;
-
+    @Column(nullable = false)
     int stockQuantity;
 
     @Builder.Default
-    @OneToMany(mappedBy = "imageId")
+    @OneToMany(mappedBy = "imageId", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ProductImage> productImages = new HashSet<>();
 }

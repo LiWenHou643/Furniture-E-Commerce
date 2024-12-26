@@ -1,8 +1,8 @@
 package com.example.application.exception;
 
 import com.example.application.dto.ApiResponse;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    // UserAlreadyExistsException Handler
+    // DataExistedException Handler
     @ExceptionHandler(DataExistedException.class)
     public ResponseEntity<ApiResponse<Object>> handleUserAlreadyExists(DataExistedException ex) {
         ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
@@ -59,11 +59,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // ConstraintViolationException Handler (for validation errors on @RequestBody or @PathVariable)
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex) {
-        ApiResponse<Object> response = new ApiResponse<>("error", "Validation failed: " + ex.getMessage(), null);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    // ConstraintViolationException Handler
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolationException(DataIntegrityViolationException ex) {
+        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException constraintEx) {
+
+            String message = "Duplicate entry for field: %s".formatted(extractFieldNameFromConstraint(
+                    constraintEx.getConstraintName()));
+            ApiResponse<Object> response = ApiResponse.builder().status("error").message(message).build();
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(
+                ApiResponse.builder().status("error").message("Database integrity violation").build(),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    // Utility to extract field name from constraint name (customize based on your naming convention)
+    private String extractFieldNameFromConstraint(String constraintName) {
+        // Assuming the constraint name is in the format "table_name.field_name"
+        if (constraintName != null && constraintName.contains(".")) {
+            return constraintName.split("\\.")[1];
+        }
+        return constraintName;
     }
 
     // BindException Handler (for validation errors in form submissions)

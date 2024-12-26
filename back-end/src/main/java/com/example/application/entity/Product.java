@@ -23,12 +23,15 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     String productId;
 
+    @Column(nullable = false)
     String productName;
 
     String productDescription;
 
+    @Builder.Default
     double averageRating = 0.0;
 
+    @Builder.Default
     int ratingCount = 0;
 
     @Builder.Default

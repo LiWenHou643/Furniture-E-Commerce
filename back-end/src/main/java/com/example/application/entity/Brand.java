@@ -17,6 +17,7 @@ public class Brand extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long brandId;
 
+    @Column(nullable = false)
     String brandName;
 
     String brandDescription;

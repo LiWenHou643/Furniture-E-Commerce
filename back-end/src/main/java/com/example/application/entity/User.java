@@ -21,16 +21,18 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
+    @Column(nullable = false)
     String firstName;
 
+    @Column(nullable = false)
     String lastName;
 
     String avatar;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     String email;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     String phoneNumber;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -45,5 +47,5 @@ public class User extends BaseEntity {
     Role role;
 
     @Builder.Default
-    boolean userStatus = true;
+    Boolean userStatus = true;
 }

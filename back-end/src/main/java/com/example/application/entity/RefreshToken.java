@@ -20,10 +20,9 @@ public class RefreshToken extends BaseEntity{
     @Column(nullable = false)
     String refreshToken;
 
-    @Builder.Default
-    boolean revoked = false;
+    boolean revoked;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
 }

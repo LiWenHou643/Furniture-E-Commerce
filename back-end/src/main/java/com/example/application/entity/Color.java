@@ -16,6 +16,10 @@ public class Color extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long colorId;
+
+    @Column(nullable = false)
     String colorName;
+
+    @Column(nullable = false)
     String hexCode;
 }
