@@ -49,7 +49,7 @@ public class SecurityConfig {
     FacebookOAuth2Properties facebookOAuth2Properties;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/auth/**", "/error", "/products/**", "/notify/**", "/image-search/**"
+            "/auth/**", "/error", "/products/**", "/categories/**", "/notify/**", "/image-search/**"
     };
 
     @Bean

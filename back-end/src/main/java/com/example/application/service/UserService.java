@@ -65,6 +65,7 @@ public class UserService {
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setAvatar(userDTO.getAvatar());
         userRepository.save(user);
         return UserMapper.INSTANCE.toDTO(user);
     }

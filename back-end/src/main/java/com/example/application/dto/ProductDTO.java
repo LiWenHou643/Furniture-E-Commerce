@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,7 +17,17 @@ public class ProductDTO {
     CategoryDTO productCategory;
     BrandDTO productBrand;
     MaterialDTO productMaterial;
-    double averageRating;
-    int ratingCount;
-    boolean productStatus;
+    @Builder.Default
+    double averageRating = 0.0;
+    @Builder.Default
+    int ratingCount = 0;
+    @Builder.Default
+    boolean productStatus = true;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    Long categoryId;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    Long brandId;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    Long materialId;
 }

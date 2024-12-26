@@ -34,19 +34,19 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>("success", "User found successfully", userService.getUserById(id)));
     }
 
-    @PostMapping("/update-address")
+    @PutMapping("/update-address")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<UserDTO>> addAddress(@RequestBody AddressDTO request) {
         return ResponseEntity.ok(new ApiResponse<>("success", "Address updated successfully", userService.updateAddress(request)));
     }
 
-    @PostMapping("/update-profile")
+    @PutMapping("/update-profile")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<UserDTO>> updateProfile(@RequestBody UserDTO request) {
         return ResponseEntity.ok(new ApiResponse<>("success", "User updated successfully", userService.updateUser(request)));
     }
 
-    @PostMapping("/update-password")
+    @PutMapping("/update-password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<UserDTO>> updatePassword(@RequestBody @Valid UserDTO request) {
         return ResponseEntity.ok(new ApiResponse<>("success", "Password updated successfully", userService.updatePassword(request)));
