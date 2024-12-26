@@ -22,7 +22,6 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getProducts() {
         List<ProductDTO> items = productService.getProducts();
         return ResponseEntity.ok(new ApiResponse<>("success", "List products found", items));
