@@ -6,8 +6,8 @@ import com.example.application.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,7 +19,47 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getCategories() {
-        var categories = categoryService.getCategories();
-        return ResponseEntity.ok(new ApiResponse<>("success", "List categories found", categories));
+        return ResponseEntity.ok(
+                ApiResponse.<List<CategoryDTO>>builder()
+                           .status("success")
+                           .message("Categories found")
+                           .data(categoryService.getCategories())
+                           .build()
+        );
+    }
+
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<ApiResponse<CategoryDTO>> getCategoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                ApiResponse.<CategoryDTO>builder()
+                           .status("success")
+                           .message("Category found")
+                           .data(categoryService.getCategoryById(id))
+                           .build()
+        );
+    }
+
+    @PostMapping("/add-category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<CategoryDTO>> addCategory(CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(
+                ApiResponse.<CategoryDTO>builder()
+                           .status("success")
+                           .message("Category added")
+                           .data(categoryService.addCategory(categoryDTO))
+                           .build()
+        );
+    }
+
+    @PutMapping("/update-category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(
+                ApiResponse.<CategoryDTO>builder()
+                           .status("success")
+                           .message("Category updated")
+                           .data(categoryService.updateCategory(categoryDTO))
+                           .build()
+        );
     }
 }

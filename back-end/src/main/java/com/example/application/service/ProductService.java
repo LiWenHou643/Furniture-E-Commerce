@@ -47,7 +47,7 @@ public class ProductService {
 
     // Cache the individual product
     @Cacheable(cacheNames = PRODUCT_CACHE_KEY, key = "#id")
-    public ProductDTO getProduct(Long id) {
+    public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                                            .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
         return ProductMapper.INSTANCE.toDTO(product);
@@ -90,10 +90,10 @@ public class ProductService {
             put = {@CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")}
     )
     @Transactional  // Ensures the update operation is atomic
-    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Product product = productRepository.findById(id)
+    public ProductDTO updateProduct(ProductDTO productDTO) {
+        Product product = productRepository.findById(productDTO.getProductId())
                                            .orElseThrow(() -> new IllegalArgumentException(
-                                                   "Product with id " + id + " not found"));
+                                                   "Product with id " + productDTO.getProductId() + " not found"));
         ProductMapper.INSTANCE.updateProductFromDto(productDTO, product);  // Update fields from DTO
         productRepository.save(product);  // Save the updated product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
