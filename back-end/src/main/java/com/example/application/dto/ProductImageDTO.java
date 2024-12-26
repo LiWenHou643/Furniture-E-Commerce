@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,5 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class ProductImageDTO {
     Long imageId;
     String imageUrl;
-    boolean isMainImage;
+    boolean mainImage;
 }

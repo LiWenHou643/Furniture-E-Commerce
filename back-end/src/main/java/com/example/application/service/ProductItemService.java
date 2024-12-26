@@ -1,5 +1,6 @@
 package com.example.application.service;
 
+import com.example.application.dto.ProductImageDTO;
 import com.example.application.dto.ProductItemDTO;
 import com.example.application.entity.Color;
 import com.example.application.entity.Product;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +35,8 @@ public class ProductItemService {
     }
 
     public ProductItemDTO getProductItemById(Long id) {
-        return ProductItemMapper.INSTANCE.toDTO(productItemRepository.findById(id).orElse(null));
+        return ProductItemMapper.INSTANCE.toDTO(productItemRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("ProductItem", "id", id)));
     }
 
     public ProductItemDTO addProductItem(ProductItemDTO productItemDTO) {
@@ -44,8 +47,8 @@ public class ProductItemService {
                 () -> new ResourceNotFoundException("Color", "id", productItemDTO.getColorId()));
 
         Set<ProductImage> productImageList = productItemDTO.getProductImages().stream()
-                                                           .map(ProductImageMapper.INSTANCE::toEntity)
-                                                           .collect(Collectors.toSet());
+                                                          .map(ProductImageMapper.INSTANCE::toEntity)
+                                                          .collect(Collectors.toSet());
 
         ProductItem productItem = ProductItem.builder()
                                              .product(product)

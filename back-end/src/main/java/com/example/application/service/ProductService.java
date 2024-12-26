@@ -78,6 +78,9 @@ public class ProductService {
                                  .category(category)
                                  .brand(brand)
                                  .material(material)
+                                 .averageRating(productDTO.getAverageRating())
+                                 .ratingCount(productDTO.getRatingCount())
+                                 .productStatus(productDTO.isProductStatus())
                                  .build();
 
         productRepository.save(product);  // Save the new product

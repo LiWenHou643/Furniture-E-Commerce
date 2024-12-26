@@ -5,7 +5,7 @@ USE
 SET
     time_zone = 'Asia/Bangkok';
 
-CREATE TABLE role
+CREATE TABLE roles
 (
     role_id    INT AUTO_INCREMENT PRIMARY KEY,
     role_name  VARCHAR(50) NOT NULL UNIQUE,
@@ -26,7 +26,7 @@ CREATE TABLE users
     user_status  BOOLEAN   DEFAULT TRUE, -- Account status
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (role_id) REFERENCES role (role_id)
+    FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
 CREATE TABLE addresses
@@ -135,7 +135,7 @@ CREATE TABLE product_images
     image_id        INT AUTO_INCREMENT PRIMARY KEY,
     product_item_id INT          NOT NULL,
     image_url       VARCHAR(255) NOT NULL,
-    is_main_image   BOOLEAN      NOT NULL DEFAULT FALSE,
+    main_image	    BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id)

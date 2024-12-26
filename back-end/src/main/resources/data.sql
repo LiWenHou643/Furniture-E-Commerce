@@ -1,5 +1,5 @@
 -- Insert role
-INSERT INTO role (role_name)
+INSERT INTO roles (role_name)
 VALUES ('ADMIN'), ('USER');
 
 -- Insert admin -- pwd: admin
@@ -603,7 +603,7 @@ VALUES (47, NULL, 'FRAME01', 10.00, 10.00, 10),
        (59, NULL, 'VASE05BLACK', 16.00, 12.00, 10);
 
 -- Add images for products    
-INSERT INTO product_images (product_item_id, image_url, is_main_image)
+INSERT INTO product_images (product_item_id, image_url, main_image)
 VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
         TRUE),
        (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',

@@ -49,7 +49,8 @@ public class SecurityConfig {
     FacebookOAuth2Properties facebookOAuth2Properties;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/auth/**", "/error", "/products/**", "/categories/**", "/materials/**", "/brands/**",
+            "/auth/**", "/error", "/products/**", "/product-items/**",
+            "/categories/**", "/materials/**", "/brands/**",
             "/notify/**", "/image-search/**"
     };
 

@@ -1,5 +1,6 @@
 package com.example.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "product_images")
-public class ProductImage extends BaseEntity{
+public class ProductImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long imageId;
@@ -26,9 +27,6 @@ public class ProductImage extends BaseEntity{
     String imageUrl;
 
     @Builder.Default
-    boolean isMainImage = false;
-
-    public ProductImage(boolean isMainImage) {
-        this.isMainImage = isMainImage;
-    }
+    @Column(nullable = false)
+    boolean mainImage = false;
 }
