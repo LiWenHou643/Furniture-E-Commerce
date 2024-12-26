@@ -1,11 +1,8 @@
 package com.example.application.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "materials")
@@ -17,8 +14,8 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 public class Material extends BaseEntity {
     @Id
-    @UuidGenerator
-    String materialId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long materialId;
 
     String materialName;
 

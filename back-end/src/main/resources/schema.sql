@@ -46,7 +46,7 @@ CREATE TABLE addresses
 CREATE TABLE categories
 (
     category_id          INT AUTO_INCREMENT PRIMARY KEY,
-    category_name        VARCHAR(255) NOT NULL,
+    category_name        VARCHAR(255) NOT NULL UNIQUE,
     category_description TEXT,
     created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -55,7 +55,7 @@ CREATE TABLE categories
 CREATE TABLE materials
 (
     material_id          INT AUTO_INCREMENT PRIMARY KEY,
-    material_name        VARCHAR(255) NOT NULL,
+    material_name        VARCHAR(255) NOT NULL UNIQUE,
     material_description TEXT,
     created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -64,7 +64,7 @@ CREATE TABLE materials
 CREATE TABLE brands
 (
     brand_id          INT AUTO_INCREMENT PRIMARY KEY,
-    brand_name        VARCHAR(255) NOT NULL,
+    brand_name        VARCHAR(255) NOT NULL UNIQUE,
     brand_description TEXT,
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -73,7 +73,7 @@ CREATE TABLE brands
 CREATE TABLE areas
 (
     area_id    INT AUTO_INCREMENT PRIMARY KEY,
-    area_name  VARCHAR(255) NOT NULL,
+    area_name  VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -109,8 +109,8 @@ CREATE TABLE products_areas
 CREATE TABLE colors
 (
     color_id   INT AUTO_INCREMENT PRIMARY KEY,
-    color_name VARCHAR(255) NOT NULL,
-    hex_code   CHAR(7)      NOT NULL,
+    color_name VARCHAR(255) NOT NULL UNIQUE,
+    hex_code   CHAR(7)      NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -133,7 +133,7 @@ CREATE TABLE product_item
 CREATE TABLE product_images
 (
     image_id        INT AUTO_INCREMENT PRIMARY KEY,
-    product_item_id INT,
+    product_item_id INT          NOT NULL,
     image_url       VARCHAR(255) NOT NULL,
     is_main_image   BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,

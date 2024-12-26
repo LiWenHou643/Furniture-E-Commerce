@@ -41,7 +41,7 @@ public class CategoryController {
 
     @PostMapping("/add-category")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<CategoryDTO>> addCategory(CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> addCategory(@RequestBody CategoryDTO categoryDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<CategoryDTO>builder()
                            .status("success")
@@ -53,7 +53,7 @@ public class CategoryController {
 
     @PutMapping("/update-category")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(@RequestBody CategoryDTO categoryDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<CategoryDTO>builder()
                            .status("success")
