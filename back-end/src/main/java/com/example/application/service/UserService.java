@@ -10,6 +10,7 @@ import com.example.application.repository.AddressRepository;
 import com.example.application.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,21 +21,24 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     UserRepository userRepository;
-    private final AddressRepository addressRepository;
+    AddressRepository addressRepository;
+    PasswordEncoder passwordEncoder;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream().map(UserMapper.INSTANCE::toDTO).collect(Collectors.toList());
     }
 
     public UserDTO getUserById(Long userId) {
-        var user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return UserMapper.INSTANCE.toDTO(user);
     }
 
     public UserDTO updateAddress(AddressDTO addressDTO) {
         if (addressDTO.getAddressId() == null) {
             // Add new address
-            var user = userRepository.findById(addressDTO.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", addressDTO.getUserId()));
+            var user = userRepository.findById(addressDTO.getUserId()).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", addressDTO.getUserId()));
             Address newAddress = AddressMapper.INSTANCE.toAddress(addressDTO);
             newAddress.setUser(user);
             user.getAddresses().add(newAddress);
@@ -43,7 +47,8 @@ public class UserService {
         }
 
         // Update existing address
-        var address = addressRepository.findById(addressDTO.getAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressDTO.getAddressId()));
+        var address = addressRepository.findById(addressDTO.getAddressId()).orElseThrow(
+                () -> new ResourceNotFoundException("Address", "id", addressDTO.getAddressId()));
         address.setStreetAddress(addressDTO.getStreetAddress());
         address.setWard(addressDTO.getWard());
         address.setDistrict(addressDTO.getDistrict());
@@ -51,5 +56,29 @@ public class UserService {
         addressRepository.save(address);
 
         return UserMapper.INSTANCE.toDTO(address.getUser());
+    }
+
+    public UserDTO updateUser(UserDTO userDTO) {
+        var user = userRepository.findById(userDTO.getUserId())
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDTO.getUserId()));
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        userRepository.save(user);
+        return UserMapper.INSTANCE.toDTO(user);
+    }
+
+    public UserDTO updatePassword(UserDTO userDTO) {
+        var user = userRepository.findById(userDTO.getUserId())
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDTO.getUserId()));
+        // Check if old password is correct
+        if (!passwordEncoder.matches(userDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
+        userRepository.save(user);
+        return UserMapper.INSTANCE.toDTO(user);
     }
 }

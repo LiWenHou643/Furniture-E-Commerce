@@ -4,6 +4,7 @@ import com.example.application.dto.AddressDTO;
 import com.example.application.dto.UserDTO;
 import com.example.application.dto.ApiResponse;
 import com.example.application.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +38,18 @@ public class UserController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<UserDTO>> addAddress(@RequestBody AddressDTO request) {
         return ResponseEntity.ok(new ApiResponse<>("success", "Address updated successfully", userService.updateAddress(request)));
+    }
+
+    @PostMapping("/update-profile")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<ApiResponse<UserDTO>> updateProfile(@RequestBody UserDTO request) {
+        return ResponseEntity.ok(new ApiResponse<>("success", "User updated successfully", userService.updateUser(request)));
+    }
+
+    @PostMapping("/update-password")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<ApiResponse<UserDTO>> updatePassword(@RequestBody @Valid UserDTO request) {
+        return ResponseEntity.ok(new ApiResponse<>("success", "Password updated successfully", userService.updatePassword(request)));
     }
 
 }
