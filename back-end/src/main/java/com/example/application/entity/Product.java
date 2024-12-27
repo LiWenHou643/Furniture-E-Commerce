@@ -49,7 +49,6 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "material_id", nullable = false)
     Material material;
 
-    @Builder.Default
     @ManyToMany(mappedBy = "products")
     Set<Area> areas = new HashSet<>();
 

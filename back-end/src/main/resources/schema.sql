@@ -3,7 +3,7 @@ CREATE
 USE
     db;
 SET
-    time_zone = 'Asia/Bangkok';
+    time_zone = 'Asia/Ho_Chi_Minh';
 
 CREATE TABLE roles
 (

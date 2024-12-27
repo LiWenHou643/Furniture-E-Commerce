@@ -764,3 +764,7 @@ VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v173452
         FALSE),
        (19, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524898/glass-table-2-4_f1om3o.jpg',
         FALSE);
+        
+INSERT INTO carts (user_id) 
+VALUES (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), 
+       (12), (13), (14), (15), (16), (17), (18), (19), (20), (21);

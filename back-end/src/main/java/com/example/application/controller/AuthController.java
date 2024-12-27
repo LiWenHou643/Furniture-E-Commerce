@@ -29,23 +29,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthDTO>> login(@RequestBody AuthDTO loginRequest, HttpServletResponse httpServletResponse) {
         var response = authService.authenticate(loginRequest, httpServletResponse);
-        log.info("User authenticated successfully");
         return ResponseEntity.ok(
                 new ApiResponse<>("success", "User authenticated successfully", response));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserDTO>> register(@RequestBody @Valid CreateUserRequest request) {
-        try {
-            var user = authService.register(request);
-            log.info("User registered successfully");
-            return ResponseEntity.ok(
-                    new ApiResponse<>("success", "User registered successfully", user));
-        } catch (Exception e) {
-            log.error("Error occurred while registering user", e);
-            return ResponseEntity.badRequest().body(
-                    new ApiResponse<>("error", e.getMessage(), null));
-        }
+        var user = authService.register(request);
+        return ResponseEntity.ok(
+                new ApiResponse<>("success", "User registered successfully", user));
     }
 
     @GetMapping("/refresh-token")

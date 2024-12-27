@@ -22,7 +22,7 @@ public class UserController {
 
     UserService userService;
 
-    @GetMapping("/all")
+    @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
         return ResponseEntity.ok(new ApiResponse<>("success", "List of users found successfully", userService.getAllUsers()));
@@ -34,7 +34,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>("success", "User found successfully", userService.getUserById(id)));
     }
 
-    @PutMapping("/update-address")
+    @PostMapping("/update-address")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<UserDTO>> addAddress(@RequestBody AddressDTO request) {
         return ResponseEntity.ok(new ApiResponse<>("success", "Address updated successfully", userService.updateAddress(request)));

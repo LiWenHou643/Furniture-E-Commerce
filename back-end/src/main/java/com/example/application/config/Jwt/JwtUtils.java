@@ -25,9 +25,11 @@ public class JwtUtils {
                                           .issuer("luxehouse")
                                           .issuedAt(Instant.now())
                                           .expiresAt(Instant.now().plus(100000, ChronoUnit.SECONDS))
-                                          .subject(user.getEmail())
-                                          .claim("scope", "ROLE_" + user.getRole().getRoleName().toUpperCase())
+                                          .subject(user.getEmail()) // Subject is typically used for the email or username
+                                          .claim("scope", "ROLE_" + user.getRole().getRoleName().toUpperCase()) // Add role information
+                                          .claim("userId", user.getUserId()) // Add userId as a custom claim
                                           .build();
+
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 

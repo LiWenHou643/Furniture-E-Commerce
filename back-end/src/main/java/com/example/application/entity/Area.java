@@ -23,10 +23,9 @@ public class Area extends BaseEntity {
     @Column(nullable = false)
     String areaName;
 
-    @Builder.Default
     @ManyToMany
     @JoinTable(
-            name = "area_products",
+            name = "products_areas",
             joinColumns = @JoinColumn(name = "area_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )

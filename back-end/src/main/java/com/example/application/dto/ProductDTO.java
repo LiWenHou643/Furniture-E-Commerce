@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,6 +19,8 @@ public class ProductDTO {
     CategoryDTO productCategory;
     BrandDTO productBrand;
     MaterialDTO productMaterial;
+    List<AreaDTO> productAreas;
+
     @Builder.Default
     double averageRating = 0.0;
     @Builder.Default
