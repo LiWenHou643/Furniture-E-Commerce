@@ -1,7 +1,9 @@
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -9,12 +11,13 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+import CustomTooltip from './CustomTooltip';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Products', 'News', 'Contact-us', 'About-us', 'Gallery'];
+const settings = ['Profile', 'Account', 'Logout'];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -45,8 +48,8 @@ function ResponsiveAppBar() {
                     <Typography
                         variant='h6'
                         noWrap
-                        component='a'
-                        href='#app-bar-with-responsive-menu'
+                        component={Link}
+                        to='/'
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -110,8 +113,8 @@ function ResponsiveAppBar() {
                     <Typography
                         variant='h5'
                         noWrap
-                        component='a'
-                        href='#app-bar-with-responsive-menu'
+                        component={Link}
+                        to='/'
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -136,23 +139,35 @@ function ResponsiveAppBar() {
                                 key={page}
                                 onClick={handleCloseNavMenu}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
+                                component={Link} // Use Link to navigate
+                                to={`/${page.toLowerCase()}`}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title='Open settings'>
+                    <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
+                        <CustomTooltip title='Open settings'>
+                            <IconButton
+                                sx={{ color: 'white', paddingBottom: 0 }}
+                            >
+                                <Badge badgeContent={10} color='secondary'>
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                        </CustomTooltip>
+
+                        <CustomTooltip title='Open settings'>
                             <IconButton
                                 onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
                             >
                                 <Avatar
                                     alt='Remy Sharp'
-                                    src='/static/images/avatar/2.jpg'
+                                    src='/static/images/avatar/1.jpg'
                                 />
                             </IconButton>
-                        </Tooltip>
+                        </CustomTooltip>
                         <Menu
                             sx={{ mt: '45px' }}
                             id='menu-appbar'

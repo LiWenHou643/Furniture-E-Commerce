@@ -7,10 +7,8 @@ import {
     CardMedia,
     Container,
     Grid,
-    IconButton,
     Typography,
 } from '@mui/material';
-import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa'; // For social media icons
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 
@@ -38,7 +36,7 @@ const Home = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    height: '60vh',
+                    height: '100vh',
                     backgroundImage: 'url(/banner.jpg)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
@@ -286,36 +284,6 @@ const Home = () => {
                         </Box>
                     </Grid>
                 </Grid>
-            </Container>
-
-            {/* Social Media Section */}
-            <Container sx={{ my: 5 }}>
-                <Typography variant='h4' sx={{ mb: 3, fontWeight: 'bold' }}>
-                    Follow Us
-                </Typography>
-                <Box sx={{ textAlign: 'center' }}>
-                    <IconButton
-                        color='primary'
-                        href='https://facebook.com'
-                        target='_blank'
-                    >
-                        <FaFacebook size={30} />
-                    </IconButton>
-                    <IconButton
-                        color='primary'
-                        href='https://instagram.com'
-                        target='_blank'
-                    >
-                        <FaInstagram size={30} />
-                    </IconButton>
-                    <IconButton
-                        color='primary'
-                        href='https://twitter.com'
-                        target='_blank'
-                    >
-                        <FaTwitter size={30} />
-                    </IconButton>
-                </Box>
             </Container>
         </div>
     );

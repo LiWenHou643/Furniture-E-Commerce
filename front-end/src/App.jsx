@@ -10,7 +10,7 @@ const theme = createTheme({
             main: '#693E05FF', // Customize primary color
         },
         secondary: {
-            main: '#4658FFFF', // Customize secondary color
+            main: '#FFD900FF', // Customize secondary color
         },
     },
 });

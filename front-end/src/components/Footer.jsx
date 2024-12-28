@@ -39,6 +39,7 @@ const Footer = () => {
     return (
         <FooterWrapper>
             <Container>
+                <Divider sx={{ marginY: 4 }} />
                 <Grid container spacing={4} justifyContent='space-between'>
                     {/* Column 1: About Us */}
                     <Grid item xs={12} sm={4}>
