@@ -39,7 +39,7 @@ public class ColorController {
                            .build());
     }
 
-    @PostMapping("/add-color")
+    @PostMapping("/colors")
     public ResponseEntity<ApiResponse<ColorDTO>> addColor(ColorDTO colorDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ColorDTO>builder()
@@ -49,7 +49,7 @@ public class ColorController {
                            .build());
     }
 
-    @PutMapping("/update-color")
+    @PutMapping("/colors")
     public ResponseEntity<ApiResponse<ColorDTO>> updateColor(ColorDTO colorDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ColorDTO>builder()

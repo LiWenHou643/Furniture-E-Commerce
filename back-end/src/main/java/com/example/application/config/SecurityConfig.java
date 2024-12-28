@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -49,9 +50,7 @@ public class SecurityConfig {
     FacebookOAuth2Properties facebookOAuth2Properties;
 
     String[] PUBLIC_ENDPOINTS = {
-            "/auth/**", "/error", "/products/**", "/product-items/**",
-            "/categories/**", "/materials/**", "/brands/**",
-            "/notify/**", "/image-search/**"
+            "/auth/**", "/error", "/products/search/**"
     };
 
     @Bean
@@ -62,7 +61,13 @@ public class SecurityConfig {
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll().anyRequest().authenticated());
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brands/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/materials/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/product-items/**").permitAll()
+                        .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                                                                   .decoder(jwtDecoder())

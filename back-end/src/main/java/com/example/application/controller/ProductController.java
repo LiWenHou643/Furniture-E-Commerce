@@ -53,7 +53,7 @@ public class ProductController {
         );
     }
 
-    @PostMapping("/add-product")
+    @PostMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@RequestBody ProductDTO productDTO) {
         return ResponseEntity.ok(
@@ -65,7 +65,7 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/update-product")
+    @PutMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductDTO>> updateProduct(@RequestBody ProductDTO productDTO) {
         return ResponseEntity.ok(

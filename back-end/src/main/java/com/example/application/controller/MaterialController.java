@@ -35,7 +35,7 @@ public class MaterialController {
                 .build());
     }
 
-    @PostMapping("/add-material")
+    @PostMapping("/materials")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<MaterialDTO>> addMaterial(@RequestBody MaterialDTO materialDTO) {
         return ResponseEntity.ok(ApiResponse.<MaterialDTO>builder()
@@ -45,7 +45,7 @@ public class MaterialController {
                 .build());
     }
 
-    @PutMapping("/update-material")
+    @PutMapping("/materials")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<MaterialDTO>> updateMaterial(@RequestBody MaterialDTO materialDTO) {
         return ResponseEntity.ok(ApiResponse.<MaterialDTO>builder()

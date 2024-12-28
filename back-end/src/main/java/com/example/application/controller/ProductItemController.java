@@ -26,7 +26,7 @@ public class ProductItemController {
         );
     }
 
-    @PostMapping("/add-product-item")
+    @PostMapping("/product-items")
     public ResponseEntity<ApiResponse<ProductItemDTO>> addProductItem(@RequestBody ProductItemDTO productItemDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ProductItemDTO>builder()
@@ -37,7 +37,7 @@ public class ProductItemController {
         );
     }
 
-    @PutMapping("/update-product-item")
+    @PutMapping("/product-items")
     public ResponseEntity<ApiResponse<ProductItemDTO>> updateProductItem(@RequestBody ProductItemDTO productItemDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ProductItemDTO>builder()

@@ -39,7 +39,7 @@ public class BrandController {
         );
     }
 
-    @PostMapping("/add-brand")
+    @PostMapping("/brands")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<BrandDTO>> addBrand(@RequestBody BrandDTO brandDTO) {
         return ResponseEntity.ok(
@@ -51,7 +51,7 @@ public class BrandController {
         );
     }
 
-    @PutMapping("/update-brand")
+    @PutMapping("/brands")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<BrandDTO>> updateBrand(@RequestBody BrandDTO brandDTO) {
         return ResponseEntity.ok(
