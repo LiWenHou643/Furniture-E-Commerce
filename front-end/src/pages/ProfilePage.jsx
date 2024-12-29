@@ -62,7 +62,7 @@ const ProfilePage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: '50px',
+                marginTop: 15,
             }}
         >
             <Box
