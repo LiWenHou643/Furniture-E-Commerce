@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 const ImageMagnifier = ({
     src,
-    className,
     width,
     height,
     alt,
@@ -38,12 +37,19 @@ const ImageMagnifier = ({
     };
 
     return (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div
+            style={{
+                position: 'relative',
+                display: 'inline-block',
+                width: width ? width : '100%',
+                height: height ? height : 'auto',
+                overflow: 'hidden',
+            }}
+        >
             <img
                 src={src}
-                className={className}
-                width={width}
-                height={height}
+                width={width ? width : '100%'}
+                height={height ? height : 'auto'}
                 alt={alt}
                 onMouseEnter={(e) => mouseEnter(e)}
                 onMouseLeave={(e) => mouseLeave(e)}

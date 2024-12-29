@@ -1,7 +1,10 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
+import NotFoundPage from './pages/NotFoundPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
 
@@ -32,6 +35,13 @@ function App() {
                             path='/products/:productId'
                             element={<ProductDetailPage />}
                         />
+                        {/* Cart Page */}
+                        <Route path='/cart' element={<CartPage />} />
+                        {/* Checkout Page */}
+                        <Route path='/checkout' element={<CheckoutPage />} />
+
+                        {/* 404 Page */}
+                        <Route path='*' element={<NotFoundPage />} />
                     </Route>
                 </Routes>
             </Router>

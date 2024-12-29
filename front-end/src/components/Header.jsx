@@ -1,4 +1,5 @@
 import AdbIcon from '@mui/icons-material/Adb';
+import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AppBar from '@mui/material/AppBar';
@@ -16,7 +17,18 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import CustomTooltip from './CustomTooltip';
 
-const pages = ['Products', 'News', 'Contact-us', 'About-us', 'Gallery'];
+const pages = [
+    'Products',
+    'News',
+    'Contact-us',
+    'About-us',
+    'Gallery',
+    'Cart',
+    'Orders',
+    'Profile',
+    'Account',
+    'Checkout',
+];
 const settings = ['Profile', 'Account', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -42,7 +54,7 @@ function ResponsiveAppBar() {
         <AppBar position='fixed'>
             <Container maxWidth='xl'>
                 <Toolbar disableGutters>
-                    <AdbIcon
+                    <HomeIcon
                         sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
                     />
                     <Typography
@@ -60,7 +72,7 @@ function ResponsiveAppBar() {
                             textDecoration: 'none',
                         }}
                     >
-                        LOGO
+                        LuxeHouse
                     </Typography>
 
                     <Box
