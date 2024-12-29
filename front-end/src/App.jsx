@@ -5,9 +5,11 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import { ArticleDetailPage, NewsPage } from './pages/NewsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
+import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 
 const theme = createTheme({
@@ -45,6 +47,15 @@ function App() {
                         <Route path='/login' element={<LoginPage />} />
                         {/* Register Page */}
                         <Route path='/register' element={<RegisterPage />} />
+                        {/* Profile Page */}
+                        <Route path='/profile' element={<ProfilePage />} />
+                        {/* News Page */}
+                        <Route path='/news' element={<NewsPage />} />
+                        {/* Article Detail Page */}
+                        <Route
+                            path='/news/:id'
+                            element={<ArticleDetailPage />}
+                        />
 
                         {/* 404 Page */}
                         <Route path='*' element={<NotFoundPage />} />

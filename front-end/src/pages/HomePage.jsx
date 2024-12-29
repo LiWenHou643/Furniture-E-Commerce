@@ -7,6 +7,7 @@ import {
     CardMedia,
     Container,
     Grid,
+    TextField,
     Typography,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -285,6 +286,146 @@ const Home = () => {
                     </Grid>
                 </Grid>
             </Container>
+
+            {/* About Us Section */}
+            <Box
+                sx={{ paddingY: '50px', backgroundColor: '#f4f4f4' }}
+                id='about'
+            >
+                <Container>
+                    <Typography
+                        variant='h4'
+                        align='center'
+                        sx={{ marginBottom: '30px' }}
+                    >
+                        About Us
+                    </Typography>
+                    <Typography
+                        variant='body1'
+                        align='center'
+                        sx={{ maxWidth: '800px', margin: '0 auto' }}
+                    >
+                        We are a leading furniture store offering a wide variety
+                        of furniture pieces for every room in your home. Our
+                        mission is to provide high-quality furniture that
+                        enhances the comfort and style of your living space.
+                    </Typography>
+                </Container>
+            </Box>
+
+            {/* Customer Testimonials Section */}
+            <Container sx={{ paddingY: '50px' }} id='testimonials'>
+                <Typography
+                    variant='h4'
+                    align='center'
+                    sx={{ marginBottom: '30px' }}
+                >
+                    What Our Customers Say
+                </Typography>
+                <Grid container spacing={4} justifyContent='center'>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Box
+                            sx={{
+                                textAlign: 'center',
+                                padding: '20px',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                borderRadius: '8px',
+                            }}
+                        >
+                            <Typography
+                                variant='body1'
+                                sx={{ marginBottom: '15px' }}
+                            >
+                                &quot;I bought a new sofa from this store, and
+                                it&apos;s amazing! Super comfortable and
+                                stylish.&quot;
+                            </Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                                - Jane Doe
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Box
+                            sx={{
+                                textAlign: 'center',
+                                padding: '20px',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                borderRadius: '8px',
+                            }}
+                        >
+                            <Typography
+                                variant='body1'
+                                sx={{ marginBottom: '15px' }}
+                            >
+                                &quot;Great service and quick delivery. Highly
+                                recommend this store for all your furniture
+                                needs.&quot;
+                            </Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                                - John Smith
+                            </Typography>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Container>
+
+            {/* Contact Us Section */}
+            <Box
+                sx={{ paddingY: '50px', backgroundColor: '#f4f4f4' }}
+                id='contact'
+            >
+                <Container>
+                    <Typography
+                        variant='h4'
+                        align='center'
+                        sx={{ marginBottom: '30px' }}
+                    >
+                        Contact Us
+                    </Typography>
+                    <Grid container spacing={4} justifyContent='center'>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <Typography variant='h6'>Get in Touch</Typography>
+                            <TextField
+                                label='Your Name'
+                                fullWidth
+                                margin='normal'
+                            />
+                            <TextField
+                                label='Your Email'
+                                fullWidth
+                                margin='normal'
+                            />
+                            <TextField
+                                label='Message'
+                                multiline
+                                rows={4}
+                                fullWidth
+                                margin='normal'
+                            />
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                sx={{ marginTop: '20px' }}
+                            >
+                                Send Message
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <Typography variant='h6'>Store Location</Typography>
+                            <Typography variant='body1'>
+                                123 Furniture St, Home City, HC 12345
+                            </Typography>
+                            <Typography variant='body1'>
+                                Email: support@furniturestore.com
+                            </Typography>
+                            <Typography variant='body1'>
+                                Phone: (123) 456-7890
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Container>
+            </Box>
         </div>
     );
 };

@@ -146,7 +146,7 @@ function CheckoutPage({ cartItems = [], userData }) {
     };
 
     return (
-        <Container sx={{ mt: 10 }}>
+        <Container sx={{ mt: 15 }}>
             <Typography variant='h4' gutterBottom>
                 Checkout
             </Typography>

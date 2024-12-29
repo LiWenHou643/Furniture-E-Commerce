@@ -20,7 +20,7 @@ const ProductPage = () => {
     };
 
     return (
-        <Container maxWidth='lg' sx={{ marginTop: 10 }}>
+        <Container maxWidth='lg' sx={{ marginTop: 15 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Search Bar */}
                 <Box sx={{ marginBottom: 2 }}>
