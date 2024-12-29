@@ -21,13 +21,13 @@ const pages = [
     'Products',
     'News',
     'Contact-us',
-    'About-us',
-    'Gallery',
     'Cart',
     'Orders',
     'Profile',
     'Account',
     'Checkout',
+    'Login',
+    'Register',
 ];
 const settings = ['Profile', 'Account', 'Logout'];
 

@@ -4,9 +4,11 @@ import AppLayout from './components/AppLayout';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
+import RegisterPage from './pages/RegisterPage';
 
 const theme = createTheme({
     palette: {
@@ -39,6 +41,10 @@ function App() {
                         <Route path='/cart' element={<CartPage />} />
                         {/* Checkout Page */}
                         <Route path='/checkout' element={<CheckoutPage />} />
+                        {/* Login Page */}
+                        <Route path='/login' element={<LoginPage />} />
+                        {/* Register Page */}
+                        <Route path='/register' element={<RegisterPage />} />
 
                         {/* 404 Page */}
                         <Route path='*' element={<NotFoundPage />} />
