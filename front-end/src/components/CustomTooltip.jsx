@@ -13,5 +13,23 @@ const LightTooltip = styled(({ className, ...props }) => (
 }));
 
 export default function CustomTooltip({ title, children }) {
-    return <LightTooltip title={title}>{children}</LightTooltip>;
+    return (
+        <LightTooltip
+            title={title}
+            slotProps={{
+                popper: {
+                    modifiers: [
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [0, -8],
+                            },
+                        },
+                    ],
+                },
+            }}
+        >
+            {children}
+        </LightTooltip>
+    );
 }

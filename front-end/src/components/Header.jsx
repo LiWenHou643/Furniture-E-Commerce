@@ -147,7 +147,7 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
                     <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
-                        <CustomTooltip title='Open settings'>
+                        <CustomTooltip title='Open Notifications'>
                             <IconButton
                                 sx={{ color: 'white', paddingBottom: 0 }}
                             >

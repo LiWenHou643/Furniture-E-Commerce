@@ -2,6 +2,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import HomePage from './pages/HomePage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
 
 const theme = createTheme({
@@ -26,6 +27,11 @@ function App() {
                         <Route path='/' element={<HomePage />} />
                         {/* Dynamic Product Page */}
                         <Route path='/products' element={<ProductPage />} />
+                        {/* Dynamic Product Detail Page */}
+                        <Route
+                            path='/products/:productId'
+                            element={<ProductDetailPage />}
+                        />
                     </Route>
                 </Routes>
             </Router>

@@ -7,6 +7,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const ProductCard = () => {
     const colorVariants = [
         {
@@ -35,18 +36,36 @@ const ProductCard = () => {
         },
     ];
 
+    const navigate = useNavigate(); // Use navigate hook
+
     // State to track selected color
     const [selectedColor, setSelectedColor] = useState(colorVariants[0]);
 
-    const handleColorSelect = (color) => {
+    const handleColorSelect = (e, color) => {
+        e.stopPropagation(); // Prevent card click event from triggering navigation
         const selected = colorVariants.find(
             (variant) => variant.color === color
         );
         setSelectedColor(selected);
     };
 
+    // Handle card click to navigate to the product detail page
+    const handleCardClick = () => {
+        navigate(`/products/${1}`); // Navigate to the detail page
+    };
+
+    // Handle "Add to Cart" click (do not navigate)
+    const handleAddToCart = (e) => {
+        e.stopPropagation(); // Prevent card click event from triggering navigation
+        // Add to cart logic goes here
+        console.log('Added to cart:', selectedColor);
+    };
+
     return (
-        <Card sx={{ height: '100%' }}>
+        <Card
+            sx={{ height: '100%', cursor: 'pointer' }}
+            onClick={handleCardClick}
+        >
             <CardMedia
                 component='img'
                 height='200'
@@ -80,7 +99,7 @@ const ProductCard = () => {
                                     border: '2px solid black', // Show border on hover
                                 },
                             }}
-                            onClick={() => handleColorSelect(variant.color)}
+                            onClick={(e) => handleColorSelect(e, variant.color)}
                         />
                     ))}
                 </Box>
@@ -108,7 +127,11 @@ const ProductCard = () => {
                         </Typography>
                     </Box>
 
-                    <Button variant='contained' color='primary'>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleAddToCart}
+                    >
                         Add to Cart
                     </Button>
                 </Box>
