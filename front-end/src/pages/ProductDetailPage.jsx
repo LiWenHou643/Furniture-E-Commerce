@@ -22,102 +22,178 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import CustomTooltip from '../components/CustomTooltip';
+import Error from '../components/Error';
 import ImageMagnifier from '../components/ImageMagnifier';
+import Loading from '../components/Loading';
+import useFetchProduct from '../hooks/useFetchProduct';
+
+const feedbacks = [
+    {
+        name: 'John Doe',
+        date: 'December 15, 2024',
+        rating: 4.5,
+        feedback:
+            'Great product! Really helped me in organizing my workspace. Would definitely recommend.',
+        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+        productImages: [
+            'https://via.placeholder.com/100', // Product image URL
+            'https://via.placeholder.com/100', // Another product image
+        ],
+    },
+    {
+        name: 'Jane Smith',
+        date: 'December 20, 2024',
+        rating: 3.0,
+        feedback:
+            'The product is good but a bit overpriced. It could use some improvements in durability.',
+        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+        productImages: ['https://via.placeholder.com/100'],
+    },
+    {
+        name: 'Alice Johnson',
+        date: 'December 25, 2024',
+        rating: 5.0,
+        feedback:
+            'Amazing quality! Exceeded my expectations. I am so happy with this purchase!',
+        avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
+        productImages: [
+            'https://via.placeholder.com/100',
+            'https://via.placeholder.com/100',
+            'https://via.placeholder.com/100',
+        ],
+    },
+];
+const topProducts = [
+    { name: 'Product 1', price: '$100' },
+    { name: 'Product 2', price: '$120' },
+    { name: 'Product 3', price: '$90' },
+    { name: 'Product 4', price: '$200' },
+];
+const productItemsObjects = {
+    productItems: [
+        {
+            productItemId: 1,
+            color: {
+                colorId: 12,
+                colorName: 'Amber',
+                hexCode: '#ba3c11',
+            },
+            sku: 'SEAT01AMBER',
+            originalPrice: 200.0,
+            salePrice: 180.0,
+            stockQuantity: 5,
+            productImages: [
+                {
+                    imageId: 3,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523960/red-chesterfield-2_ep0yxd.png',
+                    mainImage: false,
+                },
+                {
+                    imageId: 1,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
+                    mainImage: true,
+                },
+                {
+                    imageId: 2,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 4,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 5,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg',
+                    mainImage: false,
+                },
+            ],
+        },
+        {
+            productItemId: 2,
+            color: {
+                colorId: 15,
+                colorName: 'Forest Green',
+                hexCode: '#228B22',
+            },
+            sku: 'SEAT01FOREST',
+            originalPrice: 200.0,
+            salePrice: 190.0,
+            stockQuantity: 5,
+            productImages: [
+                {
+                    imageId: 8,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/green-chesterfield-7_zlqzph.png',
+                    mainImage: false,
+                },
+                {
+                    imageId: 7,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-3_szhbpl.png',
+                    mainImage: false,
+                },
+                {
+                    imageId: 10,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-8_rsysvv.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 9,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-9_kltafu.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 6,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523957/green-chesterfield-1_qsynur.jpg',
+                    mainImage: true,
+                },
+            ],
+        },
+    ],
+};
+
 const ProductDetailPage = () => {
     const theme = useTheme();
 
-    const product = {
-        id: 1,
-        title: 'Modern Leather Jacket',
-        description: 'A stylish leather jacket perfect for any occasion.',
-        colorVariants: [
-            {
-                color: 'Black',
-                hex: '#000000',
-                images: [
-                    'https://placehold.co/100',
-                    'https://placehold.co/200',
-                    'https://placehold.co/300',
-                ],
-                originalPrice: 149.99,
-                discountedPrice: 129.99,
-            },
-            {
-                color: 'Brown',
-                hex: '#8B4513',
-                images: [
-                    'https://placehold.co/400', // Different image set for Brown
-                    'https://placehold.co/500',
-                    'https://placehold.co/600',
-                ],
-                originalPrice: 159.99,
-                discountedPrice: 139.99,
-            },
-            {
-                color: 'Red',
-                hex: '#FF0000',
-                images: [
-                    'https://placehold.co/700', // Different image set for Red
-                    'https://placehold.co/800',
-                    'https://placehold.co/900',
-                ],
-                originalPrice: 169.99,
-                discountedPrice: 149.99,
-            },
-        ],
-        rating: 4.5,
-    };
-    const feedbacks = [
-        {
-            name: 'John Doe',
-            date: 'December 15, 2024',
-            rating: 4.5,
-            feedback:
-                'Great product! Really helped me in organizing my workspace. Would definitely recommend.',
-            avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-            productImages: [
-                'https://via.placeholder.com/100', // Product image URL
-                'https://via.placeholder.com/100', // Another product image
-            ],
-        },
-        {
-            name: 'Jane Smith',
-            date: 'December 20, 2024',
-            rating: 3.0,
-            feedback:
-                'The product is good but a bit overpriced. It could use some improvements in durability.',
-            avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-            productImages: ['https://via.placeholder.com/100'],
-        },
-        {
-            name: 'Alice Johnson',
-            date: 'December 25, 2024',
-            rating: 5.0,
-            feedback:
-                'Amazing quality! Exceeded my expectations. I am so happy with this purchase!',
-            avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-            productImages: [
-                'https://via.placeholder.com/100',
-                'https://via.placeholder.com/100',
-                'https://via.placeholder.com/100',
-            ],
-        },
-    ];
-    const topProducts = [
-        { name: 'Product 1', price: '$100' },
-        { name: 'Product 2', price: '$120' },
-        { name: 'Product 3', price: '$90' },
-        { name: 'Product 4', price: '$200' },
-    ];
+    // Fetch product data using the custom hook
+    const { productId } = useParams();
+    const { data: product, isLoading, error } = useFetchProduct({ productId });
+
+    const productItemsObject = product || productItemsObjects;
+
+    const productVariants = productItemsObject.productItems;
+
+    // State to track the selected color variant and image
+    const [selectedVariant, setSelectedVariant] = useState(productVariants[0]);
+    const [selectedImage, setSelectedImage] = useState(
+        selectedVariant.productImages[0]
+    );
 
     const [quantity, setQuantity] = useState(1); // Default quantity is 1
 
-    const ratingCount = 100;
-    const soldQuantity = 50;
+    if (isLoading) {
+        return <Loading />;
+    }
+    if (error) {
+        return <Error error={error} />;
+    }
+
     const stockQuantity = 100;
 
     const handleIncrease = () => {
-        if (quantity < stockQuantity) {
+        if (quantity < selectedVariant?.stockQuantity) {
             setQuantity((prevQuantity) => prevQuantity + 1);
         }
     };
@@ -135,26 +211,18 @@ const ProductDetailPage = () => {
         }
     };
 
-    const { title, description, colorVariants, rating } = product;
-
-    // State to track the selected color variant and image
-    const [selectedColor, setSelectedColor] = useState(colorVariants[0]);
-    const [selectedImage, setSelectedImage] = useState(
-        colorVariants[0].images[0]
-    );
-
     // Handle small image click to change the main image
     const handleImageClick = (image) => {
         setSelectedImage(image);
     };
 
     // Handle color selection
-    const handleColorSelect = (color) => {
-        const colorVariant = colorVariants.find(
-            (variant) => variant.color === color
+    const handleColorSelect = (colorId) => {
+        const colorVariant = productVariants.find(
+            (variant) => variant.color.colorId === colorId
         );
-        setSelectedColor(colorVariant);
-        setSelectedImage(colorVariant.images[0]); // Reset to the first image for the new color
+        setSelectedVariant(colorVariant);
+        setSelectedImage(colorVariant.productImages[0]); // Reset to the first image for the new color
     };
 
     // Navigate to cart or other page
@@ -164,35 +232,47 @@ const ProductDetailPage = () => {
     };
 
     return (
-        <Container>
-            <Box sx={{ padding: 4, marginTop: 10 }}>
+        <Container sx={{ mt: 15 }}>
+            <Box sx={{ padding: 4 }}>
                 <Grid container spacing={4}>
                     {/* Product Images */}
-                    <Grid item xs={12} sm={6} md={6}>
+                    <Grid item xs={12} sm={12} md={6}>
                         <Box
                             sx={{
                                 display: 'flex',
                                 justifyContent: 'center',
-                                width: '100%',
+                                alignItems: 'center',
+                                width: '100%', // Container width
+                                position: 'relative',
+                                aspectRatio: '4 / 3', // Set the desired aspect ratio (e.g., 16:9)
+                                overflow: 'hidden', // Clip the content if necessary
                             }}
                         >
                             {/* ReactImageMagnify Zoom Component */}
                             <ImageMagnifier
-                                src={selectedImage}
+                                src={selectedImage.imageUrl}
                                 magnifierHeight={300}
                                 magnifierWidth={300}
-                                zoomLevel={2}
+                                zoomLevel={1.3}
                                 alt='Product Image'
+                                width='100%' // Pass width and height explicitly if required
+                                height='100%'
                             />
                         </Box>
 
                         {/* Thumbnails for Color Variants */}
-                        <Box sx={{ display: 'flex', gap: 2, marginTop: 2 }}>
-                            {selectedColor.images.map((img, index) => (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 2,
+                                marginTop: 2,
+                            }}
+                        >
+                            {selectedVariant.productImages.map((img, index) => (
                                 <CardMedia
                                     key={index}
                                     component='img'
-                                    image={img}
+                                    image={img.imageUrl}
                                     alt={`product-image-${index}`}
                                     sx={{
                                         width: 60,
@@ -221,22 +301,43 @@ const ProductDetailPage = () => {
                     </Grid>
 
                     {/* Product Details */}
-                    <Grid item xs={12} sm={6} md={6}>
+                    <Grid item xs={12} sm={12} md={6}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant='h4' gutterBottom>
-                                    {title}
+                                    {selectedVariant.color.colorName +
+                                        product.productName}
+                                </Typography>
+                                <Typography
+                                    variant='body2'
+                                    color='text.secondary'
+                                    gutterBottom
+                                >
+                                    SKU: {selectedVariant.sku}
                                 </Typography>
 
-                                {/* Rating and Rating Count */}
+                                {/* Rating and Rating Count and Sold Amount */}
                                 <Box
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
                                     }}
                                 >
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                        sx={{
+                                            textDecoration: 'underline',
+                                            fontSize: '1rem',
+                                            color: 'primary',
+                                            mt: '2px',
+                                        }}
+                                    >
+                                        {product.averageRating}
+                                    </Typography>
+
                                     <Rating
-                                        value={rating}
+                                        value={product.averageRating}
                                         readOnly
                                         precision={0.1}
                                         sx={{ marginRight: 1 }}
@@ -244,8 +345,28 @@ const ProductDetailPage = () => {
                                     <Typography
                                         variant='body2'
                                         color='text.secondary'
+                                        sx={{ marginRight: 1 }}
                                     >
-                                        ({ratingCount} ratings)
+                                        |
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                    >
+                                        ({product.ratingCount} ratings)
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                        sx={{ marginRight: 1 }}
+                                    >
+                                        |
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                    >
+                                        {product.soldQuantity || 1000} sold
                                     </Typography>
                                 </Box>
 
@@ -255,7 +376,7 @@ const ProductDetailPage = () => {
                                     color='text.secondary'
                                     paragraph
                                 >
-                                    {description}
+                                    {product.description}
                                 </Typography>
 
                                 {/* Pricing */}
@@ -267,10 +388,7 @@ const ProductDetailPage = () => {
                                     }}
                                 >
                                     <Typography variant='h6' color='primary'>
-                                        $
-                                        {selectedColor.discountedPrice.toFixed(
-                                            2
-                                        )}
+                                        ${selectedVariant.salePrice.toFixed(2)}
                                     </Typography>
                                     <Typography
                                         variant='body2'
@@ -280,18 +398,11 @@ const ProductDetailPage = () => {
                                         }}
                                     >
                                         $
-                                        {selectedColor.originalPrice.toFixed(2)}
+                                        {selectedVariant.originalPrice.toFixed(
+                                            2
+                                        )}
                                     </Typography>
                                 </Box>
-
-                                {/* Sold Quantity */}
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'
-                                    sx={{ mt: 2 }}
-                                >
-                                    {soldQuantity} units sold
-                                </Typography>
 
                                 <Divider sx={{ my: 2 }} />
 
@@ -299,29 +410,45 @@ const ProductDetailPage = () => {
                                 <Typography variant='body1' gutterBottom>
                                     Select Color:
                                 </Typography>
-                                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                                    {colorVariants.map((variant) => (
-                                        <Box
-                                            key={variant.color}
-                                            sx={{
-                                                width: 30,
-                                                height: 30,
-                                                borderRadius: '50%',
-                                                backgroundColor: variant.hex,
-                                                cursor: 'pointer',
-                                                border:
-                                                    selectedColor.color ===
-                                                    variant.color
-                                                        ? '2px solid black'
-                                                        : 'none',
-                                                '&:hover': {
-                                                    borderColor: 'primary.main',
-                                                },
-                                            }}
-                                            onClick={() =>
-                                                handleColorSelect(variant.color)
-                                            } // Handle color selection
-                                        />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        gap: 2,
+                                        mb: 2,
+                                    }}
+                                >
+                                    {productVariants.map((variant) => (
+                                        <CustomTooltip
+                                            key={variant.color.colorId}
+                                            title={variant.color.colorName}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    width: 30,
+                                                    height: 30,
+                                                    boxSizing: 'border-box',
+                                                    borderRadius: '50%',
+                                                    backgroundColor:
+                                                        variant.color.hexCode,
+                                                    cursor: 'pointer',
+                                                    border:
+                                                        selectedVariant.color
+                                                            .colorId ===
+                                                        variant.color.colorId
+                                                            ? '2px solid black'
+                                                            : 'none',
+                                                    '&:hover': {
+                                                        borderColor:
+                                                            'primary.main',
+                                                    },
+                                                }}
+                                                onClick={() =>
+                                                    handleColorSelect(
+                                                        variant.color.colorId
+                                                    )
+                                                } // Handle color selection
+                                            />
+                                        </CustomTooltip>
                                     ))}
                                 </Box>
 
@@ -381,8 +508,22 @@ const ProductDetailPage = () => {
                                         color='text.secondary'
                                     >
                                         {`Stock Left: ${
-                                            stockQuantity - quantity
+                                            selectedVariant.stockQuantity -
+                                            quantity
                                         }`}
+
+                                        {quantity ===
+                                            selectedVariant?.stockQuantity && (
+                                            <Typography
+                                                component='span' // Inline to keep it part of the sentence
+                                                sx={{
+                                                    color: 'red',
+                                                    marginLeft: 1,
+                                                }} // Red color and spacing
+                                            >
+                                                Reach limit stock
+                                            </Typography>
+                                        )}
                                     </Typography>
                                 </Box>
 
@@ -444,7 +585,7 @@ const ProductDetailPage = () => {
             </Box>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} sm={8} md={9}>
+                <Grid item xs={12} sm={12} md={9}>
                     <Box sx={{ maxWidth: '800px' }}>
                         <Typography variant='h5' gutterBottom>
                             Customer Feedbacks
@@ -557,7 +698,7 @@ const ProductDetailPage = () => {
                         </List>
                     </Box>
                 </Grid>
-                <Grid item xs={12} sm={4} md={3}>
+                <Grid item lg={3} display={{ xs: 'none', lg: 'flex' }}>
                     <Box sx={{ width: 300, padding: 2 }}>
                         <Paper elevation={3} sx={{ padding: 2 }}>
                             <Typography variant='h6' gutterBottom>

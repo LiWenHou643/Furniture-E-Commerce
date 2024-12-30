@@ -1,5 +1,6 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import ScrollToTop from './components/ScrollToTop';
@@ -13,7 +14,6 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
-
 const theme = createTheme({
     palette: {
         primary: {
@@ -73,6 +73,7 @@ function App() {
                         </Route>
                     </Routes>
                 </Router>
+                <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </ThemeProvider>
     );

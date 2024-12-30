@@ -8,7 +8,7 @@ const LightTooltip = styled(({ className, ...props }) => (
         backgroundColor: theme.palette.common.white,
         color: 'rgba(0, 0, 0, 0.87)',
         boxShadow: theme.shadows[1],
-        fontSize: 11,
+        fontSize: 12,
     },
 }));
 
@@ -22,7 +22,7 @@ export default function CustomTooltip({ title, children }) {
                         {
                             name: 'offset',
                             options: {
-                                offset: [0, -8],
+                                offset: [0, 0],
                             },
                         },
                     ],

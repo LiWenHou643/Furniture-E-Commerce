@@ -26,7 +26,7 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "12") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(

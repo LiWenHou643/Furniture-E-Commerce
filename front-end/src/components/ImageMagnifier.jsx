@@ -41,13 +41,18 @@ const ImageMagnifier = ({
             style={{
                 position: 'relative',
                 display: 'inline-block',
-                width: width ? width : '100%',
-                height: height ? height : 'auto',
-                overflow: 'hidden',
+                width: width || '100%', // Default to 100% width
+                height: height || 'auto', // Maintain aspect ratio if height is not set
+                overflow: 'hidden', // Ensure no overflow from parent container
             }}
         >
             <img
                 src={src}
+                style={{
+                    width: '100%', // Stretch to fit the parent container's width
+                    height: '100%', // Stretch to fit the parent container's height
+                    objectFit: 'fill', // Fit within the container while preserving aspect ratio
+                }}
                 width={width ? width : '100%'}
                 height={height ? height : 'auto'}
                 alt={alt}

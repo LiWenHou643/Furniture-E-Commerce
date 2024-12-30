@@ -8,99 +8,102 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-const ProductCard = () => {
-    const productItemsObject = {
-        productItems: [
-            {
-                productItemId: 1,
-                color: {
-                    colorId: 12,
-                    colorName: 'Amber',
-                    hexCode: '#ba3c11',
-                },
-                sku: 'SEAT01AMBER',
-                originalPrice: 200.0,
-                salePrice: 180.0,
-                stockQuantity: 5,
-                productImages: [
-                    {
-                        imageId: 3,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523960/red-chesterfield-2_ep0yxd.png',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 1,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
-                        mainImage: true,
-                    },
-                    {
-                        imageId: 2,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 4,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 5,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg',
-                        mainImage: false,
-                    },
-                ],
+import CustomTooltip from '../../components/CustomTooltip';
+
+const productItemsObjects = {
+    productItems: [
+        {
+            productItemId: 1,
+            color: {
+                colorId: 12,
+                colorName: 'Amber',
+                hexCode: '#ba3c11',
             },
-            {
-                productItemId: 2,
-                color: {
-                    colorId: 15,
-                    colorName: 'Forest Green',
-                    hexCode: '#228B22',
+            sku: 'SEAT01AMBER',
+            originalPrice: 200.0,
+            salePrice: 180.0,
+            stockQuantity: 5,
+            productImages: [
+                {
+                    imageId: 3,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523960/red-chesterfield-2_ep0yxd.png',
+                    mainImage: false,
                 },
-                sku: 'SEAT01FOREST',
-                originalPrice: 200.0,
-                salePrice: 190.0,
-                stockQuantity: 5,
-                productImages: [
-                    {
-                        imageId: 8,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/green-chesterfield-7_zlqzph.png',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 7,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-3_szhbpl.png',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 10,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-8_rsysvv.jpg',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 9,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-9_kltafu.jpg',
-                        mainImage: false,
-                    },
-                    {
-                        imageId: 6,
-                        imageUrl:
-                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523957/green-chesterfield-1_qsynur.jpg',
-                        mainImage: true,
-                    },
-                ],
+                {
+                    imageId: 1,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
+                    mainImage: true,
+                },
+                {
+                    imageId: 2,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 4,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 5,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg',
+                    mainImage: false,
+                },
+            ],
+        },
+        {
+            productItemId: 2,
+            color: {
+                colorId: 15,
+                colorName: 'Forest Green',
+                hexCode: '#228B22',
             },
-        ],
-    };
+            sku: 'SEAT01FOREST',
+            originalPrice: 200.0,
+            salePrice: 190.0,
+            stockQuantity: 5,
+            productImages: [
+                {
+                    imageId: 8,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/green-chesterfield-7_zlqzph.png',
+                    mainImage: false,
+                },
+                {
+                    imageId: 7,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-3_szhbpl.png',
+                    mainImage: false,
+                },
+                {
+                    imageId: 10,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-8_rsysvv.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 9,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-9_kltafu.jpg',
+                    mainImage: false,
+                },
+                {
+                    imageId: 6,
+                    imageUrl:
+                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523957/green-chesterfield-1_qsynur.jpg',
+                    mainImage: true,
+                },
+            ],
+        },
+    ],
+};
+const ProductCard = ({ product }) => {
+    const productItemsObject = product || productItemsObjects;
 
     const navigate = useNavigate(); // Use navigate hook
 
@@ -184,30 +187,37 @@ const ProductCard = () => {
                 </Typography>
 
                 {/* Row of Color Variants (Round Boxes) */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                     {productVariants.map((variant) => (
-                        <Box
+                        <CustomTooltip
                             key={variant.color.colorName}
-                            sx={{
-                                width: 20,
-                                height: 20,
-                                boxSizing: 'border-box',
-                                borderRadius: '50%',
-                                backgroundColor: variant.color.hexCode,
-                                cursor: 'pointer',
-                                border:
-                                    selectedVariant.color.colorName.toLowerCase() ===
-                                    variant.color.colorName.toLowerCase()
-                                        ? '2px solid black'
-                                        : 'none',
-                                '&:hover': {
-                                    border: '2px solid black',
-                                },
-                            }}
-                            onClick={(e) =>
-                                handleColorSelect(e, variant.color.colorName)
-                            }
-                        />
+                            title={variant.color.colorName}
+                        >
+                            <Box
+                                sx={{
+                                    width: 20,
+                                    height: 20,
+                                    boxSizing: 'border-box',
+                                    borderRadius: '50%',
+                                    backgroundColor: variant.color.hexCode,
+                                    cursor: 'pointer',
+                                    border:
+                                        selectedVariant.color.colorName.toLowerCase() ===
+                                        variant.color.colorName.toLowerCase()
+                                            ? '2px solid black'
+                                            : 'none',
+                                    '&:hover': {
+                                        border: '2px solid black',
+                                    },
+                                }}
+                                onClick={(e) =>
+                                    handleColorSelect(
+                                        e,
+                                        variant.color.colorName
+                                    )
+                                }
+                            />
+                        </CustomTooltip>
                     ))}
                 </Box>
 

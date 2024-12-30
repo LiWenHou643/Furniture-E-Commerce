@@ -1,5 +1,5 @@
 // hooks/useProducts.js
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../api/axiosInstance';
 
 // Fetch products with pagination
@@ -12,7 +12,7 @@ const fetchProducts = async ({ queryKey }) => {
 };
 
 // Custom hook for fetching paginated products
-const useProducts = ({ page, size }) => {
+const useFetchProducts = ({ page, size }) => {
     return useQuery(['products', { page, size }], fetchProducts, {
         // Keep previous data when fetching new data
         keepPreviousData: true, // Avoid loading state when changing pages
@@ -34,4 +34,4 @@ const useProducts = ({ page, size }) => {
     });
 };
 
-export default useProducts;
+export default useFetchProducts;
