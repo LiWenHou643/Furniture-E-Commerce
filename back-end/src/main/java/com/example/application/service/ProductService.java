@@ -18,6 +18,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -36,13 +39,20 @@ public class ProductService {
     BrandRepository brandRepository;
     MaterialRepository materialRepository;
 
-    // Cache the entire product list
-    @Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY)
-    public List<ProductDTO> getProducts() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-                       .map(ProductMapper.INSTANCE::toDTO)
-                       .collect(Collectors.toList());
+    // Inject the cached product service
+    CachedProductService cachedProductService;
+
+    // Fetch all products from the cached service
+    public Page<ProductDTO> getProducts(Pageable pageable) {
+        // Fetch all products from the cached service
+        List<ProductDTO> allProducts = cachedProductService.getAllProducts();
+
+        // Paginate the list
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allProducts.size());
+        List<ProductDTO> paginatedContent = allProducts.subList(start, end);
+
+        return new PageImpl<>(paginatedContent, pageable, allProducts.size());
     }
 
     // Cache the individual product
@@ -97,7 +107,7 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getProductId())
                                            .orElseThrow(() -> new IllegalArgumentException(
                                                    "Product with id " + productDTO.getProductId() + " not found"));
-        ProductMapper.INSTANCE.updateProductFromDto(productDTO, product);  // Update fields from DTO
+        ProductMapper.INSTANCE.updateProductFromDTO(productDTO, product);  // Update fields from DTO
         productRepository.save(product);  // Save the updated product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
     }

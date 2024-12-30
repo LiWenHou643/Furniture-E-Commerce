@@ -4,6 +4,7 @@ import Pagination from '@mui/material/Pagination';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProductCard from '../features/products/ProductCard';
 import ProductSideBar from '../features/products/ProductSideBar';
+import useProducts from '../hooks/useProducts';
 
 const ProductPage = () => {
     const itemsPerPage = 10;
@@ -11,6 +12,14 @@ const ProductPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
     const navigate = useNavigate();
+
+    const { data, isLoading, error, isFetching } = useProducts({
+        page: currentPage - 1,
+        pageSize: itemsPerPage,
+    });
+
+    if (isLoading || isFetching) return <p>Loading products...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
     // Calculate the page range based on the current page and total items
     const handlePageChange = (event, page) => {
@@ -21,6 +30,16 @@ const ProductPage = () => {
 
     return (
         <Container maxWidth='lg' sx={{ marginTop: 15 }}>
+            <ul>
+                {data?.content?.length > 0 ? (
+                    data.content.map((product) => (
+                        <li key={product.productId}>{product.productName}</li>
+                    ))
+                ) : (
+                    <p>No products available</p>
+                )}
+            </ul>
+
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Search Bar */}
                 <Box sx={{ marginBottom: 2 }}>

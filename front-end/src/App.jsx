@@ -1,6 +1,8 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+import ScrollToTop from './components/ScrollToTop';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
@@ -22,46 +24,56 @@ const theme = createTheme({
         },
     },
 });
+const queryClient = new QueryClient();
 
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <Router>
-                <Routes>
-                    {/* The AppLayout will wrap around these routes */}
-                    <Route element={<AppLayout />}>
-                        {/* Home Page */}
-                        <Route path='/' element={<HomePage />} />
-                        {/* Dynamic Product Page */}
-                        <Route path='/products' element={<ProductPage />} />
-                        {/* Dynamic Product Detail Page */}
-                        <Route
-                            path='/products/:productId'
-                            element={<ProductDetailPage />}
-                        />
-                        {/* Cart Page */}
-                        <Route path='/cart' element={<CartPage />} />
-                        {/* Checkout Page */}
-                        <Route path='/checkout' element={<CheckoutPage />} />
-                        {/* Login Page */}
-                        <Route path='/login' element={<LoginPage />} />
-                        {/* Register Page */}
-                        <Route path='/register' element={<RegisterPage />} />
-                        {/* Profile Page */}
-                        <Route path='/profile' element={<ProfilePage />} />
-                        {/* News Page */}
-                        <Route path='/news' element={<NewsPage />} />
-                        {/* Article Detail Page */}
-                        <Route
-                            path='/news/:id'
-                            element={<ArticleDetailPage />}
-                        />
+            <QueryClientProvider client={queryClient}>
+                <Router>
+                    <ScrollToTop />
+                    <Routes>
+                        {/* The AppLayout will wrap around these routes */}
+                        <Route element={<AppLayout />}>
+                            {/* Home Page */}
+                            <Route path='/' element={<HomePage />} />
+                            {/* Dynamic Product Page */}
+                            <Route path='/products' element={<ProductPage />} />
+                            {/* Dynamic Product Detail Page */}
+                            <Route
+                                path='/products/:productId'
+                                element={<ProductDetailPage />}
+                            />
+                            {/* Cart Page */}
+                            <Route path='/cart' element={<CartPage />} />
+                            {/* Checkout Page */}
+                            <Route
+                                path='/checkout'
+                                element={<CheckoutPage />}
+                            />
+                            {/* Login Page */}
+                            <Route path='/login' element={<LoginPage />} />
+                            {/* Register Page */}
+                            <Route
+                                path='/register'
+                                element={<RegisterPage />}
+                            />
+                            {/* Profile Page */}
+                            <Route path='/profile' element={<ProfilePage />} />
+                            {/* News Page */}
+                            <Route path='/news' element={<NewsPage />} />
+                            {/* Article Detail Page */}
+                            <Route
+                                path='/news/:id'
+                                element={<ArticleDetailPage />}
+                            />
 
-                        {/* 404 Page */}
-                        <Route path='*' element={<NotFoundPage />} />
-                    </Route>
-                </Routes>
-            </Router>
+                            {/* 404 Page */}
+                            <Route path='*' element={<NotFoundPage />} />
+                        </Route>
+                    </Routes>
+                </Router>
+            </QueryClientProvider>
         </ThemeProvider>
     );
 }

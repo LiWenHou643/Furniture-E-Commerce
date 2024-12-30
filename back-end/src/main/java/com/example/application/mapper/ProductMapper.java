@@ -17,7 +17,8 @@ public interface ProductMapper {
     @Mapping(target = "productBrand", source = "brand")
     @Mapping(target = "productMaterial", source = "material")
     @Mapping(target = "productAreas", source = "areas")
+    @Mapping(target = "productItems", source = "productItems")
     ProductDTO toDTO(Product product);
 
-    void updateProductFromDto(ProductDTO productDTO, @MappingTarget Product product);
+    void updateProductFromDTO(ProductDTO productDTO, @MappingTarget Product product);
 }

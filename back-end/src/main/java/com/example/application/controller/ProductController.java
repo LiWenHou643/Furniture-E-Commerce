@@ -5,6 +5,9 @@ import com.example.application.dto.ProductDTO;
 import com.example.application.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +24,16 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<ApiResponse<List<ProductDTO>>> getProducts() {
+    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(
-                ApiResponse.<List<ProductDTO>>builder()
+                ApiResponse.<Page<ProductDTO>>builder()
                            .status("success")
                            .message("List products found")
-                           .data(productService.getProducts())
+                           .data(productService.getProducts(pageable))
                            .build()
         );
     }
