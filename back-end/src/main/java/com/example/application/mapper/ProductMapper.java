@@ -13,10 +13,6 @@ public interface ProductMapper {
 
     Product toProduct(ProductDTO productDTO);
 
-    @Mapping(target = "productCategory", source = "category")
-    @Mapping(target = "productBrand", source = "brand")
-    @Mapping(target = "productMaterial", source = "material")
-    @Mapping(target = "productAreas", source = "areas")
     @Mapping(target = "productItems", source = "productItems")
     ProductDTO toDTO(Product product);
 

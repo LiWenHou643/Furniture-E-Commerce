@@ -20,131 +20,32 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
-
-const initialCartItems = [
-    {
-        id: 1,
-        name: 'Product 1',
-        quantity: 1,
-        colors: [
-            {
-                name: 'Red',
-                originalPrice: 39.99,
-                discountedPrice: 29.99,
-                image: 'https://via.placeholder.com/50/ff0000',
-            },
-            {
-                name: 'Blue',
-                originalPrice: 42.99,
-                discountedPrice: 32.99,
-                image: 'https://via.placeholder.com/50/0000ff',
-            },
-            {
-                name: 'Green',
-                originalPrice: 37.99,
-                discountedPrice: 27.99,
-                image: 'https://via.placeholder.com/50/00ff00',
-            },
-        ],
-        selectedColor: 'Red',
-    },
-    {
-        id: 2,
-        name: 'Product 2',
-        quantity: 2,
-        colors: [
-            {
-                name: 'Black',
-                originalPrice: 79.99,
-                discountedPrice: 59.99,
-                image: 'https://via.placeholder.com/50/000000',
-            },
-            {
-                name: 'White',
-                originalPrice: 82.99,
-                discountedPrice: 62.99,
-                image: 'https://via.placeholder.com/50/ffffff',
-            },
-            {
-                name: 'Gray',
-                originalPrice: 75.99,
-                discountedPrice: 55.99,
-                image: 'https://via.placeholder.com/50/808080',
-            },
-        ],
-        selectedColor: 'Black',
-    },
-    {
-        id: 3,
-        name: 'Product 3',
-        quantity: 1,
-        colors: [
-            {
-                name: 'Yellow',
-                originalPrice: 29.99,
-                discountedPrice: 19.99,
-                image: 'https://via.placeholder.com/50/ffff00',
-            },
-            {
-                name: 'Purple',
-                originalPrice: 31.99,
-                discountedPrice: 21.99,
-                image: 'https://via.placeholder.com/50/800080',
-            },
-            {
-                name: 'Pink',
-                originalPrice: 28.99,
-                discountedPrice: 18.99,
-                image: 'https://via.placeholder.com/50/ff69b4',
-            },
-        ],
-        selectedColor: 'Yellow',
-    },
-];
+import Error from '../components/Error';
+import Loading from '../components/Loading';
+import useFetchCart from '../hooks/useFetchCart';
 
 function CartPage() {
-    const [cartItems, setCartItems] = useState(initialCartItems);
+    const { data: cart, isLoading, error } = useFetchCart();
+    if (isLoading) return <Loading />;
+    if (error) return <Error error={error} />;
 
-    // Update quantity
-    const handleQuantityChange = (id, quantity) => {
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: parseInt(quantity) || 0 }
-                    : item
-            )
-        );
-    };
-
-    // Remove item from cart
-    const handleRemoveItem = (id) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    // Update selected color
-    const handleColorChange = (id, color) => {
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, selectedColor: color } : item
-            )
-        );
-    };
+    const cartItems = cart?.cartItems || [];
 
     // Calculate total price
     const calculateTotal = () => {
         return cartItems
-            .reduce((total, item) => {
-                const selectedItem = item.colors.find(
-                    (color) => color.name === item.selectedColor
+            .reduce((total, cartItem) => {
+                const selectedItem = cartItem?.product?.productItems?.find(
+                    (productItem) =>
+                        productItem.productItemId === cartItem.productItemId
                 );
-                return total + selectedItem.discountedPrice * item.quantity;
+                return total + selectedItem?.salePrice * cartItem.quantity;
             }, 0)
             .toFixed(2);
     };
 
     return (
-        <Container sx={{ mt: 10 }}>
+        <Container sx={{ mt: 15 }}>
             <Typography variant='h4' align='center' gutterBottom>
                 Shopping Cart
             </Typography>
@@ -161,118 +62,22 @@ function CartPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {cartItems.map((item) => {
-                            const selectedColor = item.colors.find(
-                                (color) => color.name === item.selectedColor
-                            );
-                            return (
-                                <TableRow key={item.id}>
-                                    <TableCell
-                                        component='th'
-                                        scope='row'
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <img
-                                            src={selectedColor.image}
-                                            alt={item.selectedColor}
-                                            style={{
-                                                width: 50,
-                                                height: 50,
-                                                marginRight: 16,
-                                            }}
-                                        />
-                                        {item.name}
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                        <span
-                                            style={{
-                                                textDecoration: 'line-through',
-                                                color: '#999',
-                                            }}
-                                        >
-                                            $
-                                            {selectedColor.originalPrice.toFixed(
-                                                2
-                                            )}
-                                        </span>
-                                        <br />
-                                        <span style={{ color: '#000' }}>
-                                            $
-                                            {selectedColor.discountedPrice.toFixed(
-                                                2
-                                            )}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                        <TextField
-                                            type='number'
-                                            value={item.quantity}
-                                            onChange={(e) =>
-                                                handleQuantityChange(
-                                                    item.id,
-                                                    e.target.value
-                                                )
-                                            }
-                                            size='small'
-                                            InputProps={{
-                                                inputProps: { min: 1 },
-                                            }}
-                                            sx={{ width: 100 }} // Adjust the width here to make it wider
-                                        />
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                        $
-                                        {(
-                                            selectedColor.discountedPrice *
-                                            item.quantity
-                                        ).toFixed(2)}
-                                    </TableCell>
-                                    <TableCell align='center'>
-                                        <FormControl
-                                            size='small'
-                                            sx={{ width: 120 }}
-                                        >
-                                            <InputLabel>Color</InputLabel>
-                                            <Select
-                                                value={item.selectedColor}
-                                                onChange={(e) =>
-                                                    handleColorChange(
-                                                        item.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                label='Color'
-                                            >
-                                                {item.colors.map(
-                                                    (color, index) => (
-                                                        <MenuItem
-                                                            key={index}
-                                                            value={color.name}
-                                                        >
-                                                            {color.name}
-                                                        </MenuItem>
-                                                    )
-                                                )}
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell align='center'>
-                                        <IconButton
-                                            color='error'
-                                            onClick={() =>
-                                                handleRemoveItem(item.id)
-                                            }
-                                            aria-label='delete'
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
+                        {cartItems.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} align='center'>
+                                    Your cart is empty
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            cartItems.map((item) => {
+                                return (
+                                    <CartItem
+                                        cartItem={item}
+                                        key={item.cartItemId}
+                                    />
+                                );
+                            })
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -297,5 +102,114 @@ function CartPage() {
         </Container>
     );
 }
+
+const CartItem = ({ cartItem }) => {
+    const selectedItem = cartItem?.product?.productItems?.find(
+        (item) => item.productItemId === cartItem?.productItemId
+    );
+
+    console.log(selectedItem);
+
+    const handleQuantityChange = (id, quantity) => {};
+
+    // Remove item from cart
+    const handleRemoveItem = (id) => {};
+
+    // Update selected color
+    const handleColorChange = (id, color) => {};
+
+    return (
+        <TableRow key={cartItem.cartItemId}>
+            <TableCell
+                component='th'
+                scope='row'
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
+            >
+                <img
+                    src={
+                        selectedItem?.productImages?.find(
+                            (image) => image.mainImage
+                        )?.imageUrl
+                    }
+                    alt={
+                        selectedItem?.color?.colorName +
+                        cartItem?.product?.productName
+                    }
+                    style={{
+                        width: 50,
+                        height: 50,
+                        marginRight: 16,
+                    }}
+                />
+                {selectedItem?.color?.colorName +
+                    cartItem?.product?.productName}
+            </TableCell>
+            <TableCell align='right'>
+                <span
+                    style={{
+                        textDecoration: 'line-through',
+                        color: '#999',
+                    }}
+                >
+                    ${selectedItem?.originalPrice.toFixed(2)}
+                </span>
+                <br />
+                <span style={{ color: '#000' }}>
+                    ${selectedItem?.salePrice.toFixed(2)}
+                </span>
+            </TableCell>
+            <TableCell align='right'>
+                <TextField
+                    type='number'
+                    value={cartItem.quantity}
+                    onChange={(e) =>
+                        handleQuantityChange(
+                            cartItem.cartItemId,
+                            e.target.value
+                        )
+                    }
+                    size='small'
+                    InputProps={{
+                        inputProps: { min: 1 },
+                    }}
+                    sx={{ width: 100 }} // Adjust the width here to make it wider
+                />
+            </TableCell>
+            <TableCell align='right'>
+                ${(selectedItem?.salePrice * cartItem.quantity).toFixed(2)}
+            </TableCell>
+            <TableCell align='center'>
+                <FormControl size='small' sx={{ width: 120 }}>
+                    <InputLabel>Color</InputLabel>
+                    <Select
+                        value={cartItem.selectedColor}
+                        onChange={(e) =>
+                            handleColorChange(cartItem.id, e.target.value)
+                        }
+                        label='Color'
+                    >
+                        {cartItem?.colors?.map((color, index) => (
+                            <MenuItem key={index} value={color.name}>
+                                {color.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </TableCell>
+            <TableCell align='center'>
+                <IconButton
+                    color='error'
+                    onClick={() => handleRemoveItem(cartItem.id)}
+                    aria-label='delete'
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </TableCell>
+        </TableRow>
+    );
+};
 
 export default CartPage;

@@ -14,7 +14,8 @@ import lombok.experimental.FieldDefaults;
 public class CartItemDTO {
     Long cartItemId;
     Long cartId;
+    Long productId;
     Long productItemId;
     int quantity;
-    ProductItemDTO productItem;
+    ProductDTO product;
 }

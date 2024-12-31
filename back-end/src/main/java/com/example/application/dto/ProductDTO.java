@@ -16,10 +16,10 @@ public class ProductDTO {
     Long productId;
     String productName;
     String productDescription;
-    CategoryDTO productCategory;
-    BrandDTO productBrand;
-    MaterialDTO productMaterial;
-    List<AreaDTO> productAreas;
+    CategoryDTO category;
+    BrandDTO brand;
+    MaterialDTO material;
+    List<AreaDTO> areas;
     List<ProductItemDTO> productItems;
 
     @Builder.Default
