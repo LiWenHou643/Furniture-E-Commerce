@@ -102,10 +102,10 @@ const Footer = () => {
                             Contact Us
                         </Typography>
                         <Typography variant='body2' color='textSecondary'>
-                            Email: support@myshop.com
+                            Email: luxehouse8386@gmail.com
                         </Typography>
                         <Typography variant='body2' color='textSecondary'>
-                            Phone: +1 (555) 123-4567
+                            Phone: +89 123 456 789
                         </Typography>
                     </Grid>
                 </Grid>

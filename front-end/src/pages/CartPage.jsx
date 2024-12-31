@@ -4,13 +4,11 @@ import {
     Button,
     Container,
     Divider,
-    FormControl,
     Grid,
     IconButton,
-    InputLabel,
-    MenuItem,
     Paper,
-    Select,
+    Popover,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -20,10 +18,10 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import { useRef, useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
-
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
     if (isLoading) return <Loading />;
@@ -54,11 +52,11 @@ function CartPage() {
                     <TableHead>
                         <TableRow>
                             <TableCell>Product</TableCell>
+                            <TableCell align='center'>Color</TableCell>
                             <TableCell align='right'>Price</TableCell>
                             <TableCell align='right'>Quantity</TableCell>
                             <TableCell align='right'>Total</TableCell>
-                            <TableCell align='center'>Color</TableCell>
-                            <TableCell align='center'>Actions</TableCell>
+                            <TableCell align='center'></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -104,24 +102,53 @@ function CartPage() {
 }
 
 const CartItem = ({ cartItem }) => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleOpen = () => {
+        setAnchorEl(tableCellRef.current); // Set the TableCell as the anchor
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const tableCellRef = useRef(null);
+
     const selectedItem = cartItem?.product?.productItems?.find(
         (item) => item.productItemId === cartItem?.productItemId
     );
 
-    console.log(selectedItem);
+    const [tempItem, setTempItem] = useState(selectedItem);
+    const [quantity, setQuantity] = useState(cartItem.quantity);
 
-    const handleQuantityChange = (id, quantity) => {};
+    const handleQuantityChange = (id, quantity) => {
+        // Update the quantity of the cart item
+        setQuantity(quantity);
+        console.log(id, quantity);
+    };
 
     // Remove item from cart
-    const handleRemoveItem = (id) => {};
+    const handleRemoveItem = (id) => {
+        // Remove the item from the cart
+        console.log('Remove item with id:', id);
+    };
 
     // Update selected color
-    const handleColorChange = (id, color) => {};
+    const handleColorChange = (newProductItem) => {
+        // Update the selected product
+        setTempItem(newProductItem);
+    };
+
+    const handleSubmit = (selectedItem) => {
+        // Update the cart item with the new product item
+        console.log(selectedItem);
+        // Close the popover
+        handleClose;
+    };
+
+    const isOpen = Boolean(anchorEl);
 
     return (
         <TableRow key={cartItem.cartItemId}>
             <TableCell
-                component='th'
                 scope='row'
                 sx={{
                     display: 'flex',
@@ -145,8 +172,109 @@ const CartItem = ({ cartItem }) => {
                     }}
                 />
                 {selectedItem?.color?.colorName +
+                    ' ' +
                     cartItem?.product?.productName}
             </TableCell>
+
+            <TableCell align='center' ref={tableCellRef}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}
+                >
+                    {/* Display selected color */}
+                    <Box
+                        sx={{
+                            width: 20,
+                            height: 20,
+                            backgroundColor: selectedItem.color.hexCode,
+                            borderRadius: '50%',
+                            border: '2px solid #000',
+                        }}
+                    ></Box>
+                    {/* Display selected color name */}
+                    <Typography>{selectedItem.color.colorName}</Typography>
+
+                    {/* Button to open the popover */}
+                    <Button onClick={handleOpen}>Change Color</Button>
+                </Box>
+
+                {/* Popover for selecting a color */}
+                <Popover
+                    open={isOpen}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    <Box sx={{ p: 2 }}>
+                        <Typography variant='h6' gutterBottom>
+                            Select a Color
+                        </Typography>
+
+                        {/* Color buttons */}
+                        <Stack
+                            direction='row'
+                            spacing={2}
+                            sx={{
+                                flexWrap: 'wrap',
+                                gap: 1,
+                                justifyContent: 'center',
+                                marginTop: 2,
+                            }}
+                        >
+                            {cartItem?.product?.productItems?.map(
+                                (productItem) => (
+                                    <Button
+                                        key={productItem.productItemId}
+                                        variant={
+                                            productItem.productItemId ===
+                                            tempItem.productItemId
+                                                ? 'contained'
+                                                : 'outlined'
+                                        }
+                                        onClick={() =>
+                                            handleColorChange(productItem)
+                                        }
+                                        sx={{
+                                            height: 40,
+                                            borderRadius: 2,
+                                        }}
+                                    >
+                                        {productItem.color.colorName}
+                                    </Button>
+                                )
+                            )}
+                        </Stack>
+
+                        {/* Action buttons */}
+                        <Stack
+                            direction='row'
+                            spacing={2}
+                            sx={{ justifyContent: 'center', mt: 2 }}
+                        >
+                            <Button variant='outlined' onClick={handleClose}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant='contained'
+                                onClick={() => handleSubmit(tempItem)}
+                            >
+                                Submit
+                            </Button>
+                        </Stack>
+                    </Box>
+                </Popover>
+            </TableCell>
+
             <TableCell align='right'>
                 <span
                     style={{
@@ -161,10 +289,11 @@ const CartItem = ({ cartItem }) => {
                     ${selectedItem?.salePrice.toFixed(2)}
                 </span>
             </TableCell>
+
             <TableCell align='right'>
                 <TextField
                     type='number'
-                    value={cartItem.quantity}
+                    value={quantity}
                     onChange={(e) =>
                         handleQuantityChange(
                             cartItem.cartItemId,
@@ -178,31 +307,15 @@ const CartItem = ({ cartItem }) => {
                     sx={{ width: 100 }} // Adjust the width here to make it wider
                 />
             </TableCell>
+
             <TableCell align='right'>
                 ${(selectedItem?.salePrice * cartItem.quantity).toFixed(2)}
             </TableCell>
-            <TableCell align='center'>
-                <FormControl size='small' sx={{ width: 120 }}>
-                    <InputLabel>Color</InputLabel>
-                    <Select
-                        value={cartItem.selectedColor}
-                        onChange={(e) =>
-                            handleColorChange(cartItem.id, e.target.value)
-                        }
-                        label='Color'
-                    >
-                        {cartItem?.colors?.map((color, index) => (
-                            <MenuItem key={index} value={color.name}>
-                                {color.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </TableCell>
+
             <TableCell align='center'>
                 <IconButton
                     color='error'
-                    onClick={() => handleRemoveItem(cartItem.id)}
+                    onClick={() => handleRemoveItem(cartItem.cartItemId)}
                     aria-label='delete'
                 >
                     <DeleteIcon />
