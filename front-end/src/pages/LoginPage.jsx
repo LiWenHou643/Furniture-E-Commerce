@@ -7,19 +7,42 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosPublic from '../api/axiosPublic';
+import { useLogin } from '../hooks/useLogin';
+import { isAuthenticated } from '../utils/auth';
 const LoginPage = () => {
-    const [emailOrPhone, setEmailOrPhone] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    const [persistent, setPersistent] = useState(false);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (isAuthenticated()) {
+            navigate('/'); // Redirect to homepage if already logged in
+        }
+    }, [navigate]);
+
+    useEffect(() => {
+        const refresh = async () => {
+            try {
+                await axiosPublic.get('/auth/refresh-token', {
+                    withCredentials: true,
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        refresh();
+    }, [navigate]);
+
+    const loginMutation = useLogin();
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Handle login logic here (validate form, authenticate user, etc.)
-        console.log('Email or Phone:', emailOrPhone);
-        console.log('Password:', password);
-        console.log('Remember Me:', rememberMe);
+        // Call the login mutation
+        loginMutation.mutate({ username, password, persistent });
     };
 
     return (
@@ -45,14 +68,19 @@ const LoginPage = () => {
                     Login
                 </Typography>
 
+                {loginMutation.isError && (
+                    <Typography color='red' marginBottom={3}>
+                        {loginMutation.error.response.data.message}
+                    </Typography>
+                )}
                 <form onSubmit={handleSubmit}>
                     <TextField
                         label='Email or Phone Number'
                         variant='outlined'
                         fullWidth
                         required
-                        value={emailOrPhone}
-                        onChange={(e) => setEmailOrPhone(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         sx={{ marginBottom: 2 }}
                     />
                     <TextField
@@ -69,9 +97,9 @@ const LoginPage = () => {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                checked={rememberMe}
+                                checked={persistent}
                                 onChange={(e) =>
-                                    setRememberMe(e.target.checked)
+                                    setPersistent(e.target.checked)
                                 }
                                 color='primary'
                             />

@@ -89,7 +89,7 @@ public class AuthService {
         var refreshTokenEntity = RefreshToken.builder()
                                              .user(user)
                                              .refreshToken(refreshToken)
-                                             .revoked(true)
+                                             .revoked(false)
                                              .build();
         refreshTokenRepository.save(refreshTokenEntity);
     }
@@ -97,10 +97,15 @@ public class AuthService {
     private void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); // in seconds (15 days)
+        refreshTokenCookie.setSecure(true); // Set to true for production with HTTPS
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); // 15 days in seconds
+        // Use "Lax" for SameSite during development:
+        refreshTokenCookie.setAttribute("SameSite", "Lax");
+
         response.addCookie(refreshTokenCookie);
     }
+
 
     @Transactional
     public UserDTO register(CreateUserRequest request) {

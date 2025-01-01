@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "brands")
 @Getter
@@ -22,8 +25,8 @@ public class Brand extends BaseEntity {
 
     String brandDescription;
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "brand")
-//    Set<Product> products = new HashSet<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "brand")
+    Set<Product> products = new HashSet<>();
 
 }

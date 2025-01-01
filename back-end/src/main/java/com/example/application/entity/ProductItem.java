@@ -21,7 +21,7 @@ public class ProductItem extends BaseEntity{
     Long productItemId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
     @OneToOne

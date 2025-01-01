@@ -1,19 +1,13 @@
-// hooks/useProducts.js
 import { useQuery } from '@tanstack/react-query';
-import axiosPublic from '../api/axiosPublic';
+import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
 
-// Fetch products with pagination
-const fetchProducts = async ({ queryKey }) => {
-    const [_key, { page, size }] = queryKey;
-    const response = await axiosPublic.get('/products', {
-        params: { page, size }, // Pass page and size as query params
-    });
-    return response.data?.data; // Axios automatically parses JSON
+const fetchUserProfile = async () => {
+    const { data } = await axiosPrivate.get('/user');
+    return data.data;
 };
 
-// Custom hook for fetching paginated products
-const useFetchProducts = ({ page, size }) => {
-    return useQuery(['products', { page, size }], fetchProducts, {
+const useFetchCart = () => {
+    return useQuery(['profile'], fetchUserProfile, {
         // Keep previous data when fetching new data
         keepPreviousData: true, // Avoid loading state when changing pages
 
@@ -29,12 +23,12 @@ const useFetchProducts = ({ page, size }) => {
         // Refetch data on mount
         refetchOnMount: false, // Avoid refetching data on mount
 
-        // Retry failed requests
-        retry: 2, // Set the number of retries to 2
-
         // Stale time
         staleTime: 30000, // Set the stale time to 30 seconds
+
+        // Retry failed requests
+        retry: 2, // Set the number of retries to 2
     });
 };
 
-export default useFetchProducts;
+export default useFetchCart;

@@ -1,10 +1,10 @@
 // hooks/useProducts.js
 import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '../api/axiosInstance';
+import axiosPublic from '../api/axiosPublic';
 
 const fetchProductById = async ({ queryKey }) => {
     const [_key, { productId }] = queryKey;
-    const response = await axiosInstance.get(`/products/${productId}`);
+    const response = await axiosPublic.get(`/products/${productId}`);
     return response.data?.data; // Axios automatically parses JSON
 };
 
@@ -27,6 +27,9 @@ const useFetchProduct = ({ productId }) => {
 
         // Stale time
         staleTime: 30000, // Set the stale time to 30 seconds
+
+        // Retry failed requests
+        retry: 2, // Set the number of retries to 2
     });
 };
 

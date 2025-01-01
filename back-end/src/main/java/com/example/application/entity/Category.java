@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "categories")
 @Getter
@@ -23,9 +26,8 @@ public class Category extends BaseEntity {
 
     String categoryDescription;
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "category")
-//    Set<Product> products = new HashSet<>();
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Product> products = new HashSet<>();
 
 }
 

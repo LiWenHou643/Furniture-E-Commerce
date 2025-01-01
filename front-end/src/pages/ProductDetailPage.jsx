@@ -7,6 +7,7 @@ import {
     Card,
     CardContent,
     CardMedia,
+    CircularProgress,
     Container,
     Divider,
     Grid,
@@ -585,6 +586,7 @@ const ProductDetailPage = () => {
             </Box>
 
             <Grid container spacing={3}>
+                {/* Customer Feedbacks */}
                 <Grid item xs={12} sm={12} md={9}>
                     <Box sx={{ maxWidth: '800px' }}>
                         <Typography variant='h5' gutterBottom>
@@ -698,6 +700,7 @@ const ProductDetailPage = () => {
                         </List>
                     </Box>
                 </Grid>
+                {/* Top Products */}
                 <Grid item lg={3} display={{ xs: 'none', lg: 'flex' }}>
                     <Box sx={{ width: 300, padding: 2 }}>
                         <Paper elevation={3} sx={{ padding: 2 }}>
@@ -718,7 +721,84 @@ const ProductDetailPage = () => {
                     </Box>
                 </Grid>
             </Grid>
+
+            <RelatedProducts />
         </Container>
+    );
+};
+
+const RelatedProducts = () => {
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const handleProductClick = (id) => {
+        console.log('Navigate to product ID:', id);
+        // Implement navigation logic (e.g., React Router's useNavigate)
+    };
+
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    mt: 4,
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={{ mt: 4, p: 2, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
+            <Typography variant='h5' gutterBottom>
+                Related Products
+            </Typography>
+            <Grid container spacing={2}>
+                {relatedProducts.map((product) => (
+                    <Grid item xs={12} sm={6} md={3} key={product.id}>
+                        <Card sx={{ height: '100%' }}>
+                            <CardMedia
+                                component='img'
+                                height='140'
+                                image={product.image} // Replace with product.image URL
+                                alt={product.name}
+                            />
+                            <CardContent>
+                                <Typography variant='h6' noWrap>
+                                    {product.name}
+                                </Typography>
+                                <Typography
+                                    variant='body2'
+                                    color='text.secondary'
+                                >
+                                    ${product.price}
+                                </Typography>
+                            </CardContent>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    pb: 2,
+                                }}
+                            >
+                                <Button
+                                    size='small'
+                                    variant='contained'
+                                    onClick={() =>
+                                        handleProductClick(product.id)
+                                    }
+                                >
+                                    View Details
+                                </Button>
+                            </Box>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
     );
 };
 

@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '../api/axiosInstance'; // The Axios instance
+import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
 
 const fetchCart = async () => {
-    const { data } = await axiosInstance.get('/carts');
+    const { data } = await axiosPrivate.get('/carts');
+    console.log(data.data);
     return data.data;
 };
 
@@ -25,6 +26,9 @@ const useFetchCart = () => {
 
         // Stale time
         staleTime: 30000, // Set the stale time to 30 seconds
+
+        // Retry failed requests
+        retry: 2, // Set the number of retries to 2
     });
 };
 

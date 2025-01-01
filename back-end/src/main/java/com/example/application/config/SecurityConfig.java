@@ -22,8 +22,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -78,6 +82,24 @@ public class SecurityConfig {
     }
 
     @Bean
+    ClientRegistrationRepository clientRegistrationRepository() {
+        ClientRegistration google = googleClientRegistration();
+        ClientRegistration facebook = facebookClientRegistration();
+        return new InMemoryClientRegistrationRepository(google, facebook);
+    }
+
+    private ClientRegistration googleClientRegistration() {
+        return CommonOAuth2Provider.GOOGLE.getBuilder("google").clientId(googleOAuth2Properties.getClientId())
+                                          .clientSecret(googleOAuth2Properties.getClientSecret()).build();
+    }
+
+    private ClientRegistration facebookClientRegistration() {
+        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId(facebookOAuth2Properties.getClientId())
+                                            .clientSecret(facebookOAuth2Properties.getClientSecret()).build();
+    }
+
+
+    @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
@@ -101,28 +123,13 @@ public class SecurityConfig {
 //        return new InMemoryUserDetailsManager(susan);
 //    }
 //
-//    @Bean
-//    ClientRegistrationRepository clientRegistrationRepository() {
-//        ClientRegistration google = googleClientRegistration();
-//        ClientRegistration facebook = facebookClientRegistration();
-//        return new InMemoryClientRegistrationRepository(google, facebook);
-//    }
-//
-//    private ClientRegistration googleClientRegistration() {
-//        return CommonOAuth2Provider.GOOGLE.getBuilder("google").clientId(googleOAuth2Properties.getClientId())
-//                                          .clientSecret(googleOAuth2Properties.getClientSecret()).build();
-//    }
-//
-//    private ClientRegistration facebookClientRegistration() {
-//        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId(facebookOAuth2Properties.getClientId())
-//                                            .clientSecret(facebookOAuth2Properties.getClientSecret()).build();
-//    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.setAllowCredentials(true);
 

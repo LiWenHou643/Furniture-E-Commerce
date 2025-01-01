@@ -14,7 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import useLogout from '../hooks/useLogout';
 import CustomTooltip from './CustomTooltip';
 
 const pages = [
@@ -34,6 +35,8 @@ const settings = ['Profile', 'Account', 'Logout'];
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const navigate = useNavigate();
+    const logout = useLogout();
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -46,8 +49,19 @@ function ResponsiveAppBar() {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = () => {
+    const handleCloseUserMenu = (setting) => {
         setAnchorElUser(null);
+
+        console.log('Selected setting:', setting);
+
+        // Handle logout
+        if (setting === 'Logout') {
+            logout.handleLogout();
+            return;
+        }
+
+        // Navigate to the selected page
+        navigate(`/${setting.toLowerCase()}`);
     };
 
     return (
@@ -199,7 +213,7 @@ function ResponsiveAppBar() {
                             {settings.map((setting) => (
                                 <MenuItem
                                     key={setting}
-                                    onClick={handleCloseUserMenu}
+                                    onClick={() => handleCloseUserMenu(setting)} // Pass the selected setting
                                 >
                                     <Typography sx={{ textAlign: 'center' }}>
                                         {setting}

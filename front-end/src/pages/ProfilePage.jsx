@@ -19,8 +19,41 @@ import {
 import { Box } from '@mui/system';
 import { useState } from 'react';
 
+const profileData = {
+    userId: 2,
+    firstName: 'Nguyen',
+    lastName: 'Anh Tu',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/800px-Cat03.jpg',
+    email: 'user1@example.com',
+    phoneNumber: '0931234567',
+    addresses: [
+        {
+            addressId: 1,
+            streetAddress: '123 Đường Nguyễn Trãi',
+            ward: 'Phường 2',
+            district: 'Quận 1',
+            city: 'Thành phố Hồ Chí Minh',
+        },
+    ],
+    role: {
+        roleId: 2,
+        roleName: 'USER',
+    },
+    userStatus: true,
+};
+
 const ProfilePage = () => {
     const [selectedTab, setSelectedTab] = useState(0);
+
+    const info = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        phone: profileData.phoneNumber,
+        email: profileData.email,
+        avatar: profileData.avatar,
+    };
+
+    const addresses = profileData.addresses;
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -55,8 +88,10 @@ const ProfilePage = () => {
                 {/* Main Content */}
                 <Grid item xs={9}>
                     <Box sx={{ padding: 0 }}>
-                        {selectedTab === 0 && <InfoTab />}
-                        {selectedTab === 1 && <AddressesTab />}
+                        {selectedTab === 0 && <InfoTab info={info} />}
+                        {selectedTab === 1 && (
+                            <AddressesTab addresses={addresses} />
+                        )}
                         {selectedTab === 2 && <PasswordTab />}
                     </Box>
                 </Grid>
@@ -65,12 +100,12 @@ const ProfilePage = () => {
     );
 };
 
-const InfoTab = () => {
-    const [avatar, setAvatar] = useState('');
-    const [firstName, setFirstName] = useState('John');
-    const [lastName, setLastName] = useState('Wick');
-    const [phone, setPhone] = useState('0123456789');
-    const [email, setEmail] = useState('test123@example.com');
+const InfoTab = ({ info }) => {
+    const [avatar, setAvatar] = useState(info.avatar);
+    const [firstName, setFirstName] = useState(info.firstName);
+    const [lastName, setLastName] = useState(info.lastName);
+    const [phone, setPhone] = useState(info.phone);
+    const [email, setEmail] = useState(info.email);
     const [error, setError] = useState(''); // Error message for invalid file
 
     const getInitials = (first, last) => {
@@ -178,7 +213,7 @@ const InfoTab = () => {
                             display='flex'
                             justifyContent='center'
                             marginBottom={2}
-                            marginTop={1}
+                            marginTop={2}
                         >
                             <Input
                                 accept='image/*'
@@ -246,29 +281,14 @@ const InfoTab = () => {
     );
 };
 
-const AddressesTab = () => {
-    const [addresses, setAddresses] = useState([
-        {
-            id: 1,
-            street: '123 Main St',
-            city: 'New York',
-            state: 'NY',
-            zip: '10001',
-        },
-        {
-            id: 2,
-            street: '456 Elm St',
-            city: 'Los Angeles',
-            state: 'CA',
-            zip: '90001',
-        },
-    ]);
+const AddressesTab = ({ addresses: AddressesArray }) => {
+    const [addresses, setAddresses] = useState(AddressesArray);
     const [isEditing, setIsEditing] = useState(false);
     const [currentAddress, setCurrentAddress] = useState({
-        street: '',
+        streetAddress: '',
+        ward: '',
+        district: '',
         city: '',
-        state: '',
-        zip: '',
     });
 
     const handleEditClick = (address) => {
@@ -277,7 +297,12 @@ const AddressesTab = () => {
     };
 
     const handleAddClick = () => {
-        setCurrentAddress({ street: '', city: '', state: '', zip: '' });
+        setCurrentAddress({
+            streetAddress: '',
+            ward: '',
+            district: '',
+            city: '',
+        });
         setIsEditing(true);
     };
 
@@ -290,16 +315,18 @@ const AddressesTab = () => {
     };
 
     const handleSave = () => {
-        if (currentAddress.id) {
+        if (currentAddress.addressId) {
             setAddresses((prevAddresses) =>
                 prevAddresses.map((address) =>
-                    address.id === currentAddress.id ? currentAddress : address
+                    address.addressId === currentAddress.addressId
+                        ? currentAddress
+                        : address
                 )
             );
         } else {
             setAddresses((prevAddresses) => [
                 ...prevAddresses,
-                { ...currentAddress, id: prevAddresses.length + 1 },
+                { ...currentAddress, addressId: prevAddresses.length + 1 },
             ]);
         }
         setIsEditing(false);
@@ -327,16 +354,16 @@ const AddressesTab = () => {
             {!isEditing ? (
                 <Box>
                     {addresses.map((address) => (
-                        <Card key={address.id} sx={{ marginBottom: 2 }}>
+                        <Card key={address.addressId} sx={{ marginBottom: 2 }}>
                             <CardContent>
                                 <Grid container alignItems='center' spacing={2}>
                                     <Grid item xs={10}>
                                         <Typography variant='body1'>
-                                            {address.street}
+                                            {address.streetAddress}
                                         </Typography>
                                         <Typography variant='body2'>
-                                            {address.city}, {address.state}{' '}
-                                            {address.zip}
+                                            {address.ward}, {address.district}{' '}
+                                            {address.city}
                                         </Typography>
                                     </Grid>
                                     <Grid
@@ -365,7 +392,23 @@ const AddressesTab = () => {
                     <TextField
                         label='Street'
                         name='street'
-                        value={currentAddress.street}
+                        value={currentAddress.streetAddress}
+                        onChange={handleChange}
+                        fullWidth
+                        margin='normal'
+                    />
+                    <TextField
+                        label='Ward'
+                        name='ward'
+                        value={currentAddress.ward}
+                        onChange={handleChange}
+                        fullWidth
+                        margin='normal'
+                    />
+                    <TextField
+                        label='District'
+                        name='district'
+                        value={currentAddress.district}
                         onChange={handleChange}
                         fullWidth
                         margin='normal'
@@ -374,22 +417,6 @@ const AddressesTab = () => {
                         label='City'
                         name='city'
                         value={currentAddress.city}
-                        onChange={handleChange}
-                        fullWidth
-                        margin='normal'
-                    />
-                    <TextField
-                        label='State'
-                        name='state'
-                        value={currentAddress.state}
-                        onChange={handleChange}
-                        fullWidth
-                        margin='normal'
-                    />
-                    <TextField
-                        label='ZIP Code'
-                        name='zip'
-                        value={currentAddress.zip}
                         onChange={handleChange}
                         fullWidth
                         margin='normal'
