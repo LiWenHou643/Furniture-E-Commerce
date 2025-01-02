@@ -102,7 +102,6 @@ public class AuthService {
         refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); // 15 days in seconds
         // Use "Lax" for SameSite during development:
         refreshTokenCookie.setAttribute("SameSite", "Lax");
-
         response.addCookie(refreshTokenCookie);
     }
 

@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosPublic from '../api/axiosPublic';
 import { useLogin } from '../hooks/useLogin';
 import { isAuthenticated } from '../utils/auth';
 const LoginPage = () => {
@@ -21,20 +20,6 @@ const LoginPage = () => {
         if (isAuthenticated()) {
             navigate('/'); // Redirect to homepage if already logged in
         }
-    }, [navigate]);
-
-    useEffect(() => {
-        const refresh = async () => {
-            try {
-                await axiosPublic.get('/auth/refresh-token', {
-                    withCredentials: true,
-                });
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        refresh();
     }, [navigate]);
 
     const loginMutation = useLogin();

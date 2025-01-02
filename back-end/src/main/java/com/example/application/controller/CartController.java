@@ -1,9 +1,11 @@
 package com.example.application.controller;
 
+import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.dto.ApiResponse;
 import com.example.application.dto.CartDTO;
 import com.example.application.dto.CartItemDTO;
 import com.example.application.service.CartService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,9 +19,17 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CartController {
     CartService cartService;
-
+JwtUtils jwtUtils;
     @GetMapping("/carts")
-    public ResponseEntity<ApiResponse<CartDTO>> getCartById(Authentication authentication) {
+    public ResponseEntity<ApiResponse<CartDTO>> getCartById(Authentication authentication, HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String token = bearerToken.substring(7);
+            Jwt jwt = jwtUtils.decode(token);
+            boolean isExpired = jwtUtils.isExpired(jwt);
+            int duration = jwtUtils.getDuration(jwt);
+            System.out.println("Token: " + token);
+        }
         Long userId = getUserId(authentication);
         var cart = cartService.getCartById(userId);
 
