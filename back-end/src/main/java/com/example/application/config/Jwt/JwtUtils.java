@@ -24,7 +24,7 @@ public class JwtUtils {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                                           .issuer("luxehouse")
                                           .issuedAt(Instant.now())
-                                          .expiresAt(Instant.now().plus(20, ChronoUnit.SECONDS))
+                                          .expiresAt(Instant.now().plus(20, ChronoUnit.MINUTES))
                                           .subject(user.getEmail()) // Subject is typically used for the email or username
                                           .claim("scope", "ROLE_" + user.getRole().getRoleName().toUpperCase()) // Add role information
                                           .claim("userId", user.getUserId()) // Add userId as a custom claim

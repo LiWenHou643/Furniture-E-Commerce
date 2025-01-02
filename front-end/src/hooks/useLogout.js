@@ -1,17 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-import axiosPublic from '../api/axiosPublic';
+import axiosPrivate from '../api/axiosPrivate';
 const logout = async () => {
-    const response = await axiosPublic.get('/auth/logout');
+    const response = await axiosPrivate.get('/auth/logout');
     return response.data;
 };
 
 const useLogout = () => {
-    const navigate = useNavigate();
-
     const handleLogout = async () => {
         await logout();
         localStorage.removeItem('jwt');
-        navigate('/login');
+        window.location.href = '/login';
     };
 
     return { handleLogout };

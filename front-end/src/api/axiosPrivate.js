@@ -2,14 +2,14 @@
 import axios from 'axios';
 import axiosPublic from './axiosPublic';
 
-// const logout = async () => {
-//     await axiosPublic.get('/auth/logout', {}, { withCredentials: true });
+const logout = async () => {
+    await axisoPrivate.get('/auth/logout');
 
-//     console.log('User logged out');
+    console.log('User logged out');
 
-//     localStorage.removeItem('jwt');
-//     window.location.href = '/login';
-// };
+    // localStorage.removeItem('jwt');
+    // window.location.href = '/login';
+};
 
 const axisoPrivate = axios.create({
     baseURL: 'http://localhost:8080', // Replace with your backend base URL
@@ -45,7 +45,7 @@ axisoPrivate.interceptors.response.use(
                 return axisoPrivate(originalRequest);
             } catch (refreshError) {
                 // Optional: Handle refresh token failure (e.g., log out user)
-                // logout();
+                logout();
                 console.error('Refresh token failed', refreshError);
                 throw refreshError;
             }

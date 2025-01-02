@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const Loading = () => {
+const Loading = ({ ...props }) => {
     return (
         <Box
             display='flex'
             justifyContent='center'
             alignItems='center'
             height='100px'
+            {...props}
         >
             <CircularProgress />
         </Box>

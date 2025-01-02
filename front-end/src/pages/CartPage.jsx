@@ -24,7 +24,7 @@ import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
-    if (isLoading) return <Loading />;
+    if (isLoading) return <Loading marginTop={15} />;
     if (error) return <Error error={error} />;
 
     const cartItems = cart?.cartItems || [];

@@ -45,8 +45,13 @@ function ResponsiveAppBar() {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
+    const handleCloseNavMenu = (page) => {
         setAnchorElNav(null);
+
+        console.log('Selected page:', page);
+
+        // Navigate to the selected page
+        navigate(`/${page.toLowerCase()}`);
     };
 
     const handleCloseUserMenu = (setting) => {
@@ -124,7 +129,7 @@ function ResponsiveAppBar() {
                             {pages.map((page) => (
                                 <MenuItem
                                     key={page}
-                                    onClick={handleCloseNavMenu}
+                                    onClick={() => handleCloseNavMenu(page)} // Pass the selected page
                                 >
                                     <Typography sx={{ textAlign: 'center' }}>
                                         {page}
