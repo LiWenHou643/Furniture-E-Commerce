@@ -45,10 +45,10 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    company: ${MAIL_COMPANY:LuxeHouse}
     username: ${MAIL_USERNAME:MAIL_USERNAME}
     password: ${MAIL_PASSWORD:MAIL_PASSWORD}
     properties:
+      protocol: smtp
       mail:
         smtp:
           auth: true
