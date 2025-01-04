@@ -28,6 +28,7 @@ import CustomTooltip from '../components/CustomTooltip';
 import Error from '../components/Error';
 import ImageMagnifier from '../components/ImageMagnifier';
 import Loading from '../components/Loading';
+import useAddToCart from '../hooks/useAddToCart';
 import useFetchProduct from '../hooks/useFetchProduct';
 
 const feedbacks = [
@@ -82,6 +83,7 @@ const ProductDetailPage = () => {
     // Fetch product data using the custom hook
     const { productId } = useParams();
     const { data: product, isLoading, error } = useFetchProduct({ productId });
+    const { mutate: addToCart, isLoading: isAdding } = useAddToCart();
 
     // Destructure the product object
     useEffect(() => {
@@ -144,6 +146,10 @@ const ProductDetailPage = () => {
     const handleAddToCart = () => {
         // Logic to add the product to the cart
         console.log('Product added to cart');
+        addToCart({
+            productItemId: selectedVariant?.productItemId,
+            quantity: quantity,
+        });
     };
 
     return (
@@ -452,8 +458,9 @@ const ProductDetailPage = () => {
                                         color='primary'
                                         fullWidth
                                         onClick={handleAddToCart}
+                                        disabled={isAdding}
                                     >
-                                        Add to Cart
+                                        {isAdding ? 'Adding' : 'Add to Cart'}
                                     </Button>
                                     <Button
                                         variant='outlined'

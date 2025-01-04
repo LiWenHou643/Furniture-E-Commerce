@@ -157,7 +157,6 @@ CREATE TABLE cart_items
     cart_item_id    INT AUTO_INCREMENT PRIMARY KEY,
     cart_id         INT NOT NULL,
     product_item_id INT NOT NULL,
-    product_id INT NOT NULL,
     quantity        INT NOT NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

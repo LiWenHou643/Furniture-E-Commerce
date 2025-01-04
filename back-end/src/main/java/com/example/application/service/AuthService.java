@@ -5,14 +5,12 @@ import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
 import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.UserDTO;
-import com.example.application.entity.Address;
-import com.example.application.entity.RefreshToken;
-import com.example.application.entity.Role;
-import com.example.application.entity.User;
+import com.example.application.entity.*;
 import com.example.application.exception.DataExistedException;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.UserMapper;
 import com.example.application.producer.MessageProducer;
+import com.example.application.repository.CartRepository;
 import com.example.application.repository.RefreshTokenRepository;
 import com.example.application.repository.RolesRepository;
 import com.example.application.repository.UserRepository;
@@ -46,6 +44,7 @@ public class AuthService {
     RolesRepository rolesRepository;
     RefreshTokenRepository refreshTokenRepository;
     MessageProducer messageProducer;
+    private final CartRepository cartRepository;
 
     public AuthDTO authenticate(AuthDTO request, HttpServletResponse response) {
         User user;
@@ -145,8 +144,8 @@ public class AuthService {
 
         messageProducer.sendMessage("notification-delivery", notificationDTO);
 
-//        Cart cart = Cart.builder().user(isSaved).build();
-//        cartRepository.save(cart);
+        Cart cart = Cart.builder().user(isSaved).build();
+        cartRepository.save(cart);
 
         return UserMapper.INSTANCE.toDTO(isSaved);
     }

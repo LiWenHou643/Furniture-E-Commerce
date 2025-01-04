@@ -9,11 +9,14 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomTooltip from '../../components/CustomTooltip';
+import useAddToCart from '../../hooks/useAddToCart';
 
 const ProductCard = ({ product }) => {
     const productItemsObject = product;
 
     const navigate = useNavigate(); // Use navigate hook
+
+    const { mutate: addToCart, isLoading: isAdding } = useAddToCart();
 
     const productVariants = productItemsObject.productItems;
 
@@ -40,6 +43,10 @@ const ProductCard = ({ product }) => {
         e.stopPropagation(); // Prevent card click event from triggering navigation
         // Add to cart logic goes here
         console.log('Added to cart:', selectedVariant);
+        addToCart({
+            productItemId: selectedVariant.productItemId,
+            quantity: 1,
+        });
     };
 
     return (
@@ -155,8 +162,9 @@ const ProductCard = ({ product }) => {
                         variant='contained'
                         color='primary'
                         onClick={handleAddToCart}
+                        disabled={isAdding}
                     >
-                        Add to Cart
+                        {isAdding ? 'Adding...' : 'Add to Cart'}
                     </Button>
                 </Box>
             </CardContent>

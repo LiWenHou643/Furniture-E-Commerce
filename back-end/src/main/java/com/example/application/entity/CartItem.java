@@ -24,9 +24,5 @@ public class CartItem extends BaseEntity {
 
     Long productItemId;
 
-    @OneToOne
-    @JoinColumn(name = "product_id")
-    Product product;
-
     int quantity = 1;
 }
