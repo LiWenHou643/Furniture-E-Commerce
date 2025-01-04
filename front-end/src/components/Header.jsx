@@ -1,10 +1,8 @@
 import AdbIcon from '@mui/icons-material/Adb';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -17,6 +15,7 @@ import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useLogout from '../hooks/useLogout';
 import CustomTooltip from './CustomTooltip';
+import Notification from './Notification';
 
 const pages = [
     'Products',
@@ -178,15 +177,7 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
                     <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
-                        <CustomTooltip title='Open Notifications'>
-                            <IconButton
-                                sx={{ color: 'white', paddingBottom: 0 }}
-                            >
-                                <Badge badgeContent={10} color='secondary'>
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
-                        </CustomTooltip>
+                        <Notification />
 
                         <CustomTooltip title='Open settings'>
                             <IconButton

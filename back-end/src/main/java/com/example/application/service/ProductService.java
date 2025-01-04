@@ -42,17 +42,22 @@ public class ProductService {
     // Inject the cached product service
     CachedProductService cachedProductService;
 
-    // Fetch all products from the cached service
-    public Page<ProductDTO> getProducts(Pageable pageable) {
-        // Fetch all products from the cached service
-        List<ProductDTO> allProducts = cachedProductService.getAllProducts();
+    public Page<ProductDTO> getProducts(
+            List<String> categories,
+            List<String> brands,
+            List<String> materials,
+            Double minPrice,
+            Double maxPrice,
+            Pageable pageable
+    ) {
+        List<ProductDTO> products = cachedProductService.getFilteredProducts(categories, brands, materials, minPrice, maxPrice);
 
         // Paginate the list
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), allProducts.size());
-        List<ProductDTO> paginatedContent = allProducts.subList(start, end);
+        int end = Math.min((start + pageable.getPageSize()), products.size());
+        List<ProductDTO> paginatedContent = products.subList(start, end);
 
-        return new PageImpl<>(paginatedContent, pageable, allProducts.size());
+        return new PageImpl<>(paginatedContent, pageable, products.size());
     }
 
     // Cache the individual product
@@ -121,4 +126,12 @@ public class ProductService {
                        .collect(Collectors.toList());
     }
 
+    public List<ProductDTO> getTopFeatureProducts() {
+        List<Product> products = productRepository.findTopFeatureProducts()
+                                                  .orElse(Collections.emptyList());
+
+        return products.stream()
+                       .map(ProductMapper.INSTANCE::toDTO)
+                       .collect(Collectors.toList());
+    }
 }

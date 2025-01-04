@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -26,17 +27,32 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false, name = "categories") String categories,
+            @RequestParam(required = false) String brands,
+            @RequestParam(required = false) String materials,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
     ) {
         Pageable pageable = PageRequest.of(page, size);
+
+        // Parse comma-separated strings into lists
+        List<String> categoryList = categories != null ? Arrays.asList(categories.split(",")) : null;
+        List<String> brandList = brands != null ? Arrays.asList(brands.split(",")) : null;
+        List<String> materialList = materials != null ? Arrays.asList(materials.split(",")) : null;
+
+        // Pass filtering parameters to the service
+        Page<ProductDTO> products = productService.getProducts(categoryList, brandList, materialList, minPrice, maxPrice, pageable);
+
         return ResponseEntity.ok(
                 ApiResponse.<Page<ProductDTO>>builder()
                            .status("success")
                            .message("List products found")
-                           .data(productService.getProducts(pageable))
+                           .data(products)
                            .build()
         );
     }
+
 
     @GetMapping("/products/{id}")
     public ResponseEntity<ApiResponse<ProductDTO>> getItemById(@PathVariable Long id) {
@@ -80,6 +96,17 @@ public class ProductController {
                            .status("success")
                            .message("Product updated")
                            .data(productService.updateProduct(productDTO))
+                           .build()
+        );
+    }
+
+    @GetMapping("/products/top-feature")
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> getTopFeatureProducts() {
+        return ResponseEntity.ok(
+                ApiResponse.<List<ProductDTO>>builder()
+                           .status("success")
+                           .message("Top feature products found")
+                           .data(productService.getTopFeatureProducts())
                            .build()
         );
     }

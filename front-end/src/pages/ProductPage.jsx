@@ -1,8 +1,14 @@
 // src/components/ProductPage.js
-import { Box, Container, Grid, Stack, TextField } from '@mui/material';
+import {
+    Box,
+    Container,
+    Grid,
+    Stack,
+    TextField,
+    Typography,
+} from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Error from '../components/Error';
 import Loading from '../components/Loading';
 import ProductCard from '../features/products/ProductCard';
 import ProductSideBar from '../features/products/ProductSideBar';
@@ -11,22 +17,29 @@ import useFetchProducts from '../hooks/useFetchProducts';
 const itemPerPage = 12;
 
 const ProductPage = () => {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
-    const navigate = useNavigate();
 
-    const { data, isLoading, error, isFetching } = useFetchProducts({
+    const { data, isLoading, isFetching } = useFetchProducts({
         page: currentPage - 1,
         size: itemPerPage,
+        categories: searchParams.get('categories'),
+        brands: searchParams.get('brands'),
+        materials: searchParams.get('materials'),
+        minPrice: searchParams.get('minPrice'),
+        maxPrice: searchParams.get('maxPrice'),
+        minRating: searchParams.get('minRating'),
     });
-
-    if (error) return <Error error={error} />;
 
     // Calculate the page range based on the current page and total items
     const handlePageChange = (event, page) => {
-        setSearchParams({ page: page.toString() });
-        // Optionally, you can navigate to another path if required, e.g. '/items?page={page}'
-        navigate(`?page=${page}`);
+        const currentParams = Object.fromEntries(searchParams.entries()); // Get all current search parameters
+        const updatedParams = { ...currentParams, page: page.toString() }; // Merge with the new page number
+        setSearchParams(updatedParams); // Update the search params
+        navigate(`?${new URLSearchParams(updatedParams).toString()}`); // Optionally navigate to the updated URL
+        // Scroll to top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -42,23 +55,19 @@ const ProductPage = () => {
                         sx={{ marginBottom: 2 }}
                     />
                 </Box>
-
-                {/* Loading Spinner */}
-                {isLoading || isFetching ? (
-                    <Loading />
-                ) : (
-                    // Product Grid
-                    <Grid container spacing={2}>
-                        {/* Sidebar */}
-                        <Grid
-                            item
-                            xs={3}
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
-                        >
-                            <ProductSideBar />
-                        </Grid>
-
-                        {/* Product Grid */}
+                <Grid container spacing={2}>
+                    {/* Sidebar */}
+                    <Grid
+                        item
+                        xs={3}
+                        sx={{ display: { xs: 'none', sm: 'block' } }}
+                    >
+                        <ProductSideBar />
+                    </Grid>
+                    {/* Loading Spinner */}
+                    {isLoading || isFetching ? (
+                        <Loading margin='auto' />
+                    ) : (
                         <Grid item xs={12} sm={9}>
                             <Grid container spacing={2}>
                                 {/* Here, map over your products data */}
@@ -72,33 +81,43 @@ const ProductPage = () => {
                                             key={index}
                                         >
                                             <ProductCard
-                                                key={product.productId}
+                                                key={
+                                                    product.productId +
+                                                    product.name
+                                                }
                                                 product={product}
                                             />
                                         </Grid>
                                     ))
                                 ) : (
-                                    <p>No products available</p>
+                                    <Typography margin='auto'>
+                                        No products available
+                                    </Typography>
                                 )}
                             </Grid>
 
                             {/* Pagination Component */}
-                            <Stack
-                                spacing={2}
-                                direction='row'
-                                justifyContent='center'
-                                sx={{ marginTop: 3 }}
-                            >
-                                <Pagination
-                                    count={Math.ceil(data?.totalPages)} // Total pages
-                                    page={currentPage}
-                                    onChange={handlePageChange}
-                                    color='primary'
-                                />
-                            </Stack>
+                            {
+                                // Display pagination component only if there are more than 1 page
+                                data?.totalPages > 1 && (
+                                    <Stack
+                                        spacing={2}
+                                        direction='row'
+                                        justifyContent='center'
+                                        sx={{ marginTop: 3 }}
+                                    >
+                                        <Pagination
+                                            count={Math.ceil(data?.totalPages)} // Total pages
+                                            page={currentPage}
+                                            onChange={handlePageChange}
+                                            color='primary'
+                                        />
+                                    </Stack>
+                                )
+                            }
                         </Grid>
-                    </Grid>
-                )}
+                    )}
+                </Grid>
             </Box>
         </Container>
     );

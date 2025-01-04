@@ -48,6 +48,7 @@ CREATE TABLE categories
     category_id          INT AUTO_INCREMENT PRIMARY KEY,
     category_name        VARCHAR(255) NOT NULL UNIQUE,
     category_description TEXT,
+    image_url VARCHAR(255),
     created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -74,6 +75,7 @@ CREATE TABLE areas
 (
     area_id    INT AUTO_INCREMENT PRIMARY KEY,
     area_name  VARCHAR(255) NOT NULL UNIQUE,
+    image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

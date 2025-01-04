@@ -3,6 +3,12 @@ package com.example.application.config.Jwt;
 import com.example.application.config.RSAKeyRecord;
 import com.example.application.entity.User;
 import com.example.application.repository.InvalidatedTokenRepository;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.oauth2.jwt.*;
@@ -18,7 +24,6 @@ import java.util.Objects;
 public class JwtUtils {
     InvalidatedTokenRepository invalidatedTokenRepository;
     RSAKeyRecord rsaKeyRecord;
-    JwtEncoder jwtEncoder;
 
     public String generateAccessToken(User user) {
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -30,7 +35,7 @@ public class JwtUtils {
                                           .claim("userId", user.getUserId()) // Add userId as a custom claim
                                           .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return encode(claims);
     }
 
     public String generateRefreshToken(User user) {
@@ -41,12 +46,19 @@ public class JwtUtils {
                                           .subject(user.getEmail())
                                           .claim("scope", "REFRESH_TOKEN")
                                           .build();
+
+        return encode(claims);
+    }
+
+    public String encode(JwtClaimsSet claims) {
+        JWK jwk = new RSAKey.Builder(rsaKeyRecord.rsaPublicKey()).privateKey(rsaKeyRecord.rsaPrivateKey()).build();
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
+        JwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource);
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
     public Jwt decode(String token) {
         JwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
-
         return jwtDecoder.decode(token);
     }
 

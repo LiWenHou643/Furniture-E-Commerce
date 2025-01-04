@@ -1,6 +1,7 @@
 package com.example.application.config;
 
-import com.example.application.config.Jwt.JwtAuthenticationEntryPoint;
+import com.example.application.config.Jwt.JwtFilter;
+import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.config.Oauth2.FacebookOAuth2Properties;
 import com.example.application.config.Oauth2.GoogleOAuth2Properties;
 import com.nimbusds.jose.jwk.JWK;
@@ -15,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,18 +28,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.time.Duration;
 import java.util.Arrays;
 
 @Configuration
@@ -52,32 +53,17 @@ public class SecurityConfig {
     RSAKeyRecord rsaKeyRecord;
     GoogleOAuth2Properties googleOAuth2Properties;
     FacebookOAuth2Properties facebookOAuth2Properties;
-
-    String[] PUBLIC_ENDPOINTS = {
-            "/auth/**", "/error", "/products/search/**"
-    };
+    JwtUtils jwtUtils;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brands/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/materials/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/product-items/**").permitAll()
-                        .anyRequest().authenticated());
-
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
-                                                                  .decoder(jwtDecoder())
-                                                                  .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                                                          .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        httpSecurity.addFilterBefore(new JwtFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
@@ -149,20 +135,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
-        OAuth2TokenValidator<Jwt> withClockSkew = new DelegatingOAuth2TokenValidator<>(
-                new JwtTimestampValidator(Duration.ofSeconds(0)),
-                new JwtIssuerValidator("luxehouse"));
-
-        jwtDecoder.setJwtValidator(withClockSkew);
-        return jwtDecoder;
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
     }
 
-
-
     @Bean
-    JwtEncoder jwtEncoder() {
+    public JwtEncoder jwtEncoder() {
         JWK jwk = new RSAKey.Builder(rsaKeyRecord.rsaPublicKey()).privateKey(rsaKeyRecord.rsaPrivateKey()).build();
         JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwkSource);

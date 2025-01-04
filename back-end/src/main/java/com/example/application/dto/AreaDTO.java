@@ -13,4 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class AreaDTO {
     Long areaId;
     String areaName;
+    String imageUrl;
 }

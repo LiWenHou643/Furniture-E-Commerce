@@ -21,17 +21,12 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
-
-    String[] PUBLIC_ENDPOINTS = {
-            "/auth/**", "/error", "/favicon.ico", "/products/**", "/notify/**", "/image-search/**"
-    };
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws IOException {
@@ -81,6 +76,26 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(p -> new AntPathMatcher().match(p, request.getRequestURI()));
+        String[] ignoreUrls = {"/auth/**", "/products/**", "/categories/**", "/error/**", "/favicon.ico", "/brands/**", "/materials/**"};
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        String requestUrl = request.getRequestURI();
+        String requestMethod = request.getMethod();
+
+        // Always ignore URLs under /auth/**
+        if (pathMatcher.match("/auth/**", requestUrl)) {
+            return true;
+        }
+
+        // Ignore GET requests for other specified patterns
+        for (String pattern : ignoreUrls) {
+            if (pathMatcher.match(pattern, requestUrl) && "GET".equalsIgnoreCase(requestMethod)) {
+                return true; // Skip filtering for matching GET requests
+            }
+        }
+
+        // Apply the filter for other cases
+        return false;
     }
+
+
 }

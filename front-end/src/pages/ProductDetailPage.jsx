@@ -22,7 +22,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import CustomTooltip from '../components/CustomTooltip';
 import Error from '../components/Error';
@@ -72,117 +72,25 @@ const topProducts = [
     { name: 'Product 3', price: '$90' },
     { name: 'Product 4', price: '$200' },
 ];
-const productItemsObjects = {
-    productItems: [
-        {
-            productItemId: 1,
-            color: {
-                colorId: 12,
-                colorName: 'Amber',
-                hexCode: '#ba3c11',
-            },
-            sku: 'SEAT01AMBER',
-            originalPrice: 200.0,
-            salePrice: 180.0,
-            stockQuantity: 5,
-            productImages: [
-                {
-                    imageId: 3,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523960/red-chesterfield-2_ep0yxd.png',
-                    mainImage: false,
-                },
-                {
-                    imageId: 1,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
-                    mainImage: true,
-                },
-                {
-                    imageId: 2,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',
-                    mainImage: false,
-                },
-                {
-                    imageId: 4,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg',
-                    mainImage: false,
-                },
-                {
-                    imageId: 5,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg',
-                    mainImage: false,
-                },
-            ],
-        },
-        {
-            productItemId: 2,
-            color: {
-                colorId: 15,
-                colorName: 'Forest Green',
-                hexCode: '#228B22',
-            },
-            sku: 'SEAT01FOREST',
-            originalPrice: 200.0,
-            salePrice: 190.0,
-            stockQuantity: 5,
-            productImages: [
-                {
-                    imageId: 8,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/green-chesterfield-7_zlqzph.png',
-                    mainImage: false,
-                },
-                {
-                    imageId: 7,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-3_szhbpl.png',
-                    mainImage: false,
-                },
-                {
-                    imageId: 10,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-8_rsysvv.jpg',
-                    mainImage: false,
-                },
-                {
-                    imageId: 9,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-9_kltafu.jpg',
-                    mainImage: false,
-                },
-                {
-                    imageId: 6,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523957/green-chesterfield-1_qsynur.jpg',
-                    mainImage: true,
-                },
-            ],
-        },
-    ],
-};
 
 const ProductDetailPage = () => {
     const theme = useTheme();
+    const [selectedVariant, setSelectedVariant] = useState();
+    const [selectedImage, setSelectedImage] = useState();
+    const [quantity, setQuantity] = useState(1); // Default quantity is 1
 
     // Fetch product data using the custom hook
     const { productId } = useParams();
     const { data: product, isLoading, error } = useFetchProduct({ productId });
 
-    const productItemsObject = product || productItemsObjects;
-
-    const productVariants = productItemsObject.productItems;
-
-    // State to track the selected color variant and image
-    const [selectedVariant, setSelectedVariant] = useState(productVariants[0]);
-    const [selectedImage, setSelectedImage] = useState(
-        selectedVariant.productImages[0]
-    );
-
-    const [quantity, setQuantity] = useState(1); // Default quantity is 1
+    // Destructure the product object
+    useEffect(() => {
+        if (product) {
+            const defaultVariant = product?.productItems[0];
+            setSelectedVariant(defaultVariant);
+            setSelectedImage(defaultVariant?.productImages[0]);
+        }
+    }, [product]);
 
     if (isLoading) {
         return <Loading />;
@@ -190,6 +98,12 @@ const ProductDetailPage = () => {
     if (error) {
         return <Error error={error} />;
     }
+
+    const productItemsObject = product;
+
+    const productVariants = productItemsObject?.productItems;
+
+    // State to track the selected color variant and image
 
     const stockQuantity = 100;
 
@@ -220,10 +134,10 @@ const ProductDetailPage = () => {
     // Handle color selection
     const handleColorSelect = (colorId) => {
         const colorVariant = productVariants.find(
-            (variant) => variant.color.colorId === colorId
+            (variant) => variant?.color.colorId === colorId
         );
         setSelectedVariant(colorVariant);
-        setSelectedImage(colorVariant.productImages[0]); // Reset to the first image for the new color
+        setSelectedImage(colorVariant?.productImages[0]); // Reset to the first image for the new color
     };
 
     // Navigate to cart or other page
@@ -251,7 +165,7 @@ const ProductDetailPage = () => {
                         >
                             {/* ReactImageMagnify Zoom Component */}
                             <ImageMagnifier
-                                src={selectedImage.imageUrl}
+                                src={selectedImage?.imageUrl}
                                 magnifierHeight={300}
                                 magnifierWidth={300}
                                 zoomLevel={1.3}
@@ -269,35 +183,37 @@ const ProductDetailPage = () => {
                                 marginTop: 2,
                             }}
                         >
-                            {selectedVariant.productImages.map((img, index) => (
-                                <CardMedia
-                                    key={index}
-                                    component='img'
-                                    image={img.imageUrl}
-                                    alt={`product-image-${index}`}
-                                    sx={{
-                                        width: 60,
-                                        height: 60,
-                                        cursor: 'pointer',
-                                        border:
-                                            selectedImage === img
-                                                ? `2px solid ${theme.palette.primary.main}` // Use primary color from theme
-                                                : '1px solid #ddd',
-                                        borderRadius: 1,
-                                        transition: 'transform 0.3s ease', // Smooth transition for scaling
-                                        transform:
-                                            selectedImage === img
-                                                ? 'scale(1.1)'
-                                                : 'scale(1)', // Slightly enlarge selected image
-                                        '&:hover': {
-                                            borderColor:
-                                                theme.palette.primary.main, // Use primary color on hover
-                                            transform: 'scale(1.1)', // Scale up on hover
-                                        },
-                                    }}
-                                    onClick={() => handleImageClick(img)} // Change image on click
-                                />
-                            ))}
+                            {selectedVariant?.productImages.map(
+                                (img, index) => (
+                                    <CardMedia
+                                        key={index}
+                                        component='img'
+                                        image={img?.imageUrl}
+                                        alt={`product-image-${index}`}
+                                        sx={{
+                                            width: 60,
+                                            height: 60,
+                                            cursor: 'pointer',
+                                            border:
+                                                selectedImage === img
+                                                    ? `2px solid ${theme.palette.primary.main}` // Use primary color from theme
+                                                    : '1px solid #ddd',
+                                            borderRadius: 1,
+                                            transition: 'transform 0.3s ease', // Smooth transition for scaling
+                                            transform:
+                                                selectedImage === img
+                                                    ? 'scale(1.1)'
+                                                    : 'scale(1)', // Slightly enlarge selected image
+                                            '&:hover': {
+                                                borderColor:
+                                                    theme.palette.primary.main, // Use primary color on hover
+                                                transform: 'scale(1.1)', // Scale up on hover
+                                            },
+                                        }}
+                                        onClick={() => handleImageClick(img)} // Change image on click
+                                    />
+                                )
+                            )}
                         </Box>
                     </Grid>
 
@@ -306,7 +222,7 @@ const ProductDetailPage = () => {
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant='h4' gutterBottom>
-                                    {selectedVariant.color.colorName +
+                                    {selectedVariant?.color.colorName +
                                         product.productName}
                                 </Typography>
                                 <Typography
@@ -314,7 +230,7 @@ const ProductDetailPage = () => {
                                     color='text.secondary'
                                     gutterBottom
                                 >
-                                    SKU: {selectedVariant.sku}
+                                    SKU: {selectedVariant?.sku}
                                 </Typography>
 
                                 {/* Rating and Rating Count and Sold Amount */}
@@ -353,6 +269,7 @@ const ProductDetailPage = () => {
                                     <Typography
                                         variant='body2'
                                         color='text.secondary'
+                                        sx={{ marginRight: 1 }}
                                     >
                                         ({product.ratingCount} ratings)
                                     </Typography>
@@ -389,7 +306,7 @@ const ProductDetailPage = () => {
                                     }}
                                 >
                                     <Typography variant='h6' color='primary'>
-                                        ${selectedVariant.salePrice.toFixed(2)}
+                                        ${selectedVariant?.salePrice.toFixed(2)}
                                     </Typography>
                                     <Typography
                                         variant='body2'
@@ -399,7 +316,7 @@ const ProductDetailPage = () => {
                                         }}
                                     >
                                         $
-                                        {selectedVariant.originalPrice.toFixed(
+                                        {selectedVariant?.originalPrice.toFixed(
                                             2
                                         )}
                                     </Typography>
@@ -433,7 +350,7 @@ const ProductDetailPage = () => {
                                                         variant.color.hexCode,
                                                     cursor: 'pointer',
                                                     border:
-                                                        selectedVariant.color
+                                                        selectedVariant?.color
                                                             .colorId ===
                                                         variant.color.colorId
                                                             ? '2px solid black'
@@ -509,7 +426,7 @@ const ProductDetailPage = () => {
                                         color='text.secondary'
                                     >
                                         {`Stock Left: ${
-                                            selectedVariant.stockQuantity -
+                                            selectedVariant?.stockQuantity -
                                             quantity
                                         }`}
 
@@ -648,13 +565,13 @@ const ProductDetailPage = () => {
                                                 </Typography>
 
                                                 {/* Product Images */}
-                                                {feedback.productImages.length >
-                                                    0 && (
+                                                {feedback?.productImages
+                                                    .length > 0 && (
                                                     <Grid
                                                         container
                                                         sx={{ mt: 2 }}
                                                     >
-                                                        {feedback.productImages.map(
+                                                        {feedback?.productImages.map(
                                                             (
                                                                 image,
                                                                 imageIndex

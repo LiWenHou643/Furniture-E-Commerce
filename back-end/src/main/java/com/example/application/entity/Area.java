@@ -23,6 +23,8 @@ public class Area extends BaseEntity {
     @Column(nullable = false)
     String areaName;
 
+    String imageUrl;
+
     @ManyToMany
     @JoinTable(
             name = "products_areas",

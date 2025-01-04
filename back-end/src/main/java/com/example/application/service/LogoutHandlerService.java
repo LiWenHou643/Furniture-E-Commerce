@@ -8,10 +8,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -24,11 +24,13 @@ import java.util.Objects;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class LogoutHandlerService implements LogoutHandler {
 
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
-    private final RSAKeyRecord rsaKeyRecord;
+    RefreshTokenRepository refreshTokenRepository;
+    InvalidatedTokenRepository invalidatedTokenRepository;
+    RSAKeyRecord rsaKeyRecord;
+
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -53,8 +55,7 @@ public class LogoutHandlerService implements LogoutHandler {
                                               token.setRevoked(true);
                                               refreshTokenRepository.save(token);
                                               return token;
-                                          })
-                                          .orElseThrow(() -> new BadJwtException("Invalid refresh token"));
+                                          }).orElseThrow();
                 }
             }
         }

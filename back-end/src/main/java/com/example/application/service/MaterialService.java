@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class MaterialService {
 
     @Cacheable(cacheNames = MATERIAL_LIST_CACHE_KEY)
     public List<MaterialDTO> getMaterials() {
-        return materialRepository.findAll().stream().map(MaterialMapper.INSTANCE::toDTO).toList();
+        return materialRepository.findAll().stream().map(MaterialMapper.INSTANCE::toDTO).collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = MATERIAL_CACHE_KEY, key = "#id")

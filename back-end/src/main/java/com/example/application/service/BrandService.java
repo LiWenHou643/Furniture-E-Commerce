@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class BrandService {
     public List<BrandDTO> getBrands() {
         return brandRepository.findAll().stream()
                               .map(BrandMapper.INSTANCE::toDTO)
-                              .toList();
+                              .collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = BRAND_CACHE_KEY, key = "#id")

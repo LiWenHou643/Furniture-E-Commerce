@@ -182,7 +182,7 @@ const Footer = () => {
                     color='textSecondary'
                     align='center'
                 >
-                    &copy; {new Date().getFullYear()} MyShop. All Rights
+                    &copy; {new Date().getFullYear()} LuxeHouse. All Rights
                     Reserved.
                 </Typography>
             </Container>

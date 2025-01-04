@@ -26,6 +26,8 @@ public class Category extends BaseEntity {
 
     String categoryDescription;
 
+    String imageUrl;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Product> products = new HashSet<>();
 

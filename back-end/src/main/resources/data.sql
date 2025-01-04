@@ -73,14 +73,14 @@ VALUES (2, '123 Đường Nguyễn Trãi', 'Phường 2', 'Quận 1', 'Thành ph
        (21, '1717 Đường Trần Quý Cáp', 'Phường 21', 'Quận 10', 'Thành phố Đà Nẵng');
 
 
-INSERT INTO categories (category_name, category_description)
-VALUES ('Seating', 'Furniture designed primarily for sitting, including sofas, chairs, armchairs, and benches.'),
+INSERT INTO categories (category_name, category_description, image_url)
+VALUES ('Seating', 'Furniture designed primarily for sitting, including sofas, chairs, armchairs, and benches.', 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524635/hobro-sofa-5_jybfis.jpg'),
        ('Table',
-        'Furniture primarily used for placing items, including dining tables, coffee tables, side tables, and desks.'),
-       ('Bed', 'Furniture designed for sleeping, including beds, bunk beds, and platform beds.'),
-       ('Storage', 'Furniture focused on storage, such as bookshelves, wardrobes, and cabinets.'),
+        'Furniture primarily used for placing items, including dining tables, coffee tables, side tables, and desks.', 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524930/round-stone-1-0_aogq78.png'),
+       ('Bed', 'Furniture designed for sleeping, including beds, bunk beds, and platform beds.', 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734527281/bed-1-3_pt0z9r.png'),
+       ('Storage', 'Furniture focused on storage, such as bookshelves, wardrobes, and cabinets.', 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734525118/black-drawer-1-4_sx2pxj.png'),
        ('Decor',
-        'Items used to enhance the aesthetic appeal of a space, such as vases, wall art, rugs, mirrors, and decorative lighting.');
+        'Items used to enhance the aesthetic appeal of a space, such as vases, wall art, rugs, mirrors, and decorative lighting.', 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734527178/coffee-vase-5-4_opa9xq.webp');
 
 INSERT INTO areas (area_name)
 VALUES ('Living Room'),
@@ -1140,8 +1140,6 @@ VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v173452
         (92, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734527178/coffee-vase-5-4_opa9xq.webp', FALSE),
         (92, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734527182/coffee-vase-5-5_dr0llv.webp', FALSE);
         
-        
-       
         
 INSERT INTO carts (user_id) 
 VALUES (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), 

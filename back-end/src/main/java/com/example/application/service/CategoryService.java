@@ -1,8 +1,10 @@
 package com.example.application.service;
 
 import com.example.application.dto.CategoryDTO;
+import com.example.application.dto.ProductDTO;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.CategoryMapper;
+import com.example.application.mapper.ProductMapper;
 import com.example.application.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,6 +13,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,8 @@ public class CategoryService {
     @Cacheable(cacheNames = CATEGORY_LIST_CACHE_KEY)
     public List<CategoryDTO> getCategories() {
         return categoryRepository.findAll().stream()
-                         .map(CategoryMapper.INSTANCE::toDTO)
-                         .toList();
+                                 .map(CategoryMapper.INSTANCE::toDTO)
+                                 .collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = CATEGORY_CACHE_KEY, key = "#id")
@@ -33,7 +36,12 @@ public class CategoryService {
         var category = categoryRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "id", id)
         );
-        return CategoryMapper.INSTANCE.toDTO(category);
+        var categoryDTO = CategoryMapper.INSTANCE.toDTO(category);
+        List<ProductDTO> productDTOList = category.getProducts().stream()
+                                                  .map(ProductMapper.INSTANCE::toDTO)
+                                                  .toList();
+        categoryDTO.setProductsList(productDTOList);
+        return categoryDTO;
     }
 
     @Caching(

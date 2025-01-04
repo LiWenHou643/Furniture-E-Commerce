@@ -1,4 +1,3 @@
-// src/components/Home.js
 import {
     Box,
     Button,
@@ -10,19 +9,39 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
+import Loading from '../components/Loading';
+import useFetchBrand from '../hooks/useFetchBrand';
+import useFetchCategory from '../hooks/useFetchCategory';
+import useFetchMaterial from '../hooks/useFetchMaterial';
+import useFetchTopFeature from '../hooks/useFetchTopFeature';
 
 const Home = () => {
     const carouselSettings = {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
+        slidesToShow: 4,
+        slidesToScroll: 4,
         responsive: [
             {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                },
+            },
+            {
                 breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 600,
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
@@ -30,6 +49,33 @@ const Home = () => {
             },
         ],
     };
+    const navigate = useNavigate();
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleMouseDown = () => setIsDragging(false);
+    const handleMouseMove = () => setIsDragging(true);
+    const handleClick = (e, productId) => {
+        if (isDragging) e.preventDefault();
+        else navigate(`/products/${productId}`);
+    };
+
+    const { data: top_features, isLoading: loadingFeature } =
+        useFetchTopFeature();
+    const { data: categories, isLoading: loadingCategories } =
+        useFetchCategory();
+
+    const { data: brands, isLoading: loadingBrands } = useFetchBrand();
+
+    const { data: materials, isLoading: loadingMaterials } = useFetchMaterial();
+
+    if (
+        loadingFeature ||
+        loadingCategories ||
+        loadingBrands ||
+        loadingMaterials
+    ) {
+        return <Loading />;
+    }
 
     return (
         <div>
@@ -79,69 +125,97 @@ const Home = () => {
                     Featured Products
                 </Typography>
                 <Slider {...carouselSettings}>
-                    <div>
-                        <Card sx={{ maxWidth: 345 }}>
+                    {top_features.map((product) => (
+                        <Card
+                            sx={{
+                                height: '100%',
+                                cursor: 'pointer',
+                                borderRadius: '0px',
+                            }}
+                            key={product.productId}
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onMouseUp={() =>
+                                setTimeout(() => setIsDragging(false), 0)
+                            }
+                            onClick={(e) => handleClick(e, product.productId)}
+                        >
                             <CardMedia
                                 component='img'
+                                height='250'
+                                image={
+                                    product.productItems[0].productImages.find(
+                                        (image) => image.mainImage
+                                    )?.imageUrl ||
+                                    product.productItems[0].productImages[0] ||
+                                    'https://placeholder.com/200' // Fallback if no mainImage is true
+                                }
                                 alt='Product Image'
-                                height='200'
-                                image='https://picsum.photos/200'
                             />
+
                             <CardContent>
-                                <Typography variant='h6'>
-                                    Product Name
+                                <Typography variant='h6' gutterBottom>
+                                    {product.productName}
                                 </Typography>
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'
+                                <Box
+                                    display='flex'
+                                    justifyContent='space-between'
+                                    alignItems='center'
+                                    p={0}
                                 >
-                                    $19.99
-                                </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.primary'
+                                    >
+                                        SKU: {product.productItems[0].sku}
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.primary'
+                                    >
+                                        Stock:{' '}
+                                        {product.productItems[0].stockQuantity}
+                                    </Typography>
+                                </Box>
+                                {/* Pricing Information */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography
+                                            variant='body2'
+                                            sx={{
+                                                textDecoration: 'line-through',
+                                                color: 'text.secondary',
+                                            }}
+                                        >
+                                            $
+                                            {product.productItems[0].originalPrice.toFixed(
+                                                2
+                                            )}
+                                        </Typography>
+                                        <Typography
+                                            variant='h6'
+                                            color='primary'
+                                        >
+                                            $
+                                            {product.productItems[0].salePrice.toFixed(
+                                                2
+                                            )}
+                                        </Typography>
+                                    </Box>
+
+                                    <Button variant='contained' color='primary'>
+                                        Add to Cart
+                                    </Button>
+                                </Box>
                             </CardContent>
                         </Card>
-                    </div>
-                    <div>
-                        <Card sx={{ maxWidth: 345 }}>
-                            <CardMedia
-                                component='img'
-                                alt='Product Image'
-                                height='200'
-                                image='https://picsum.photos/200'
-                            />
-                            <CardContent>
-                                <Typography variant='h6'>
-                                    Product Name
-                                </Typography>
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'
-                                >
-                                    $29.99
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </div>
-                    <div>
-                        <Card sx={{ maxWidth: 345 }}>
-                            <CardMedia
-                                component='img'
-                                alt='Product Image'
-                                height='200'
-                                image='https://picsum.photos/200'
-                            />
-                            <CardContent>
-                                <Typography variant='h6'>
-                                    Product Name
-                                </Typography>
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'
-                                >
-                                    $49.99
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    ))}
                 </Slider>
             </Container>
 
@@ -215,75 +289,51 @@ const Home = () => {
                     Shop by Categories
                 </Typography>
                 <Grid container spacing={4}>
-                    <Grid item xs={12} md={4}>
-                        <Box
-                            sx={{
-                                p: 2,
-                                textAlign: 'center',
-                                backgroundColor: '#f4f4f4',
-                            }}
+                    {categories.map((category) => (
+                        <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            md={4}
+                            lg={3}
+                            key={category.categoryId}
                         >
-                            <Typography
-                                variant='h6'
-                                sx={{ fontWeight: 'bold' }}
+                            <Card
+                                sx={{
+                                    height: '100%',
+                                    cursor: 'pointer',
+                                    borderRadius: '0px',
+                                }}
+                                onClick={() =>
+                                    navigate(
+                                        `/products?categories=${category.categoryId}`
+                                    )
+                                }
                             >
-                                Electronics
-                            </Typography>
-                            <Button
-                                variant='outlined'
-                                component={Link}
-                                to='/shop/electronics'
-                            >
-                                Explore
-                            </Button>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box
-                            sx={{
-                                p: 2,
-                                textAlign: 'center',
-                                backgroundColor: '#f4f4f4',
-                            }}
-                        >
-                            <Typography
-                                variant='h6'
-                                sx={{ fontWeight: 'bold' }}
-                            >
-                                Clothing
-                            </Typography>
-                            <Button
-                                variant='outlined'
-                                component={Link}
-                                to='/shop/clothing'
-                            >
-                                Explore
-                            </Button>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box
-                            sx={{
-                                p: 2,
-                                textAlign: 'center',
-                                backgroundColor: '#f4f4f4',
-                            }}
-                        >
-                            <Typography
-                                variant='h6'
-                                sx={{ fontWeight: 'bold' }}
-                            >
-                                Home & Kitchen
-                            </Typography>
-                            <Button
-                                variant='outlined'
-                                component={Link}
-                                to='/shop/home'
-                            >
-                                Explore
-                            </Button>
-                        </Box>
-                    </Grid>
+                                <CardMedia
+                                    component='img'
+                                    height='250'
+                                    image={category.imageUrl}
+                                    alt='Category Image'
+                                    style={{
+                                        objectFit: 'fill',
+                                        objectPosition: 'center',
+                                    }}
+                                />
+                                <CardContent>
+                                    <Typography variant='h6' gutterBottom>
+                                        {category.categoryName}
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                    >
+                                        {category.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
                 </Grid>
             </Container>
 
@@ -414,13 +464,13 @@ const Home = () => {
                         <Grid item xs={12} sm={6} md={4}>
                             <Typography variant='h6'>Store Location</Typography>
                             <Typography variant='body1'>
-                                123 Furniture St, Home City, HC 12345
+                                1 Mau Than, An Nghiep, Ninh Kieu, TP Can Tho
                             </Typography>
                             <Typography variant='body1'>
-                                Email: support@furniturestore.com
+                                Email: luxehouse8386@gmail.com
                             </Typography>
                             <Typography variant='body1'>
-                                Phone: (123) 456-7890
+                                Phone: +89 123 456 789
                             </Typography>
                         </Grid>
                     </Grid>
