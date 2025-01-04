@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.TimeZone;
 
 @SpringBootApplication(scanBasePackages = "com.example.application")
@@ -21,11 +20,9 @@ public class MainApplication {
     }
 
     @PostConstruct
-    public void logTimeZone() {
+    public void init() {
+//        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         System.out.println("JVM Time Zone: " + TimeZone.getDefault().getID());
         System.out.println("Current Time: " + LocalDateTime.now());
-        System.out.println("CreatedAt Example: " + LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
     }
-
-
 }

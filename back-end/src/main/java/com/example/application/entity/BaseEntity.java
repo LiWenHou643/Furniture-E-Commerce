@@ -31,4 +31,5 @@ public class BaseEntity {
     @Column(insertable = false)
     @JsonIgnore
     LocalDateTime updatedAt = LocalDateTime.now();
+
 }

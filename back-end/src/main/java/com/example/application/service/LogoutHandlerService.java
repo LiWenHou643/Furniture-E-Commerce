@@ -37,13 +37,17 @@ public class LogoutHandlerService implements LogoutHandler {
         String authenticateHeader = request.getHeader("Authorization");
         if (authenticateHeader != null) {
             authenticateHeader = authenticateHeader.replace("Bearer ", "");
-            JwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
-            Jwt jwt = jwtDecoder.decode(authenticateHeader);
-            InvalidatedToken invalidatedToken = new InvalidatedToken();
-            invalidatedToken.setToken(authenticateHeader);
-            Date expiration = Date.from(Objects.requireNonNull(jwt.getExpiresAt()));
-            invalidatedToken.setExpiration(expiration);
-            invalidatedTokenRepository.save(invalidatedToken);
+            try {
+                JwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
+                Jwt jwt = jwtDecoder.decode(authenticateHeader);
+                Date expiration = Date.from(Objects.requireNonNull(jwt.getExpiresAt()));
+                InvalidatedToken invalidatedToken = new InvalidatedToken();
+                invalidatedToken.setToken(authenticateHeader);
+                invalidatedToken.setExpiration(expiration);
+                invalidatedTokenRepository.save(invalidatedToken);
+            } catch (Exception e) {
+                log.error("Error while decoding JWT token: {}", e.getMessage());
+            }
         }
 
         Cookie[] cookies = request.getCookies();
