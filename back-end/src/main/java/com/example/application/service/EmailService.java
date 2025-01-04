@@ -1,11 +1,14 @@
 package com.example.application.service;
 
 import com.example.application.dto.NotificationDTO;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -14,9 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +45,6 @@ public class EmailService {
     @Value("${spring.mail.port}")
     @NonFinal
     String port;
-
 
     public void sendEmailAfterRegisterUser(NotificationDTO request) {
         // Email subject and HTML content with image
@@ -75,22 +79,31 @@ public class EmailService {
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(request.getRecipient()));
             message.setSubject(subject);
 
-            // Create the multipart/related content
-            MimeMultipart multipart = new MimeMultipart("related");
+            // Generate a CID for the image
+            String cid = generateCID();
 
             // HTML part
             MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlContent = htmlContent.replace("cid:LOGO", "cid:" + cid);
             htmlPart.setContent(htmlContent, "text/html");
-            multipart.addBodyPart(htmlPart);
 
             // Image part
             MimeBodyPart imagePart = new MimeBodyPart();
-            imagePart.attachFile(imageFilePath); // Replace with your image path
-            imagePart.setContentID("<LOGO>");
-            imagePart.setDisposition(MimeBodyPart.INLINE); // Ensure it's inline
-            multipart.addBodyPart(imagePart);
+            String imagePath = "static/logo.png";  // Path relative to src/main/resources
+            InputStream imageStream = EmailService.class.getClassLoader().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                throw new Exception("Image not found: " + imagePath);
+            }
+            DataSource dataSource = new ByteArrayDataSource(imageStream, "image/png");
+            imagePart.setDataHandler(new DataHandler(dataSource));
+            imagePart.setHeader("Content-ID", "<" + cid + ">");
+            imagePart.setDisposition(MimeBodyPart.INLINE);
+            imagePart.setFileName("logo.png");
 
             // Set the content for the message
+            MimeMultipart multipart = new MimeMultipart("related");
+            multipart.addBodyPart(htmlPart);
+            multipart.addBodyPart(imagePart);
             message.setContent(multipart);
 
             // Send the email
@@ -100,5 +113,9 @@ public class EmailService {
         } catch (Exception e) {
             log.error("Error sending email: ", e);
         }
+    }
+
+    private String generateCID() {
+        return UUID.randomUUID().toString();
     }
 }

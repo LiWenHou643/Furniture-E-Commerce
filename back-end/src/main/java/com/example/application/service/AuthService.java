@@ -105,7 +105,6 @@ public class AuthService {
         response.addCookie(refreshTokenCookie);
     }
 
-
     @Transactional
     public UserDTO register(CreateUserRequest request) {
         Boolean existedEmail = userRepository.existsByEmail(request.getEmail());
