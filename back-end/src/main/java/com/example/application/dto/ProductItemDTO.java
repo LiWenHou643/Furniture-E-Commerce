@@ -22,5 +22,6 @@ public class ProductItemDTO {
     double originalPrice;
     double salePrice;
     int stockQuantity;
+    ProductDTO productDTO;
     List<ProductImageDTO> productImages;
 }

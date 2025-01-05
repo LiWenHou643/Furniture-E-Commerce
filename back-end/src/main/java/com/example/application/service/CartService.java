@@ -10,11 +10,13 @@ import com.example.application.repository.ProductItemRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class CartService {
 
     CartRepository cartRepository;
@@ -24,6 +26,13 @@ public class CartService {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart", "userId", userId)
         );
+        var cartItems = cart.getCartItems();
+        cartItems.forEach(cartItem -> {
+            var productItem = cartItem.getProductItem();
+            var product = productItem.getProduct();
+
+            log.info("Product: {}", product);
+        });
 
         return CartMapper.INSTANCE.toDTO(cart);
     }
@@ -34,7 +43,7 @@ public class CartService {
         );
 
         var cartItem = cart.getCartItems().stream()
-                           .filter(item -> item.getProductItemId().equals(cartItemDTO.getProductItemId()))
+                           .filter(item -> item.getProductItem().getProductItemId().equals(cartItemDTO.getProductItemId()))
                            .findFirst();
 
         if (cartItem.isPresent()) {
@@ -52,7 +61,7 @@ public class CartService {
 
         var newCartItem = CartItem.builder()
                                   .cart(cart)
-                                  .productItemId(productItem.getProductItemId())
+                                  .productItem(productItem)
                                   .quantity(cartItemDTO.getQuantity())
                                   .build();
 
@@ -70,7 +79,7 @@ public class CartService {
 
         // Update item in cart
         var cartItem = cart.getCartItems().stream()
-                           .filter(item -> item.getProductItemId().equals(cartItemDTO.getProductItemId()))
+                           .filter(item -> item.getProductItem().getProductItemId().equals(cartItemDTO.getProductItemId()))
                            .findFirst()
                            .orElseThrow(
                                    () -> new ResourceNotFoundException("CartItem", "itemId",
@@ -89,7 +98,7 @@ public class CartService {
         );
 
         // Remove item from cart
-        cart.getCartItems().removeIf(item -> item.getProductItemId().equals(itemId));
+        cart.getCartItems().removeIf(item -> item.getProductItem().getProductItemId().equals(itemId));
 
         var savedCart = cartRepository.save(cart);
 
