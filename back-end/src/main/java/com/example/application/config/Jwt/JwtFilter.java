@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -50,8 +49,15 @@ public class JwtFilter extends OncePerRequestFilter {
             } else {
                 String username = jwt.getClaim("sub");
                 String authorities = jwt.getClaim("scope");
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+                Long userId = jwt.getClaim("userId");
+
+                // Create authentication object with userId in details
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        username,
+                        null,
+                        AuthorityUtils.commaSeparatedStringToAuthorityList(authorities)
+                );
+                authentication.setDetails(userId);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 

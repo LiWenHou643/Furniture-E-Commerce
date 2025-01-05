@@ -136,6 +136,10 @@ public class AuthService {
         address.setUser(user);
         User isSaved = userRepository.save(user);
 
+        // Create a cart for the user
+        Cart cart = Cart.builder().user(isSaved).build();
+        cartRepository.save(cart);
+
         NotificationDTO notificationDTO = NotificationDTO.builder().channel(
                                                                  "EMAIL"
                                                          ).recipient(user.getEmail())
@@ -143,9 +147,6 @@ public class AuthService {
                                                          .build();
 
         messageProducer.sendMessage("notification-delivery", notificationDTO);
-
-        Cart cart = Cart.builder().user(isSaved).build();
-        cartRepository.save(cart);
 
         return UserMapper.INSTANCE.toDTO(isSaved);
     }

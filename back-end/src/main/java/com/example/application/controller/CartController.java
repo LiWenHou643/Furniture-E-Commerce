@@ -4,13 +4,12 @@ import com.example.application.dto.ApiResponse;
 import com.example.application.dto.CartDTO;
 import com.example.application.dto.CartItemDTO;
 import com.example.application.service.CartService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -18,9 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CartController {
     CartService cartService;
+
     @GetMapping("/carts")
-    public ResponseEntity<ApiResponse<CartDTO>> getCartById(Authentication authentication, HttpServletRequest request) {
-        Long userId = getUserId(authentication);
+    public ResponseEntity<ApiResponse<CartDTO>> getCartById() {
+        Long userId = getUserId();
         var cart = cartService.getCartById(userId);
 
         return ResponseEntity.ok(
@@ -33,8 +33,8 @@ public class CartController {
     }
 
     @PostMapping("/carts/items")
-    public ResponseEntity<ApiResponse<CartDTO>> addItemToCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
-        Long userId = getUserId(authentication);
+    public ResponseEntity<ApiResponse<CartDTO>> addItemToCart(@RequestBody CartItemDTO cartItemDTO) {
+        Long userId = getUserId();
         var cart = cartService.addItemToCart(userId, cartItemDTO);
 
         return ResponseEntity.ok(
@@ -47,8 +47,8 @@ public class CartController {
     }
 
     @PutMapping("/carts/items")
-    public ResponseEntity<ApiResponse<CartDTO>> updateItemInCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
-        Long userId = getUserId(authentication);
+    public ResponseEntity<ApiResponse<CartDTO>> updateItemInCart(@RequestBody CartItemDTO cartItemDTO) {
+        Long userId = getUserId();
         var cart = cartService.updateItemInCart(userId, cartItemDTO);
 
         return ResponseEntity.ok(
@@ -61,8 +61,8 @@ public class CartController {
     }
 
     @DeleteMapping("/carts/items/{productItemId}")
-    public ResponseEntity<ApiResponse<CartDTO>> removeItemFromCart(@PathVariable Long productItemId, Authentication authentication) {
-        Long userId = getUserId(authentication);
+    public ResponseEntity<ApiResponse<CartDTO>> removeItemFromCart(@PathVariable Long productItemId) {
+        Long userId = getUserId();
         var cart = cartService.removeItemFromCart(userId, productItemId);
 
         return ResponseEntity.ok(
@@ -74,12 +74,9 @@ public class CartController {
         );
     }
 
-    private Long getUserId(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof Jwt jwt) {
-            return jwt.getClaim("userId");
-        }
-
-        return null;
+    private Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Long) (authentication).getDetails();
     }
 
 }
