@@ -38,7 +38,8 @@ const LoginPage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: 15,
+                mt: 30,
+                mb: 20,
             }}
         >
             <Box

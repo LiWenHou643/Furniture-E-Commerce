@@ -64,8 +64,23 @@ const Sidebar = () => {
     };
 
     const handlePriceApply = () => {
-        updateSearchParams('minPrice', priceRange.minPrice || null);
-        updateSearchParams('maxPrice', priceRange.maxPrice || null);
+        console.log(priceRange.minPrice, priceRange.maxPrice);
+
+        // Create a new object for search params
+        const updatedParams = {
+            ...Object.fromEntries(searchParams), // Retain existing search params
+            minPrice: priceRange.minPrice || null,
+            maxPrice: priceRange.maxPrice || null,
+        };
+
+        // Remove null values
+        Object.keys(updatedParams).forEach((key) => {
+            if (updatedParams[key] === null) delete updatedParams[key];
+        });
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Update search params
+        setSearchParams(updatedParams);
     };
 
     const handleStarChange = (value) => {
@@ -85,7 +100,6 @@ const Sidebar = () => {
         >
             <Typography variant='h6'>Filters</Typography>
             <Divider sx={{ marginY: 2 }} />
-
             {/* Category Filter */}
             <Typography variant='subtitle1'>Category</Typography>
             {categories?.map((category) => (
@@ -107,12 +121,19 @@ const Sidebar = () => {
                     label={category.categoryName}
                 />
             ))}
-
             <Divider sx={{ marginY: 2 }} />
-
             {/* Price Filter */}
-            <Typography variant='subtitle1'>Price</Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Typography variant='subtitle1' gutterBottom>
+                Price
+            </Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 2,
+                    flexDirection: 'column',
+                    alignItems: 'left',
+                }}
+            >
                 <TextField
                     label='Min'
                     variant='outlined'
@@ -147,19 +168,18 @@ const Sidebar = () => {
                     Apply
                 </Button>
             </Box>
-
             <Divider sx={{ marginY: 2 }} />
-
             {/* Star Filter */}
             <Typography variant='subtitle1'>Stars</Typography>
-            <Rating
-                name='star-filter'
-                value={parseInt(searchParams.get('stars') || 0, 10)}
-                onChange={(event, newValue) => handleStarChange(newValue)}
-            />
-
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Rating
+                    name='star-filter'
+                    value={parseInt(searchParams.get('stars') || 0, 10)}
+                    onChange={(event, newValue) => handleStarChange(newValue)}
+                />
+                <Typography variant='outlined'> and above</Typography>
+            </Box>
             <Divider sx={{ marginY: 2 }} />
-
             {/* Brand Filter */}
             <Typography variant='subtitle1'>Brands</Typography>
             {brands?.map((brand) => (
@@ -169,7 +189,7 @@ const Sidebar = () => {
                         <Checkbox
                             checked={decodeArrayParam(
                                 searchParams.get('brands')
-                            ).includes(brand.brandId)}
+                            ).includes(brand.brandId.toString())}
                             onChange={() =>
                                 handleCheckboxChange('brands', brand.brandId)
                             }
@@ -178,9 +198,7 @@ const Sidebar = () => {
                     label={brand.brandName}
                 />
             ))}
-
             <Divider sx={{ marginY: 2 }} />
-
             {/* Material Filter */}
             <Typography variant='subtitle1'>Materials</Typography>
             {materials.map((material) => (
@@ -190,7 +208,7 @@ const Sidebar = () => {
                         <Checkbox
                             checked={decodeArrayParam(
                                 searchParams.get('materials')
-                            ).includes(material.materialId)}
+                            ).includes(material.materialId.toString())}
                             onChange={() =>
                                 handleCheckboxChange(
                                     'materials',

@@ -189,13 +189,13 @@ const CartItem = ({ cartItem }) => {
                         sx={{
                             width: 20,
                             height: 20,
-                            backgroundColor: selectedItem.color.hexCode,
+                            backgroundColor: selectedItem?.color.hexCode,
                             borderRadius: '50%',
                             border: '2px solid #000',
                         }}
                     ></Box>
                     {/* Display selected color name */}
-                    <Typography>{selectedItem.color.colorName}</Typography>
+                    <Typography>{selectedItem?.color.colorName}</Typography>
 
                     {/* Button to open the popover */}
                     <Button onClick={handleOpen}>Change Color</Button>

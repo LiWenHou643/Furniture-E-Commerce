@@ -1,4 +1,3 @@
-import AdbIcon from '@mui/icons-material/Adb';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
@@ -96,6 +95,24 @@ function ResponsiveAppBar() {
                     <Box
                         sx={{
                             flexGrow: 1,
+                            display: { xs: 'none', md: 'flex' },
+                        }}
+                    >
+                        {pages.map((page) => (
+                            <Button
+                                key={page}
+                                onClick={() => handleCloseNavMenu(page)} // Pass the selected page
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                {page}
+                            </Button>
+                        ))}
+                    </Box>
+
+                    {/* Responsive Navigation */}
+                    <Box
+                        sx={{
+                            flexGrow: 1,
                             display: { xs: 'flex', md: 'none' },
                         }}
                     >
@@ -137,7 +154,8 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
-                    <AdbIcon
+                    {/* Logo */}
+                    <HomeIcon
                         sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
                     />
                     <Typography
@@ -156,26 +174,10 @@ function ResponsiveAppBar() {
                             textDecoration: 'none',
                         }}
                     >
-                        LOGO
+                        LuxeHouse
                     </Typography>
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: 'none', md: 'flex' },
-                        }}
-                    >
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                                component={Link} // Use Link to navigate
-                                to={`/${page.toLowerCase()}`}
-                            >
-                                {page}
-                            </Button>
-                        ))}
-                    </Box>
+
+                    {/* Notification and User Menu */}
                     <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
                         <Notification />
 

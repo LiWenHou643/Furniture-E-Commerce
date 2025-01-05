@@ -7,8 +7,8 @@ const logout = async () => {
 
     console.log('User logged out');
 
-    // localStorage.removeItem('jwt');
-    // window.location.href = '/login';
+    localStorage.removeItem('jwt');
+    window.location.href = '/login';
 };
 
 const axisoPrivate = axios.create({

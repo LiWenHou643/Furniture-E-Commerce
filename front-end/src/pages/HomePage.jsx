@@ -59,6 +59,11 @@ const Home = () => {
         else navigate(`/products/${productId}`);
     };
 
+    const addToCart = (e, product) => {
+        e.stopPropagation();
+        console.log('Added to cart:', product);
+    };
+
     const { data: top_features, isLoading: loadingFeature } =
         useFetchTopFeature();
     const { data: categories, isLoading: loadingCategories } =
@@ -151,6 +156,10 @@ const Home = () => {
                                     'https://placeholder.com/200' // Fallback if no mainImage is true
                                 }
                                 alt='Product Image'
+                                style={{
+                                    objectFit: 'fill',
+                                    objectPosition: 'center',
+                                }}
                             />
 
                             <CardContent>
@@ -209,7 +218,11 @@ const Home = () => {
                                         </Typography>
                                     </Box>
 
-                                    <Button variant='contained' color='primary'>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={(e) => addToCart(e, product)}
+                                    >
                                         Add to Cart
                                     </Button>
                                 </Box>
@@ -320,8 +333,8 @@ const Home = () => {
                                         objectPosition: 'center',
                                     }}
                                 />
-                                <CardContent>
-                                    <Typography variant='h6' gutterBottom>
+                                <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                                    <Typography variant='h6'>
                                         {category.categoryName}
                                     </Typography>
                                     <Typography
