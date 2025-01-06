@@ -1,7 +1,6 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,11 +12,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItemDTO {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long productItemId;
-
     Long cartItemId;
     Long cartId;
-    ProductItemDTO productItem;
+
+    ProductDTO product;
+
     int quantity;
 }

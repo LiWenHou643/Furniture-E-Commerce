@@ -22,7 +22,7 @@ public class ProductDTO {
     BrandDTO brand;
     MaterialDTO material;
     List<AreaDTO> areas;
-    List<ProductVariant> productVariants;
+    List<ProductItemDTO> productItems;
 
     @Builder.Default
     double averageRating = 0.0;

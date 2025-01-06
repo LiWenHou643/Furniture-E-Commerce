@@ -3,6 +3,7 @@ package com.example.application.service;
 import com.example.application.dto.CartDTO;
 import com.example.application.dto.CartItemDTO;
 import com.example.application.entity.CartItem;
+import com.example.application.entity.Product;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.CartMapper;
 import com.example.application.repository.CartRepository;
@@ -12,6 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,11 @@ public class CartService {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart", "userId", userId)
         );
+
+
+
+        var cartDTO = CartMapper.INSTANCE.toDTO(cart);
+
 
         return CartMapper.INSTANCE.toDTO(cart);
     }

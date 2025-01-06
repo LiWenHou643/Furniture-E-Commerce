@@ -2,6 +2,7 @@ package com.example.application.mapper;
 
 import com.example.application.dto.ProductDTO;
 import com.example.application.entity.Product;
+import com.example.application.entity.ProductItem;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -11,7 +12,6 @@ public interface ProductMapper {
 
     Product toEntity(ProductDTO productDTO);
 
-    @Mapping(target = "productVariants", source = "product.productItems")
     ProductDTO toDTO(Product product);
 
     void updateProductFromDTO(ProductDTO productDTO, @MappingTarget Product product);

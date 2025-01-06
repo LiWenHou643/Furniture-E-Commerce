@@ -1,7 +1,6 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,9 +15,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductItemDTO {
     Long productItemId;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long productId;
-    ProductDTO product;
     Long colorId;
     ColorDTO color;
     String sku;
