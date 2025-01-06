@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDTO {
     Long productId;
     String productName;
@@ -20,7 +22,7 @@ public class ProductDTO {
     BrandDTO brand;
     MaterialDTO material;
     List<AreaDTO> areas;
-    List<ProductItemDTO> productItems;
+    List<ProductVariant> productVariants;
 
     @Builder.Default
     double averageRating = 0.0;

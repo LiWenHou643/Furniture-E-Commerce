@@ -22,6 +22,92 @@ import { useRef, useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
+
+const data = {
+    cartId: 1,
+    userId: 2,
+    cartItems: [
+        {
+            cartItemId: 1,
+            productItem: {
+                productItemId: 1,
+                color: { colorId: 12, colorName: 'Amber', hexCode: '#ba3c11' },
+                sku: 'SEAT01AMBER',
+                originalPrice: 200.0,
+                salePrice: 180.0,
+                stockQuantity: 5,
+                product: {
+                    productId: 1,
+                    productName: 'Chesterfield Sofa',
+                    productDescription:
+                        'A timeless chesterfield sofa with deep button tufting and luxurious leather upholstery, perfect for any living room.',
+                    category: {
+                        categoryId: 1,
+                        categoryName: 'Seating',
+                        categoryDescription:
+                            'Furniture designed primarily for sitting, including sofas, chairs, armchairs, and benches.',
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524635/hobro-sofa-5_jybfis.jpg',
+                        productsList: null,
+                    },
+                    brand: {
+                        brandId: 3,
+                        brandName: 'La-Z-Boy',
+                        brandDescription:
+                            'Famous for their recliners and comfortable seating, La-Z-Boy combines style with relaxation.',
+                    },
+                    material: {
+                        materialId: 4,
+                        materialName: 'Leather',
+                        materialDescription:
+                            'Premium upholstery material offering a luxurious look and feel, commonly used for sofas and chairs.',
+                    },
+                    areas: [
+                        { areaId: 1, areaName: 'Living Room', imageUrl: null },
+                    ],
+                    productItemsList: null,
+                    averageRating: 4.8,
+                    ratingCount: 220,
+                    productStatus: true,
+                },
+                productImages: [
+                    {
+                        imageId: 1,
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg',
+                        mainImage: true,
+                    },
+                    {
+                        imageId: 5,
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg',
+                        mainImage: false,
+                    },
+                    {
+                        imageId: 2,
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg',
+                        mainImage: false,
+                    },
+                    {
+                        imageId: 3,
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523960/red-chesterfield-2_ep0yxd.png',
+                        mainImage: false,
+                    },
+                    {
+                        imageId: 4,
+                        imageUrl:
+                            'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg',
+                        mainImage: false,
+                    },
+                ],
+            },
+            quantity: 10,
+        },
+    ],
+};
+
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
     if (isLoading) return <Loading marginTop={15} />;

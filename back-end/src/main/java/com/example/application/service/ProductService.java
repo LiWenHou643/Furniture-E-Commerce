@@ -65,6 +65,7 @@ public class ProductService {
     public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                                            .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
+
         return ProductMapper.INSTANCE.toDTO(product);
     }
 
@@ -122,7 +123,7 @@ public class ProductService {
                                                   .orElse(Collections.emptyList());
 
         return products.stream()
-                       .map(ProductMapper.INSTANCE::toDTO)
+                       .map((ProductMapper.INSTANCE::toDTO))
                        .collect(Collectors.toList());
     }
 
@@ -131,7 +132,7 @@ public class ProductService {
                                                   .orElse(Collections.emptyList());
 
         return products.stream()
-                       .map(ProductMapper.INSTANCE::toDTO)
+                       .map((ProductMapper.INSTANCE::toDTO))
                        .collect(Collectors.toList());
     }
 }

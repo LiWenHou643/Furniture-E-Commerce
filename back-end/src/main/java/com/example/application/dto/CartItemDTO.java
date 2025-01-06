@@ -18,6 +18,6 @@ public class CartItemDTO {
 
     Long cartItemId;
     Long cartId;
-    ProductItemDTO productItemDTO;
+    ProductItemDTO productItem;
     int quantity;
 }

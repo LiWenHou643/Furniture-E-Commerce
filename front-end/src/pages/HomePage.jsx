@@ -130,7 +130,7 @@ const Home = () => {
                     Featured Products
                 </Typography>
                 <Slider {...carouselSettings}>
-                    {top_features.map((product) => (
+                    {top_features?.map((product) => (
                         <Card
                             sx={{
                                 height: '100%',
@@ -302,7 +302,7 @@ const Home = () => {
                     Shop by Categories
                 </Typography>
                 <Grid container spacing={4}>
-                    {categories.map((category) => (
+                    {categories?.map((category) => (
                         <Grid
                             item
                             xs={12}

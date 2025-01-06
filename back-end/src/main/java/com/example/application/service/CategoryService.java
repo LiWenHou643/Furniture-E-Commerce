@@ -1,10 +1,8 @@
 package com.example.application.service;
 
 import com.example.application.dto.CategoryDTO;
-import com.example.application.dto.ProductDTO;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.CategoryMapper;
-import com.example.application.mapper.ProductMapper;
 import com.example.application.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,12 +34,7 @@ public class CategoryService {
         var category = categoryRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "id", id)
         );
-        var categoryDTO = CategoryMapper.INSTANCE.toDTO(category);
-        List<ProductDTO> productDTOList = category.getProducts().stream()
-                                                  .map(ProductMapper.INSTANCE::toDTO)
-                                                  .toList();
-        categoryDTO.setProductsList(productDTOList);
-        return categoryDTO;
+        return CategoryMapper.INSTANCE.toDTO(category);
     }
 
     @Caching(

@@ -1,6 +1,5 @@
 package com.example.application.service;
 
-import com.example.application.dto.ProductImageDTO;
 import com.example.application.dto.ProductItemDTO;
 import com.example.application.entity.Color;
 import com.example.application.entity.Product;
@@ -16,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,8 +28,9 @@ public class ProductItemService {
     private final ColorRepository colorRepository;
 
     public List<ProductItemDTO> getAllProductItems() {
-        return productItemRepository.findAll().stream().map(ProductItemMapper.INSTANCE::toDTO)
-                                    .collect(Collectors.toList());
+        return productItemRepository.findAll().stream().map(
+                ProductItemMapper.INSTANCE::toDTO
+        ).collect(Collectors.toList());
     }
 
     public ProductItemDTO getProductItemById(Long id) {
@@ -62,6 +60,7 @@ public class ProductItemService {
                                              .build();
 
         productImageList.forEach(productImage -> productImage.setProductItem(productItem));
+
         return ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
     }
 

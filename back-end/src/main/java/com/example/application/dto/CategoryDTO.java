@@ -3,8 +3,6 @@ package com.example.application.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
@@ -16,5 +14,4 @@ public class CategoryDTO {
     String categoryName;
     String categoryDescription;
     String imageUrl;
-    List<ProductDTO> productsList;
 }

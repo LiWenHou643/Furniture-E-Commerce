@@ -26,13 +26,6 @@ public class CartService {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart", "userId", userId)
         );
-        var cartItems = cart.getCartItems();
-        cartItems.forEach(cartItem -> {
-            var productItem = cartItem.getProductItem();
-            var product = productItem.getProduct();
-
-            log.info("Product: {}", product);
-        });
 
         return CartMapper.INSTANCE.toDTO(cart);
     }
