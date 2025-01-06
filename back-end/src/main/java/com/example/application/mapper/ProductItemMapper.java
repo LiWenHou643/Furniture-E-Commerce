@@ -11,6 +11,5 @@ public interface ProductItemMapper {
 
     ProductItemDTO toDTO(ProductItem productItem);
 
-    @InheritInverseConfiguration
     ProductItem toEntity(ProductItemDTO productItemDTO);
 }
