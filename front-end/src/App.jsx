@@ -1,6 +1,7 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from 'react-hot-toast';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import ScrollToTop from './components/ScrollToTop';
@@ -74,6 +75,7 @@ function App() {
                     </Routes>
                 </Router>
                 <ReactQueryDevtools initialIsOpen={false} />
+                <Toaster />
             </QueryClientProvider>
         </ThemeProvider>
     );

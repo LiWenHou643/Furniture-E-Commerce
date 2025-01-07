@@ -23,12 +23,17 @@ public class CartService {
     private final ProductItemRepository productItemRepository;
 
     public CartDTO getCartById(Long userId) {
-        var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
-                () -> new ResourceNotFoundException("Cart", "userId", userId)
-        );
+        // Fetch the cart by userId, or throw an exception if not found
+        var cart = cartRepository.findByUser_UserId(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
 
-        return CartMapper.INSTANCE.toDTO(cart);
+        // Sort cart items by created date in descending order
+        var cartDTO = CartMapper.INSTANCE.toDTO(cart);
+        cartDTO.getCartItems().sort((item1, item2) -> item2.getCreatedAt().compareTo(item1.getCreatedAt()));
+
+        return cartDTO;
     }
+
 
     public CartDTO addItemToCart(Long userId, CartItemDTO cartItemDTO) {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
@@ -53,6 +58,7 @@ public class CartService {
         );
 
         var newCartItem = CartItem.builder()
+                                  .cart(cart)
                                   .productItemId(cartItemDTO.getProductItemId())
                                   .product(productItem.getProduct())
                                   .quantity(cartItemDTO.getQuantity())
@@ -70,16 +76,21 @@ public class CartService {
                 () -> new ResourceNotFoundException("Cart", "userId", userId)
         );
 
-        // Update item in cart
         var cartItem = cart.getCartItems().stream()
-                           .filter(item -> item.getProductItemId().equals(cartItemDTO.getProductItemId()))
+                           .filter(item -> item.getCartItemId().equals(cartItemDTO.getCartItemId()))
                            .findFirst()
                            .orElseThrow(
                                    () -> new ResourceNotFoundException("CartItem", "itemId",
                                            cartItemDTO.getCartItemId())
                            );
 
-        cartItem.setQuantity(cartItemDTO.getQuantity());
+        // Update quantity or change variants based on input
+        if (cartItemDTO.getQuantity() != null && cartItemDTO.getQuantity() > 0) {
+            cartItem.setQuantity(cartItemDTO.getQuantity());
+        } else if (cartItemDTO.getProductItemId() != null) {
+            cartItem.setProductItemId(cartItemDTO.getProductItemId());
+        }
+
         var savedCart = cartRepository.save(cart);
 
         return CartMapper.INSTANCE.toDTO(savedCart);

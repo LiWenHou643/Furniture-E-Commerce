@@ -3,7 +3,7 @@ import axios from 'axios';
 import axiosPublic from './axiosPublic';
 
 const logout = async () => {
-    await axisoPrivate.get('/auth/logout');
+    await axiosPublic.get('/auth/logout');
 
     console.log('User logged out');
 
@@ -50,8 +50,6 @@ axisoPrivate.interceptors.response.use(
                 throw refreshError;
             }
         }
-        // logout();
-
         return Promise.reject(error);
     }
 );

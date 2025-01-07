@@ -28,5 +28,5 @@ public class CartItem extends BaseEntity {
 
     Long productItemId;
 
-    int quantity = 1;
+    Integer quantity = 1;
 }

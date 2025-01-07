@@ -18,7 +18,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
@@ -119,6 +119,12 @@ const CartItem = ({ cartItem }) => {
 
     const [tempItem, setTempItem] = useState(selectedItem);
     const [quantity, setQuantity] = useState(cartItem.quantity);
+
+    useEffect(() => {
+        if (cartItem) {
+            setQuantity(cartItem.quantity);
+        }
+    }, [cartItem]);
 
     const handleQuantityChange = (id, quantity) => {
         // Update the quantity of the cart item
@@ -235,10 +241,10 @@ const CartItem = ({ cartItem }) => {
                             {cartItem?.product?.productItems?.map(
                                 (productItem) => (
                                     <Button
-                                        key={productItem.productItemId}
+                                        key={productItem?.productItemId}
                                         variant={
-                                            productItem.productItemId ===
-                                            tempItem.productItemId
+                                            productItem?.productItemId ===
+                                            tempItem?.productItemId
                                                 ? 'contained'
                                                 : 'outlined'
                                         }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Builder
@@ -16,5 +18,6 @@ public class CartItemDTO {
     Long cartItemId;
     Long cartId;
     ProductDTO product;
-    int quantity;
+    Integer quantity;
+    Date createdAt;
 }

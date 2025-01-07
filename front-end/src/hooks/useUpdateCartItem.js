@@ -1,31 +1,32 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
-const addToCart = async ({ productItemId, quantity }) => {
-    const response = await axiosPrivate.post('/carts/items', {
+const updateCartItem = async ({ cartItemId, productItemId, quantity }) => {
+    const response = await axiosPrivate.put('/carts/items', {
+        cartItemId,
         productItemId,
         quantity,
     });
     return response.data;
 };
 
-const useAddToCart = () => {
+const useUpdateCartItem = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: addToCart,
+        mutationFn: updateCartItem,
         onSuccess: (data) => {
-            console.log('Added to cart', data);
+            console.log('Updated cart item!', data);
             // Invalidate the cart query to trigger a refresh
             queryClient.invalidateQueries(['cart']);
             // Show a success toast
-            toast.success('Added to cart');
+            toast.success('Updated cart item!');
         },
         onError: (error) => {
-            console.error('Failed to add to cart', error);
+            console.error('Failed to update', error);
             // Show an error toast
-            toast.error('Failed to add to cart');
+            toast.error('Failed to update');
         },
     });
 };
 
-export default useAddToCart;
+export default useUpdateCartItem;

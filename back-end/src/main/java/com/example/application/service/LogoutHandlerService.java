@@ -59,7 +59,7 @@ public class LogoutHandlerService implements LogoutHandler {
                                               token.setRevoked(true);
                                               refreshTokenRepository.save(token);
                                               return token;
-                                          }).orElseThrow();
+                                          });
                 }
             }
         }
@@ -67,7 +67,9 @@ public class LogoutHandlerService implements LogoutHandler {
         Cookie refreshTokenCookie = new Cookie("refresh_token", null);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setAttribute("SameSite", "Lax");
         response.addCookie(refreshTokenCookie);
 
         SecurityContextHolder.clearContext();

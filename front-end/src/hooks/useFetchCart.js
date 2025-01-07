@@ -21,14 +21,11 @@ const useFetchCart = () => {
         // Refetch data on interval
         refetchInterval: false, // Avoid refetching data on interval
 
-        // Refetch data on mount
-        refetchOnMount: false, // Avoid refetching data on mount
-
         // Stale time
         staleTime: 30000, // Set the stale time to 30 seconds
 
         // Retry failed requests
-        retry: 2, // Set the number of retries to 2
+        retry: 1, // Set the number of retries to 2
     });
 };
 
