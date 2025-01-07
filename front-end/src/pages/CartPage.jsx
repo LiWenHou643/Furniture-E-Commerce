@@ -18,10 +18,12 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
+import useUpdateCartItem from '../hooks/useUpdateCartItem';
 
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
@@ -120,16 +122,41 @@ const CartItem = ({ cartItem }) => {
     const [tempItem, setTempItem] = useState(selectedItem);
     const [quantity, setQuantity] = useState(cartItem.quantity);
 
+    const { mutate: updateCartItem } = useUpdateCartItem();
+
     useEffect(() => {
         if (cartItem) {
             setQuantity(cartItem.quantity);
         }
     }, [cartItem]);
 
+    // Create a ref to store the debounced function
+    const debouncedUpdateCartItem = useRef(
+        debounce((id, quantity) => {
+            updateCartItem({
+                cartItemId: id,
+                quantity: quantity,
+            });
+        }, 300) // 300ms debounce delay
+    );
+
+    // Cleanup debounce on component unmount
+    useEffect(() => {
+        // Capture the current value of debouncedUpdateCartItem.current
+        const currentDebouncedFunction = debouncedUpdateCartItem.current;
+
+        return () => {
+            // Use the captured value in the cleanup function
+            currentDebouncedFunction.cancel();
+        };
+    }, []); // No dependencies because the function is created only once
+
     const handleQuantityChange = (id, quantity) => {
-        // Update the quantity of the cart item
+        // Update the local quantity state immediately
         setQuantity(quantity);
-        console.log(id, quantity);
+
+        // Call the debounced function
+        debouncedUpdateCartItem.current(id, quantity);
     };
 
     // Remove item from cart
@@ -144,11 +171,17 @@ const CartItem = ({ cartItem }) => {
         setTempItem(newProductItem);
     };
 
-    const handleSubmit = (selectedItem) => {
+    const handleChangeVariants = (selectedItem) => {
         // Update the cart item with the new product item
         console.log(selectedItem);
+
+        updateCartItem({
+            cartItemId: cartItem.cartItemId,
+            productItemId: selectedItem.productItemId,
+        });
+
         // Close the popover
-        handleClose;
+        handleClose();
     };
 
     const isOpen = Boolean(anchorEl);
@@ -273,7 +306,7 @@ const CartItem = ({ cartItem }) => {
                             </Button>
                             <Button
                                 variant='contained'
-                                onClick={() => handleSubmit(tempItem)}
+                                onClick={() => handleChangeVariants(tempItem)}
                             >
                                 Submit
                             </Button>
