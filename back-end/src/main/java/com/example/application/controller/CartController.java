@@ -60,10 +60,10 @@ public class CartController {
         );
     }
 
-    @DeleteMapping("/carts/items/{productItemId}")
-    public ResponseEntity<ApiResponse<CartDTO>> removeItemFromCart(@PathVariable Long productItemId) {
+    @DeleteMapping("/carts/items/{cartItemId}")
+    public ResponseEntity<ApiResponse<CartDTO>> removeItemFromCart(@PathVariable Long cartItemId) {
         Long userId = getUserId();
-        var cart = cartService.removeItemFromCart(userId, productItemId);
+        var cart = cartService.removeItemFromCart(userId, cartItemId);
 
         return ResponseEntity.ok(
                 ApiResponse.<CartDTO>builder()

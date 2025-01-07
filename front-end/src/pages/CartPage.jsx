@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
+import useRemoveCartItem from '../hooks/useRemoveCartItem';
 import useUpdateCartItem from '../hooks/useUpdateCartItem';
 
 function CartPage() {
@@ -123,6 +124,7 @@ const CartItem = ({ cartItem }) => {
     const [quantity, setQuantity] = useState(cartItem.quantity);
 
     const { mutate: updateCartItem } = useUpdateCartItem();
+    const { mutate: removeCartItem } = useRemoveCartItem();
 
     useEffect(() => {
         if (cartItem) {
@@ -160,9 +162,12 @@ const CartItem = ({ cartItem }) => {
     };
 
     // Remove item from cart
-    const handleRemoveItem = (id) => {
+    const handleRemoveItem = (cartItemId) => {
         // Remove the item from the cart
-        console.log('Remove item with id:', id);
+        console.log('Remove item with id:', cartItemId);
+
+        // Call the removeCartItem function
+        removeCartItem(cartItemId);
     };
 
     // Update selected color

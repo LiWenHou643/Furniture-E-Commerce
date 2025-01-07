@@ -96,13 +96,13 @@ public class CartService {
         return CartMapper.INSTANCE.toDTO(savedCart);
     }
 
-    public CartDTO removeItemFromCart(Long userId, Long itemId) {
+    public CartDTO removeItemFromCart(Long userId, Long cartItemId) {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart", "userId", userId)
         );
 
         // Remove item from cart
-        cart.getCartItems().removeIf(item -> item.getProductItemId().equals(itemId));
+        cart.getCartItems().removeIf(item -> item.getCartItemId().equals(cartItemId));
 
         var savedCart = cartRepository.save(cart);
 
