@@ -34,7 +34,6 @@ public class CartService {
         return cartDTO;
     }
 
-
     public CartDTO addItemToCart(Long userId, CartItemDTO cartItemDTO) {
         var cart = cartRepository.findByUser_UserId(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart", "userId", userId)

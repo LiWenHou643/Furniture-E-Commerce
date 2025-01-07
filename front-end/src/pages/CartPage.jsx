@@ -20,12 +20,12 @@ import {
 } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
 import useRemoveCartItem from '../hooks/useRemoveCartItem';
 import useUpdateCartItem from '../hooks/useUpdateCartItem';
-
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
     if (isLoading) return <Loading marginTop={15} />;
@@ -96,7 +96,13 @@ function CartPage() {
                 </Grid>
                 <Divider sx={{ my: 2 }} />
                 <Box display='flex' justifyContent='flex-end'>
-                    <Button variant='contained' color='primary' size='large'>
+                    <Button
+                        component={Link}
+                        to='/checkout'
+                        variant='contained'
+                        color='primary'
+                        size='large'
+                    >
                         Checkout
                     </Button>
                 </Box>

@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
 
 const fetchUserProfile = async () => {
-    const { data } = await axiosPrivate.get('/user');
+    const { data } = await axiosPrivate.get('/users/profile');
     return data.data;
 };
 
-const useFetchCart = () => {
+const useFetchUserProfile = () => {
     return useQuery(['profile'], fetchUserProfile, {
         // Keep previous data when fetching new data
         keepPreviousData: true, // Avoid loading state when changing pages
@@ -28,4 +28,4 @@ const useFetchCart = () => {
     });
 };
 
-export default useFetchCart;
+export default useFetchUserProfile;

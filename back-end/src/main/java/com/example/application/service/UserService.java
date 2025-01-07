@@ -58,9 +58,10 @@ public class UserService {
         return UserMapper.INSTANCE.toDTO(address.getUser());
     }
 
-    public UserDTO updateUser(UserDTO userDTO) {
-        var user = userRepository.findById(userDTO.getUserId())
-                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDTO.getUserId()));
+    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());

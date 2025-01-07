@@ -18,39 +18,24 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useState } from 'react';
-
-const profileData = {
-    userId: 2,
-    firstName: 'Nguyen',
-    lastName: 'Anh Tu',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/800px-Cat03.jpg',
-    email: 'user1@example.com',
-    phoneNumber: '0931234567',
-    addresses: [
-        {
-            addressId: 1,
-            streetAddress: '123 Đường Nguyễn Trãi',
-            ward: 'Phường 2',
-            district: 'Quận 1',
-            city: 'Thành phố Hồ Chí Minh',
-        },
-    ],
-    role: {
-        roleId: 2,
-        roleName: 'USER',
-    },
-    userStatus: true,
-};
-
+import Loading from '../components/Loading';
+import useFetchUserProfile from '../hooks/useFetchUserProfile';
+import useUpdateProfile from '../hooks/useUpdateProfile';
 const ProfilePage = () => {
     const [selectedTab, setSelectedTab] = useState(0);
+
+    const { data: profileData, isLoading } = useFetchUserProfile();
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     const info = {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
-        phone: profileData.phoneNumber,
+        phoneNumber: profileData.phoneNumber,
         email: profileData.email,
-        avatar: profileData.avatar,
+        avatar: '',
     };
 
     const addresses = profileData.addresses;
@@ -104,15 +89,12 @@ const InfoTab = ({ info }) => {
     const [avatar, setAvatar] = useState(info.avatar);
     const [firstName, setFirstName] = useState(info.firstName);
     const [lastName, setLastName] = useState(info.lastName);
-    const [phone, setPhone] = useState(info.phone);
+    const [phoneNumber, setPhone] = useState(info.phoneNumber);
     const [email, setEmail] = useState(info.email);
     const [error, setError] = useState(''); // Error message for invalid file
 
-    const getInitials = (first, last) => {
-        const firstInitial = first.charAt(0).toUpperCase();
-        const lastInitial = last.charAt(0).toUpperCase();
-        return `${firstInitial}${lastInitial}`;
-    };
+    const { mutate: updateProfile, isLoading: isUpdatingProfile } =
+        useUpdateProfile();
 
     // Handle file input for avatar upload
     const handleAvatarChange = (event) => {
@@ -141,9 +123,13 @@ const InfoTab = ({ info }) => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         // Handle form submission logic
-        console.log({ avatar, firstName, lastName, phone, email });
+        console.log({ avatar, firstName, lastName, phoneNumber, email });
+
+        // Call the updateProfile mutation
+        updateProfile({ avatar, firstName, lastName, phoneNumber, email });
     };
 
     return (
@@ -170,7 +156,7 @@ const InfoTab = ({ info }) => {
                         />
                         <TextField
                             label='Phone'
-                            value={phone}
+                            value={phoneNumber}
                             onChange={(e) => setPhone(e.target.value)}
                             fullWidth
                             margin='none'
@@ -200,11 +186,11 @@ const InfoTab = ({ info }) => {
                                     width: 100,
                                     height: 100,
                                     bgcolor: 'primary.main', // Background color for initials
-                                    fontSize: 40, // Font size for initials
+                                    fontSize: 20, // Font size for initials
                                 }}
                             >
                                 {/* If no avatar URL, generate initials */}
-                                {!avatar && getInitials(firstName, lastName)}
+                                {(!avatar || avatar === '') && 'PHOTO'}
                             </Avatar>
                         </Box>
 
@@ -272,8 +258,9 @@ const InfoTab = ({ info }) => {
                             marginLeft: 'auto',
                             marginRight: 'auto',
                         }}
+                        disabled={isUpdatingProfile}
                     >
-                        Save Changes
+                        {isUpdatingProfile ? 'Updating...' : 'Update Profile'}
                     </Button>
                 </Grid>
             </form>
