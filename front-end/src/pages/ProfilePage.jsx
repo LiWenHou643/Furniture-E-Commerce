@@ -7,20 +7,30 @@ import {
     Card,
     CardContent,
     Container,
+    FormControl,
     Grid,
     IconButton,
     Input,
+    InputLabel,
+    MenuItem,
     Paper,
+    Select,
     Tab,
     Tabs,
     TextField,
     Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loading from '../components/Loading';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
 import useUpdateProfile from '../hooks/useUpdateProfile';
+
+// Import your JSON data
+import citiesData from '../data/cities.json';
+import districtsData from '../data/districts.json';
+import wardsData from '../data/wards.json';
+
 const ProfilePage = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
@@ -31,14 +41,14 @@ const ProfilePage = () => {
     }
 
     const info = {
-        firstName: profileData.firstName,
-        lastName: profileData.lastName,
-        phoneNumber: profileData.phoneNumber,
-        email: profileData.email,
+        firstName: profileData?.firstName,
+        lastName: profileData?.lastName,
+        phoneNumber: profileData?.phoneNumber,
+        email: profileData?.email,
         avatar: '',
     };
 
-    const addresses = profileData.addresses;
+    const addresses = profileData?.addresses;
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -278,10 +288,107 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
         city: '',
     });
 
-    const handleEditClick = (address) => {
-        setCurrentAddress(address);
-        setIsEditing(true);
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+
+    const [selectedCity, setSelectedCity] = useState(currentAddress.city || '');
+    const [selectedDistrict, setSelectedDistrict] = useState(
+        currentAddress.district || ''
+    );
+    const [selectedWard, setSelectedWard] = useState(currentAddress.ward || '');
+    const [streetAddress, setStreetAddress] = useState(
+        currentAddress.streetAddress || ''
+    );
+
+    useEffect(() => {
+        setCities(citiesData); // Load cities on initial render
+    }, []);
+
+    useEffect(() => {
+        if (currentAddress.city) {
+            setSelectedCity(currentAddress.city);
+            const filteredDistricts = districtsData.filter(
+                (district) => district.parent_code === currentAddress.city
+            );
+            setDistricts(filteredDistricts);
+        }
+        if (currentAddress.district) {
+            setSelectedDistrict(currentAddress.district);
+            const filteredWards = wardsData.filter(
+                (ward) => ward.parent_code === currentAddress.district
+            );
+            setWards(filteredWards);
+        }
+        if (currentAddress.ward) {
+            setSelectedWard(currentAddress.ward);
+        }
+        setStreetAddress(currentAddress.streetAddress || '');
+    }, [currentAddress]);
+
+    const handleCityChange = (event) => {
+        const cityCode = event.target.value;
+        setSelectedCity(cityCode);
+        setSelectedDistrict('');
+        setSelectedWard('');
+
+        const filteredDistricts = districtsData.filter(
+            (district) => district.parent_code === cityCode
+        );
+        setDistricts(filteredDistricts);
+        setWards([]);
     };
+
+    const handleDistrictChange = (event) => {
+        const districtCode = event.target.value;
+        setSelectedDistrict(districtCode);
+        setSelectedWard('');
+
+        const filteredWards = wardsData.filter(
+            (ward) => ward.parent_code === districtCode
+        );
+        setWards(filteredWards);
+    };
+
+    const handleWardChange = (event) => {
+        setSelectedWard(event.target.value);
+    };
+
+    const handleStreetAddressChange = (event) => {
+        setStreetAddress(event.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Handle form submission logic
+        console.log({
+            selectedCity,
+            selectedDistrict,
+            selectedWard,
+            streetAddress,
+        });
+    };
+
+    // Function to map codes to names
+    const getNameFromCode = (code, data) => {
+        const item = data.find((item) => item.code === code);
+        return item ? item.name : 'Unknown';
+    };
+
+    const formatAddress = (address) => {
+        const cityName = getNameFromCode(address.city, citiesData);
+        const districtName = getNameFromCode(address.district, districtsData);
+        const wardName = getNameFromCode(address.ward, wardsData);
+
+        return {
+            ...address,
+            cityName: cityName,
+            districtName: districtName,
+            wardName: wardName,
+        };
+    };
+
+    const formattedAddresses = addresses.map(formatAddress);
 
     const handleAddClick = () => {
         setCurrentAddress({
@@ -290,37 +397,13 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
             district: '',
             city: '',
         });
+        setIsEditing((isEditing) => !isEditing);
+    };
+
+    const handleEditClick = (address) => {
+        console.log(address);
+        setCurrentAddress(address);
         setIsEditing(true);
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentAddress((prevAddress) => ({
-            ...prevAddress,
-            [name]: value,
-        }));
-    };
-
-    const handleSave = () => {
-        if (currentAddress.addressId) {
-            setAddresses((prevAddresses) =>
-                prevAddresses.map((address) =>
-                    address.addressId === currentAddress.addressId
-                        ? currentAddress
-                        : address
-                )
-            );
-        } else {
-            setAddresses((prevAddresses) => [
-                ...prevAddresses,
-                { ...currentAddress, addressId: prevAddresses.length + 1 },
-            ]);
-        }
-        setIsEditing(false);
-    };
-
-    const handleCancel = () => {
-        setIsEditing(false);
     };
 
     return (
@@ -330,8 +413,8 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                 <Button
                     variant='contained'
                     color='primary'
-                    startIcon={<AddIcon />}
                     onClick={handleAddClick}
+                    startIcon={<AddIcon />}
                 >
                     Add Address
                 </Button>
@@ -340,7 +423,7 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
             {/* List of addresses */}
             {!isEditing ? (
                 <Box>
-                    {addresses.map((address) => (
+                    {formattedAddresses?.map((address) => (
                         <Card key={address.addressId} sx={{ marginBottom: 2 }}>
                             <CardContent>
                                 <Grid container alignItems='center' spacing={2}>
@@ -349,8 +432,9 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                                             {address.streetAddress}
                                         </Typography>
                                         <Typography variant='body2'>
-                                            {address.ward}, {address.district}{' '}
-                                            {address.city}
+                                            {address.wardName},{' '}
+                                            {address.districtName},{' '}
+                                            {address.cityName}
                                         </Typography>
                                     </Grid>
                                     <Grid
@@ -360,10 +444,10 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                                         justifyContent='flex-end'
                                     >
                                         <IconButton
+                                            sx={{ padding: 1 }}
                                             onClick={() =>
                                                 handleEditClick(address)
                                             }
-                                            sx={{ padding: 0 }}
                                         >
                                             <EditIcon />
                                         </IconButton>
@@ -375,57 +459,94 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                 </Box>
             ) : (
                 // Address Form for Edit or New Address
-                <Box>
-                    <TextField
-                        label='Street'
-                        name='street'
-                        value={currentAddress.streetAddress}
-                        onChange={handleChange}
+                <div>
+                    <FormControl fullWidth margin='normal'>
+                        <InputLabel>City</InputLabel>
+                        <Select
+                            value={selectedCity}
+                            onChange={handleCityChange}
+                            label='City'
+                        >
+                            {cities?.map((city) => (
+                                <MenuItem key={city.code} value={city.code}>
+                                    {city.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl
                         fullWidth
                         margin='normal'
-                    />
-                    <TextField
-                        label='Ward'
-                        name='ward'
-                        value={currentAddress.ward}
-                        onChange={handleChange}
+                        disabled={!districts.length}
+                    >
+                        <InputLabel>District</InputLabel>
+                        <Select
+                            value={selectedDistrict}
+                            onChange={handleDistrictChange}
+                            label='District'
+                        >
+                            {districts?.map((district) => (
+                                <MenuItem
+                                    key={district.code}
+                                    value={district.code}
+                                >
+                                    {district.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl
                         fullWidth
                         margin='normal'
-                    />
+                        disabled={!wards.length}
+                    >
+                        <InputLabel>Ward</InputLabel>
+                        <Select
+                            value={selectedWard}
+                            onChange={handleWardChange}
+                            label='Ward'
+                        >
+                            {wards?.map((ward) => (
+                                <MenuItem key={ward.code} value={ward.code}>
+                                    {ward.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <TextField
-                        label='District'
-                        name='district'
-                        value={currentAddress.district}
-                        onChange={handleChange}
                         fullWidth
                         margin='normal'
-                    />
-                    <TextField
-                        label='City'
-                        name='city'
-                        value={currentAddress.city}
-                        onChange={handleChange}
-                        fullWidth
-                        margin='normal'
+                        label='Street Address'
+                        value={streetAddress}
+                        onChange={handleStreetAddressChange}
+                        placeholder='Enter your street address'
                     />
 
-                    <Box display='flex' justifyContent='flex-end' marginTop={2}>
+                    <Box
+                        display='flex'
+                        justifyContent='center'
+                        marginTop={2}
+                        gap={2}
+                    >
                         <Button
+                            type='submit'
                             variant='contained'
                             color='primary'
-                            onClick={handleSave}
+                            onClick={handleSubmit}
                         >
-                            Save
+                            Save Address
                         </Button>
+
                         <Button
+                            type='cancel'
                             variant='outlined'
-                            onClick={handleCancel}
-                            sx={{ marginLeft: 2 }}
+                            color='primary'
+                            onClick={() => setIsEditing(false)}
                         >
                             Cancel
                         </Button>
                     </Box>
-                </Box>
+                </div>
             )}
         </Box>
     );

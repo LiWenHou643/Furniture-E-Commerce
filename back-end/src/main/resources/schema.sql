@@ -33,10 +33,10 @@ CREATE TABLE addresses
 (
     address_id     INT AUTO_INCREMENT PRIMARY KEY,
     user_id        INT          NOT NULL,
-    street_address VARCHAR(255) NOT NULL, -- Số nhà, tên đường
-    ward           VARCHAR(100) NOT NULL, -- Phường/Xã
-    district       VARCHAR(100) NOT NULL, -- Quận/Huyện
-    city           VARCHAR(100) NOT NULL, -- Thành phố/Tỉnh
+    street_address VARCHAR(100) NOT NULL, -- Số nhà, tên đường
+    ward           VARCHAR(10) NOT NULL, -- Phường/Xã
+    district       VARCHAR(10) NOT NULL, -- Quận/Huyện
+    city           VARCHAR(10) NOT NULL, -- Thành phố/Tỉnh
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (user_id)

@@ -51,26 +51,7 @@ VALUES ('user1@example.com', '0931234567', 'Nguyen', 'Anh Tu',
         '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2);
 
 INSERT INTO addresses (user_id, street_address, ward, district, city)
-VALUES (2, '123 Đường Nguyễn Trãi', 'Phường 2', 'Quận 1', 'Thành phố Hồ Chí Minh'),
-       (3, '456 Đường Lý Thái Tổ', 'Phường 8', 'Quận 3', 'Thành phố Đà Nẵng'),
-       (4, '789 Đường Trần Hưng Đạo', 'Phường 5', 'Quận 5', 'Thành phố Hà Nội'),
-       (5, '101 Đường Lê Lợi', 'Phường 7', 'Quận 1', 'Thành phố Hồ Chí Minh'),
-       (6, '202 Đường Phan Bội Châu', 'Phường 10', 'Quận 10', 'Thành phố Đà Nẵng'),
-       (7, '303 Đường Nguyễn Huệ', 'Phường 9', 'Quận 3', 'Thành phố Hà Nội'),
-       (8, '404 Đường Hùng Vương', 'Phường 4', 'Quận 7', 'Thành phố Hồ Chí Minh'),
-       (9, '505 Đường Điện Biên Phủ', 'Phường 6', 'Quận 2', 'Thành phố Đà Nẵng'),
-       (10, '606 Đường Lạc Long Quân', 'Phường 11', 'Quận 9', 'Thành phố Hà Nội'),
-       (11, '707 Đường Trường Chinh', 'Phường 3', 'Quận 6', 'Thành phố Hồ Chí Minh'),
-       (12, '808 Đường Võ Nguyên Giáp', 'Phường 12', 'Quận 4', 'Thành phố Đà Nẵng'),
-       (13, '909 Đường Phạm Văn Đồng', 'Phường 13', 'Quận 8', 'Thành phố Hà Nội'),
-       (14, '1010 Đường Nguyễn Văn Cừ', 'Phường 14', 'Quận 12', 'Thành phố Hồ Chí Minh'),
-       (15, '1111 Đường Bạch Đằng', 'Phường 15', 'Quận 11', 'Thành phố Đà Nẵng'),
-       (16, '1212 Đường Hàm Nghi', 'Phường 16', 'Quận 1', 'Thành phố Hà Nội'),
-       (17, '1313 Đường Lê Duẩn', 'Phường 17', 'Quận 5', 'Thành phố Hồ Chí Minh'),
-       (18, '1414 Đường Hoàng Văn Thụ', 'Phường 18', 'Quận 3', 'Thành phố Đà Nẵng'),
-       (19, '1515 Đường Cách Mạng Tháng 8', 'Phường 19', 'Quận 7', 'Thành phố Hà Nội'),
-       (20, '1616 Đường Nguyễn Đình Chiểu', 'Phường 20', 'Quận 9', 'Thành phố Hồ Chí Minh'),
-       (21, '1717 Đường Trần Quý Cáp', 'Phường 21', 'Quận 10', 'Thành phố Đà Nẵng');
+VALUES (2, '1 Mậu Thân', '31126', '916', '92');
 
 
 INSERT INTO categories (category_name, category_description, image_url)
