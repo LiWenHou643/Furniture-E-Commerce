@@ -18,7 +18,7 @@ const updateAddress = async ({
     return response.data;
 };
 
-const useAddorUpdateAddress = () => {
+const useUpdateAddress = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateAddress,
@@ -39,4 +39,4 @@ const useAddorUpdateAddress = () => {
     });
 };
 
-export default useAddorUpdateAddress;
+export default useUpdateAddress;

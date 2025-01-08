@@ -21,20 +21,30 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import AvatarUploader from '../components/AvatarUploader';
 import Loading from '../components/Loading';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
+import useUpdateAddress from '../hooks/useUpdateAddress';
 import useUpdateProfile from '../hooks/useUpdateProfile';
-
 // Import your JSON data
 import citiesData from '../data/cities.json';
 import districtsData from '../data/districts.json';
 import wardsData from '../data/wards.json';
 
 const ProfilePage = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selectedTab, setSelectedTab] = useState(0);
 
     const { data: profileData, isLoading } = useFetchUserProfile();
+
+    useEffect(() => {
+        // Sync tab with query parameter on component mount or query change
+        const tab = parseInt(searchParams.get('tab'), 10);
+        if (!isNaN(tab) && tab >= 0 && tab <= 2) {
+            setSelectedTab(tab);
+        }
+    }, [searchParams]);
 
     if (isLoading) {
         return <Loading />;
@@ -52,6 +62,7 @@ const ProfilePage = () => {
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
+        setSearchParams({ tab: newValue });
     };
 
     return (
@@ -235,7 +246,7 @@ const InfoTab = ({ info }) => {
 };
 
 const AddressesTab = ({ addresses: AddressesArray }) => {
-    const [addresses] = useState(AddressesArray);
+    const [addresses, setAddresses] = useState(AddressesArray);
     const [isEditing, setIsEditing] = useState(false);
     const [currentAddress, setCurrentAddress] = useState({
         addressId: '',
@@ -257,6 +268,8 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
     const [streetAddress, setStreetAddress] = useState(
         currentAddress.streetAddress || ''
     );
+
+    const { mutate: updateAddress } = useUpdateAddress();
 
     useEffect(() => {
         setCities(citiesData); // Load cities on initial render
@@ -282,6 +295,10 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
         }
         setStreetAddress(currentAddress.streetAddress || '');
     }, [currentAddress]);
+
+    useEffect(() => {
+        setAddresses(AddressesArray);
+    }, [AddressesArray]);
 
     const handleCityChange = (event) => {
         const cityCode = event.target.value;
@@ -328,6 +345,29 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
             ward: selectedWard,
             streetAddress: streetAddress,
         });
+
+        // Update the address in the database
+        updateAddress(
+            {
+                addressId,
+                city: selectedCity,
+                district: selectedDistrict,
+                ward: selectedWard,
+                streetAddress: streetAddress,
+            },
+            {
+                onSuccess: () => {
+                    setIsEditing(false);
+                    setCurrentAddress({
+                        addressId: '',
+                        streetAddress: '',
+                        ward: '',
+                        district: '',
+                        city: '',
+                    });
+                },
+            }
+        );
     };
 
     // Function to map codes to names
