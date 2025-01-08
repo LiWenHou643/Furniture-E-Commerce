@@ -10,7 +10,6 @@ import {
     FormControl,
     Grid,
     IconButton,
-    Input,
     InputLabel,
     MenuItem,
     Paper,
@@ -22,6 +21,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
+import AvatarUploader from '../components/AvatarUploader';
 import Loading from '../components/Loading';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
 import useUpdateProfile from '../hooks/useUpdateProfile';
@@ -45,7 +45,7 @@ const ProfilePage = () => {
         lastName: profileData?.lastName,
         phoneNumber: profileData?.phoneNumber,
         email: profileData?.email,
-        avatar: '',
+        avatar: profileData?.avatar,
     };
 
     const addresses = profileData?.addresses;
@@ -101,37 +101,9 @@ const InfoTab = ({ info }) => {
     const [lastName, setLastName] = useState(info.lastName);
     const [phoneNumber, setPhone] = useState(info.phoneNumber);
     const [email, setEmail] = useState(info.email);
-    const [error, setError] = useState(''); // Error message for invalid file
 
     const { mutate: updateProfile, isLoading: isUpdatingProfile } =
         useUpdateProfile();
-
-    // Handle file input for avatar upload
-    const handleAvatarChange = (event) => {
-        const file = event.target.files[0]; // Get the selected file
-        if (file) {
-            const fileSize = file.size / 1024 / 1024; // Convert size to MB
-            const validFormats = ['image/jpeg', 'image/png', 'image/jpg'];
-
-            // Check file size and format
-            if (fileSize > 2) {
-                setError('File size must be less than 2MB.');
-                setAvatar(''); // Reset avatar if invalid file
-            } else if (!validFormats.includes(file.type)) {
-                setError(
-                    'Invalid file format. Only JPG, PNG, and JPEG are allowed.'
-                );
-                setAvatar(''); // Reset avatar if invalid file
-            } else {
-                setError(''); // Clear error
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setAvatar(reader.result); // Set the avatar state to the Base64 string of the image
-                };
-                reader.readAsDataURL(file); // Read the file as a Data URL
-            }
-        }
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -141,6 +113,14 @@ const InfoTab = ({ info }) => {
         // Call the updateProfile mutation
         updateProfile({ avatar, firstName, lastName, phoneNumber, email });
     };
+
+    useEffect(() => {
+        setFirstName(info.firstName);
+        setLastName(info.lastName);
+        setPhone(info.phoneNumber);
+        setEmail(info.email);
+        setAvatar(info.avatar);
+    }, [info]);
 
     return (
         <Box>
@@ -211,18 +191,7 @@ const InfoTab = ({ info }) => {
                             marginBottom={2}
                             marginTop={2}
                         >
-                            <Input
-                                accept='image/*'
-                                id='avatar-upload'
-                                type='file'
-                                onChange={handleAvatarChange}
-                                sx={{ display: 'none' }}
-                            />
-                            <label htmlFor='avatar-upload'>
-                                <Button variant='outlined' component='span'>
-                                    Upload Avatar
-                                </Button>
-                            </label>
+                            <AvatarUploader />
                         </Box>
 
                         {/* Note for user about image requirements */}
@@ -232,7 +201,7 @@ const InfoTab = ({ info }) => {
                                     variant='body2'
                                     color='textSecondary'
                                 >
-                                    Max image size: 2MB.
+                                    Max image size: 5MB.
                                 </Typography>
                             </Box>
                             <Box marginBottom={2}>
@@ -244,19 +213,6 @@ const InfoTab = ({ info }) => {
                                 </Typography>
                             </Box>
                         </Box>
-
-                        {/* Error Message */}
-                        {error && (
-                            <Box
-                                display='flex'
-                                justifyContent='center'
-                                marginBottom={2}
-                            >
-                                <Typography variant='body2' color='error'>
-                                    {error}
-                                </Typography>
-                            </Box>
-                        )}
                     </Grid>
 
                     <Button
@@ -279,9 +235,10 @@ const InfoTab = ({ info }) => {
 };
 
 const AddressesTab = ({ addresses: AddressesArray }) => {
-    const [addresses, setAddresses] = useState(AddressesArray);
+    const [addresses] = useState(AddressesArray);
     const [isEditing, setIsEditing] = useState(false);
     const [currentAddress, setCurrentAddress] = useState({
+        addressId: '',
         streetAddress: '',
         ward: '',
         district: '',
@@ -361,11 +318,15 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission logic
+
+        const addressId = currentAddress.addressId;
+
         console.log({
-            selectedCity,
-            selectedDistrict,
-            selectedWard,
-            streetAddress,
+            addressId,
+            city: selectedCity,
+            district: selectedDistrict,
+            ward: selectedWard,
+            streetAddress: streetAddress,
         });
     };
 
@@ -392,16 +353,21 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
 
     const handleAddClick = () => {
         setCurrentAddress({
+            addressId: '',
             streetAddress: '',
             ward: '',
             district: '',
             city: '',
         });
-        setIsEditing((isEditing) => !isEditing);
+
+        setStreetAddress('');
+        setSelectedCity('');
+        setSelectedDistrict('');
+        setSelectedWard('');
+        setIsEditing(true);
     };
 
     const handleEditClick = (address) => {
-        console.log(address);
         setCurrentAddress(address);
         setIsEditing(true);
     };

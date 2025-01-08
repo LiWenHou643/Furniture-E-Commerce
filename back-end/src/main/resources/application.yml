@@ -41,7 +41,6 @@ spring:
           facebook:
             client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
             client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
-
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
@@ -56,6 +55,11 @@ spring:
             enable: true
           ssl:
             trust: smtp.gmail.com
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
 
 logging:
   level:
@@ -83,3 +87,8 @@ paypal:
     id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
     secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
   mode: ${PAYPAL_MODE:sandbox}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY:CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET:CLOUDINARY_API_SECRET}

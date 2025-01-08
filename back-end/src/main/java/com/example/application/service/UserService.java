@@ -34,11 +34,11 @@ public class UserService {
         return UserMapper.INSTANCE.toDTO(user);
     }
 
-    public UserDTO updateAddress(AddressDTO addressDTO) {
-        if (addressDTO.getAddressId() == null) {
+    public UserDTO updateAddress(Long userId, AddressDTO addressDTO) {
+        if (addressDTO.getAddressId() == null || addressDTO.getAddressId().toString().isEmpty()) {
             // Add new address
-            var user = userRepository.findById(addressDTO.getUserId()).orElseThrow(
-                    () -> new ResourceNotFoundException("User", "id", addressDTO.getUserId()));
+            var user = userRepository.findById(userId).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", userId));
             Address newAddress = AddressMapper.INSTANCE.toAddress(addressDTO);
             newAddress.setUser(user);
             user.getAddresses().add(newAddress);
@@ -49,6 +49,11 @@ public class UserService {
         // Update existing address
         var address = addressRepository.findById(addressDTO.getAddressId()).orElseThrow(
                 () -> new ResourceNotFoundException("Address", "id", addressDTO.getAddressId()));
+
+        if (!address.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Address does not belong to user");
+        }
+
         address.setStreetAddress(addressDTO.getStreetAddress());
         address.setWard(addressDTO.getWard());
         address.setDistrict(addressDTO.getDistrict());
@@ -80,6 +85,14 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
+        userRepository.save(user);
+        return UserMapper.INSTANCE.toDTO(user);
+    }
+
+    public UserDTO updateAvatar(Long userId, String avatarUrl) {
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        user.setAvatar(avatarUrl);
         userRepository.save(user);
         return UserMapper.INSTANCE.toDTO(user);
     }
