@@ -63,6 +63,21 @@ public class UserService {
         return UserMapper.INSTANCE.toDTO(address.getUser());
     }
 
+    public UserDTO deleteAddress(Long userId, Long addressId) {
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        boolean addressRemoved = user.getAddresses().removeIf(a -> a.getAddressId().equals(addressId));
+
+        if (!addressRemoved) {
+            throw new ResourceNotFoundException("Address", "id", addressId);
+        }
+
+        userRepository.save(user);
+        return UserMapper.INSTANCE.toDTO(user);
+    }
+
+
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
         var user = userRepository.findById(userId)
                                  .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));

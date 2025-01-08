@@ -53,6 +53,13 @@ public class UserController {
                 userService.updateAddress(userId, request)));
     }
 
+    @DeleteMapping("/address/{addressId}")
+    public ResponseEntity<ApiResponse<UserDTO>> deleteAddress(@PathVariable Long addressId) {
+        var userId = getUserId();
+        return ResponseEntity.ok(new ApiResponse<>("success", "Address deleted successfully",
+                userService.deleteAddress(userId, addressId)));
+    }
+
     @PutMapping("/profile")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<UserDTO>> updateProfile(@RequestBody UserDTO request) {

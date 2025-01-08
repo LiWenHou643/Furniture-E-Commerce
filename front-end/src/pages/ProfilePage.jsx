@@ -1,5 +1,6 @@
 // App.js (or ProfilePage.js)
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
     Avatar,
@@ -24,6 +25,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AvatarUploader from '../components/AvatarUploader';
 import Loading from '../components/Loading';
+import useDeleteAddress from '../hooks/useDeleteAddress';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
 import useUpdateAddress from '../hooks/useUpdateAddress';
 import useUpdateProfile from '../hooks/useUpdateProfile';
@@ -271,6 +273,8 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
 
     const { mutate: updateAddress } = useUpdateAddress();
 
+    const { mutate: deleteAddress } = useDeleteAddress();
+
     useEffect(() => {
         setCities(citiesData); // Load cities on initial render
     }, []);
@@ -370,6 +374,11 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
         );
     };
 
+    const handleDelete = (addressId) => {
+        // Delete the address in the database
+        deleteAddress(addressId);
+    };
+
     // Function to map codes to names
     const getNameFromCode = (code, data) => {
         const item = data.find((item) => item.code === code);
@@ -451,11 +460,21 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                                     >
                                         <IconButton
                                             sx={{ padding: 1 }}
+                                            color='primary'
                                             onClick={() =>
                                                 handleEditClick(address)
                                             }
                                         >
                                             <EditIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            sx={{ padding: 1 }}
+                                            color='error'
+                                            onClick={() =>
+                                                handleDelete(address.addressId)
+                                            }
+                                        >
+                                            <DeleteIcon />
                                         </IconButton>
                                     </Grid>
                                 </Grid>
