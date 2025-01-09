@@ -1,6 +1,5 @@
 package com.example.application.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +19,7 @@ public class ProductImage extends BaseEntity {
     Long imageId;
 
     @ManyToOne
-    @JoinColumn(name = "productItemId", nullable = false)
+    @JoinColumn(name = "product_item_id", nullable = false)
     ProductItem productItem;
 
     @Column(nullable = false)
