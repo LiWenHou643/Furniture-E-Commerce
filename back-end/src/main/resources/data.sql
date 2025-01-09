@@ -1408,10 +1408,10 @@ INSERT INTO cart_items (cart_id, product_id, product_item_id, quantity)
 VALUES (1, 1, 1, 10);
 -- INSERT INTO cart_items (cart_id, product_item_id, quantity) VALUES (1, 1, 10);
 -- 2025-01-08 12:13:38
-INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, delivery_date, canceled_date,
+INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, delivery_date, cancel_date,
                     shipping_address,
                     shipping_method, shipping_cost, notes, leave_feedback, created_at, updated_at)
-VALUES (2, 360, 400, 'delivered', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
+VALUES (2, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
         '+84 123 456 789 - 123, ABC Street, XYZ Ward, HCM City', 'express', 40,
         'I will be at home after 5pm. Please delivery me after that time!', false, '2025-01-07 12:13:38',
         '2025-01-10 12:13:38');

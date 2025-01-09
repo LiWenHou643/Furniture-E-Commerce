@@ -4,15 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum ShipmentMethod {
-    STANDARD("standard",5),
-    EXPRESS("express",3);
+    standard(5),
+    express(3);
 
-    private final String name;
     private final int days;
 
     // Constructor to set display name and delivery days
-    ShipmentMethod(String displayName, int deliveryDays) {
-        this.name = displayName;
+    ShipmentMethod(int deliveryDays) {
         this.days = deliveryDays;
     }
 

@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,4 +44,6 @@ public class OrderDTO {
     Boolean leaveFeedback;
 
     Date created_at;
+
+    List<OrderDetailDTO> orderDetails;
 }

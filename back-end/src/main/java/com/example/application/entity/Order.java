@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -30,6 +31,7 @@ public class Order extends BaseEntity{
 
     double total;
 
+    @Enumerated(EnumType.STRING)
     OrderStatus orderStatus;
 
     Date shipping_date;
@@ -40,6 +42,7 @@ public class Order extends BaseEntity{
 
     String shipping_address;
 
+    @Enumerated(EnumType.STRING)
     ShipmentMethod shippingMethod;
 
     double shipping_cost;
@@ -47,5 +50,8 @@ public class Order extends BaseEntity{
     String notes;
 
     boolean leaveFeedback;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<OrderDetail> orderDetails;
 
 }

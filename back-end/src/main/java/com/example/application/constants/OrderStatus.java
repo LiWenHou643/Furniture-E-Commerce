@@ -1,9 +1,9 @@
 package com.example.application.constants;
 
 public enum OrderStatus {
-    PENDING,       // Order has been placed, awaiting confirmation
-    PROCESSING,     // Payment has been confirmed
-    SHIPPED,       // Order has been shipped
-    DELIVERED,     // Order has been delivered to the customer
-    CANCELLED,     // Order has been cancelled
+    pending,       // Order has been placed, awaiting confirmation
+    processing,     // Payment has been confirmed
+    shipped,       // Order has been shipped
+    delivered,     // Order has been delivered to the customer
+    cancelled,     // Order has been cancelled
 }

@@ -1,9 +1,9 @@
 CREATE
-DATABASE IF NOT EXISTS db;
+    DATABASE IF NOT EXISTS db;
 USE
-db;
+    db;
 SET
-time_zone = 'Asia/Ho_Chi_Minh';
+    time_zone = 'Asia/Ho_Chi_Minh';
 
 CREATE TABLE roles
 (
@@ -168,20 +168,20 @@ CREATE TABLE cart_items
 CREATE TABLE orders
 (
     order_id         INT AUTO_INCREMENT PRIMARY KEY,
-    user_id          INT            NOT NULL,
-    subtotal         DECIMAL(10, 2) NOT NULL,
-    total            DECIMAL(10, 2) NOT NULL, -- subtotal + shipping_fee
+    user_id          INT                                                                 NOT NULL,
+    subtotal         DECIMAL(10, 2)                                                      NOT NULL,
+    total            DECIMAL(10, 2)                                                      NOT NULL, -- subtotal + shipping_fee
     order_status     ENUM ('pending', 'processing', 'shipped', 'delivered', 'cancelled') NOT NULL,
     shipping_date    TIMESTAMP,
     delivery_date    TIMESTAMP,
-    canceled_date    TIMESTAMP,
-    shipping_address TEXT           NOT NULL, -- +84 123 456 789 - 123, ABC Street, XYZ Ward, HCM City
+    cancel_date      TIMESTAMP,
+    shipping_address TEXT                                                                NOT NULL, -- +84 123 456 789 - 123, ABC Street, XYZ Ward, HCM City
     shipping_method  ENUM ('standard', 'express')                                        NOT NULL,
-    shipping_cost    DECIMAL(10, 2) NOT NULL,
+    shipping_cost    DECIMAL(10, 2)                                                      NOT NULL,
     notes            TEXT,
-    leave_feedback   BOOLEAN        NOT NULL DEFAULT FALSE,
-    created_at       TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    leave_feedback   BOOLEAN                                                             NOT NULL DEFAULT FALSE,
+    created_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
@@ -204,9 +204,9 @@ CREATE TABLE order_details
 CREATE TABLE payments
 (
     payment_id            INT AUTO_INCREMENT PRIMARY KEY,
-    order_id              INT            NOT NULL,
+    order_id              INT                                                                 NOT NULL,
     payment_date          TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Payment datetime: customer paid for the order successfully
-    payment_amount        DECIMAL(10, 2) NOT NULL,
+    payment_amount        DECIMAL(10, 2)                                                      NOT NULL,
     payment_method        ENUM ('credit_card', 'paypal', 'bank_transfer', 'cash_on_delivery') NOT NULL,
     payment_status        ENUM ('pending', 'completed', 'failed')                             NOT NULL,
     transaction_reference VARCHAR(255),                        -- Payment gateway or transaction reference
