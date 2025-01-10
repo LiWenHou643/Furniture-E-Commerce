@@ -182,7 +182,9 @@ CREATE TABLE orders
     leave_feedback   BOOLEAN                                                             NOT NULL DEFAULT FALSE,
     created_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    FOREIGN KEY (user_id) REFERENCES users (user_id),
+    -- Compound Index Declaration
+    INDEX idx_user_created_status (user_id, created_at DESC, order_status ASC)
 );
 
 CREATE TABLE order_details

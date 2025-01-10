@@ -15,9 +15,11 @@ public class OrderDetailDTO {
 
     Long orderDetailId;
 
-    Long orderId;
-
     Long productId;
+
+    String productName;
+
+    String colorType;
 
     Long productItemId;
 

@@ -26,7 +26,9 @@ public class OrderDetail extends BaseEntity{
     @JoinColumn(name = "product_id")
     Product product;
 
-    Long productItemId;
+    @ManyToOne
+    @JoinColumn(name = "product_item_id")
+    ProductItem productItem;
 
     int quantity;
 

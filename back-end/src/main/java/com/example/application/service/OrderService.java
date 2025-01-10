@@ -1,7 +1,7 @@
 package com.example.application.service;
 
 import com.example.application.dto.OrderDTO;
-import com.example.application.entity.Order;
+import com.example.application.dto.OrderDetailDTO;
 import com.example.application.entity.OrderDetail;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
@@ -25,15 +25,27 @@ public class OrderService {
     OrderRepository orderRepository;
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
-        var orders = orderRepository.findByUser_UserId(userId);
+        // Fetch and sort orders directly in the database using the index
+        var orders = orderRepository.findByUser_UserIdOrderByCreatedAtDescOrderStatusAsc(userId);
 
-        // Sort orders by createdDate (descending) and orderStatus (ascending)
-        return orders.stream().parallel()
-                     .sorted(Comparator.comparing(Order::getCreatedAt).reversed()
-                                       .thenComparing(Order::getOrderStatus))
-                     .map(OrderMapper.INSTANCE::toDTO)
+        // Map orders to DTOs
+        return orders.stream()
+                     .map(order -> {
+                         // Convert and sort OrderDetails by orderDetailId
+                         List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
+                                                                        .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
+                                                                        .map(OrderDetailMapper.INSTANCE::toDTO)
+                                                                        .collect(Collectors.toList());
+
+                         // Map Order to OrderDTO and set sorted OrderDetails
+                         OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
+                         orderDTO.setOrderDetails(sortedOrderDetails);
+                         return orderDTO;
+                     })
                      .collect(Collectors.toList());
     }
+
+
 
 
     public OrderDTO getOrderById(Long userId, Long orderId) {
