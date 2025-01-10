@@ -1,12 +1,22 @@
 package com.example.application.service;
 
+import com.example.application.constants.OrderStatus;
+import com.example.application.constants.PaymentMethod;
+import com.example.application.constants.PaymentStatus;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
+import com.example.application.entity.Order;
 import com.example.application.entity.OrderDetail;
+import com.example.application.entity.Payments;
+import com.example.application.entity.User;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
 import com.example.application.mapper.OrderMapper;
 import com.example.application.repository.OrderRepository;
+import com.example.application.repository.PaymentRepository;
+import com.example.application.repository.ProductItemRepository;
+import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +33,9 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     OrderRepository orderRepository;
+    PayPalService payPalService;
+    PaymentRepository paymentRepository;
+    ProductItemRepository productItemRepository;
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
         // Fetch and sort orders directly in the database using the index
@@ -33,7 +46,8 @@ public class OrderService {
                      .map(order -> {
                          // Convert and sort OrderDetails by orderDetailId
                          List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
-                                                                        .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
+                                                                        .sorted(Comparator.comparing(
+                                                                                OrderDetail::getOrderDetailId))
                                                                         .map(OrderDetailMapper.INSTANCE::toDTO)
                                                                         .collect(Collectors.toList());
 
@@ -44,9 +58,6 @@ public class OrderService {
                      })
                      .collect(Collectors.toList());
     }
-
-
-
 
     public OrderDTO getOrderById(Long userId, Long orderId) {
         var order = orderRepository.findById(orderId)
@@ -68,5 +79,89 @@ public class OrderService {
         return orderDTO;
     }
 
+    public OrderDTO createOrder(Long userId, OrderDTO orderDTO) {
+        var user = new User();
+        user.setUserId(userId);
 
+        var order = OrderMapper.INSTANCE.toEntity(orderDTO);
+        order.setUser(user);
+        order.setOrderStatus(OrderStatus.pending);
+
+        var orderDetails = orderDTO.getOrderDetails();
+
+        return orderDTO;
+    }
+
+    public OrderDTO cancelOrder(Long userId, Long orderId) {
+        var order = orderRepository.findById(orderId)
+                                   .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("You do not have permission to cancel this order.");
+        }
+
+        order.setOrderStatus(OrderStatus.cancelled);
+        orderRepository.save(order);
+
+        // Convert and sort OrderDetails by orderDetailId
+        List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
+                                                       .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
+                                                       .map(OrderDetailMapper.INSTANCE::toDTO)
+                                                       .collect(Collectors.toList());
+
+        // Map Order to OrderDTO and set sorted OrderDetails
+        OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
+        orderDTO.setOrderDetails(sortedOrderDetails);
+
+        return orderDTO;
+    }
+
+    public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        Payment payment = payPalService.createPayment(
+                order.getTotal(),
+                "USD",
+                "paypal",
+                "sale",
+                "Order #%d".formatted(order.getOrderId()),
+                cancelUrl,
+                successUrl
+        );
+
+        // Redirect user to PayPal approval URL
+        for (com.paypal.api.payments.Links link : payment.getLinks()) {
+            if (link.getRel().equals("approval_url")) {
+                return link.getHref();
+            }
+        }
+
+        throw new RuntimeException("Failed to generate PayPal payment URL");
+    }
+
+    public String executePayPalPayment(Long orderId, String paymentId, String payerId) throws PayPalRESTException {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Execute PayPal payment
+        Payment payment = payPalService.executePayment(paymentId, payerId);
+
+        if (payment.getState().equals("approved")) {
+            // Update order status
+            order.setOrderStatus(OrderStatus.valueOf("PAID"));
+            Payments payments = Payments.builder()
+                                        .order(order)
+                                        .paymentDate(payment.getCreateTime())
+                                        .paymentAmount(order.getTotal())
+                                        .paymentMethod(PaymentMethod.paypal)
+                                        .paymentStatus(PaymentStatus.paid)
+                                        .transactionReference(payment.getId())
+                                        .build();
+
+            // Save payment
+            paymentRepository.save(payments);
+            return "Payment successful! Order ID: " + orderId;
+        }
+
+        throw new RuntimeException("Payment failed");
+    }
 }

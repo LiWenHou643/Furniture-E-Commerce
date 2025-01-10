@@ -1,8 +1,11 @@
 package com.example.application.dto;
 
 import com.example.application.constants.OrderStatus;
+import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.ShipmentMethod;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,23 +30,26 @@ public class OrderDTO {
 
     OrderStatus orderStatus;
 
-    Date shipping_date;
+    Date shippingDate;
 
-    Date delivery_date;
+    Date deliveryDate;
 
-    Date cancel_date;
+    Date cancelDate;
 
-    String shipping_address;
+    String shippingAddress;
 
     ShipmentMethod shippingMethod;
 
-    Double shipping_cost;
+    @Enumerated(EnumType.STRING)
+    PaymentMethod paymentMethod;
+
+    Double shippingCost;
 
     String notes;
 
     Boolean leaveFeedback;
 
-    Date created_at;
+    Date createdAt;
 
     List<OrderDetailDTO> orderDetails;
 }

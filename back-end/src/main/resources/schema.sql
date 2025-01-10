@@ -209,8 +209,8 @@ CREATE TABLE payments
     order_id              INT                                                                 NOT NULL,
     payment_date          TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Payment datetime: customer paid for the order successfully
     payment_amount        DECIMAL(10, 2)                                                      NOT NULL,
-    payment_method        ENUM ('credit_card', 'paypal', 'bank_transfer', 'cash_on_delivery') NOT NULL,
-    payment_status        ENUM ('pending', 'completed', 'failed')                             NOT NULL,
+    payment_method        ENUM ('paypal', 'cash_on_delivery') NOT NULL,
+    payment_status        ENUM ('unpaid', 'paid')                             NOT NULL,
     transaction_reference VARCHAR(255),                        -- Payment gateway or transaction reference
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

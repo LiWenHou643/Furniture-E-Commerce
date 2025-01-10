@@ -34,18 +34,18 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     OrderStatus orderStatus;
 
-    Date shipping_date;
+    Date shippingDate;
 
-    Date delivery_date;
+    Date deliveryDate;
 
-    Date cancel_date;
+    Date cancelDate;
 
-    String shipping_address;
+    String shippingAddress;
 
     @Enumerated(EnumType.STRING)
     ShipmentMethod shippingMethod;
 
-    double shipping_cost;
+    double shippingCost;
 
     String notes;
 
