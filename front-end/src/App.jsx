@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import { ArticleDetailPage, NewsPage } from './pages/NewsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import OrdersPage from './pages/OrdersPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
@@ -68,6 +69,8 @@ function App() {
                                 path='/news/:id'
                                 element={<ArticleDetailPage />}
                             />
+                            {/* Orders Page */}
+                            <Route path='/orders' element={<OrdersPage />} />
 
                             {/* 404 Page */}
                             <Route path='*' element={<NotFoundPage />} />
