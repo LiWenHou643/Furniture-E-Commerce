@@ -54,6 +54,7 @@ public class OrderController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<?>> processPayment(@RequestBody OrderDTO orderDTO) throws PayPalRESTException {
         var userId = getUserId();
         var paymentMethod = orderDTO.getPaymentMethod();
@@ -100,8 +101,7 @@ public class OrderController {
 
     @GetMapping("/{orderId}/paypal/cancel")
     public ResponseEntity<ApiResponse<?>> cancelPayPalPayment(@PathVariable Long orderId) {
-        var userId = getUserId();
-        var orderDTO = orderService.cancelOrder(orderId, userId);
+        var orderDTO = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")

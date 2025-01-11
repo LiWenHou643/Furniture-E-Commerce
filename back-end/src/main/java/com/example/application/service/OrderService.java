@@ -15,6 +15,7 @@ import com.example.application.mapper.OrderMapper;
 import com.example.application.repository.OrderRepository;
 import com.example.application.repository.PaymentRepository;
 import com.example.application.repository.ProductItemRepository;
+import com.example.application.repository.ProductRepository;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ public class OrderService {
     PayPalService payPalService;
     PaymentRepository paymentRepository;
     ProductItemRepository productItemRepository;
+    private final ProductRepository productRepository;
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
         // Fetch and sort orders directly in the database using the index
@@ -87,20 +90,45 @@ public class OrderService {
         order.setUser(user);
         order.setOrderStatus(OrderStatus.pending);
 
-        var orderDetails = orderDTO.getOrderDetails();
+        var orderDetails = orderDTO.getOrderDetails().stream()
+                                   .map(orderDetailDTO -> {
+                                       var orderDetail = OrderDetailMapper.INSTANCE.toEntity(orderDetailDTO);
+                                       var productItem = productItemRepository.findById(
+                                                                                      orderDetailDTO.getProductItemId())
+                                                                              .orElseThrow(
+                                                                                      () -> new ResourceNotFoundException(
+                                                                                              "ProductItem", "id",
+                                                                                              orderDetailDTO.getProductItemId()));
+                                       orderDetail.setOrder(order);
+                                       orderDetail.setProduct(productItem.getProduct());
+                                       orderDetail.setProductItem(productItem);
+                                       return orderDetail;
+                                   })
+                                   .collect(Collectors.toSet());
 
-        return orderDTO;
+        order.setOrderDetails(orderDetails);
+        orderRepository.save(order);
+
+        // Convert and sort OrderDetails by orderDetailId
+        List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
+                                                       .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
+                                                       .map(OrderDetailMapper.INSTANCE::toDTO)
+                                                       .collect(Collectors.toList());
+
+        // Map Order to OrderDTO and set sorted OrderDetails
+        OrderDTO savedOrderDTO = OrderMapper.INSTANCE.toDTO(order);
+        savedOrderDTO.setOrderDetails(sortedOrderDetails);
+
+        return savedOrderDTO;
     }
 
-    public OrderDTO cancelOrder(Long userId, Long orderId) {
+    public OrderDTO cancelOrder(Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
-        if (!order.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("You do not have permission to cancel this order.");
-        }
 
         order.setOrderStatus(OrderStatus.cancelled);
+        order.setCancelDate(Date.from(new Date().toInstant()));
         orderRepository.save(order);
 
         // Convert and sort OrderDetails by orderDetailId
@@ -117,7 +145,7 @@ public class OrderService {
     }
 
     public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
         Payment payment = payPalService.createPayment(
                 order.getTotal(),
