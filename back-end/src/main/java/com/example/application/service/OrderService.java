@@ -5,10 +5,7 @@ import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.PaymentStatus;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
-import com.example.application.entity.Order;
-import com.example.application.entity.OrderDetail;
-import com.example.application.entity.Payments;
-import com.example.application.entity.User;
+import com.example.application.entity.*;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
 import com.example.application.mapper.OrderMapper;
@@ -18,15 +15,16 @@ import com.example.application.repository.ProductItemRepository;
 import com.example.application.repository.ProductRepository;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,24 +80,56 @@ public class OrderService {
         return orderDTO;
     }
 
+    @Transactional
     public OrderDTO createOrder(Long userId, OrderDTO orderDTO) {
+        // Fetch or create user
         var user = new User();
         user.setUserId(userId);
 
+        // Convert OrderDTO to Order entity
         var order = OrderMapper.INSTANCE.toEntity(orderDTO);
         order.setUser(user);
         order.setOrderStatus(OrderStatus.pending);
 
+        // Collect all productItemIds from orderDetailDTOs
+        Set<Long> productItemIds = orderDTO.getOrderDetails().stream()
+                                           .map(OrderDetailDTO::getProductItemId)
+                                           .collect(Collectors.toSet());
+
+        // Fetch all ProductItems in one query
+        Map<Long, ProductItem> productItemMap = productItemRepository.findAllById(productItemIds)
+                                                                     .stream()
+                                                                     .collect(Collectors.toMap(
+                                                                             ProductItem::getProductItemId,
+                                                                             Function.identity()));
+
+        // Process OrderDetails
+        Order finalOrder = order;
         var orderDetails = orderDTO.getOrderDetails().stream()
                                    .map(orderDetailDTO -> {
                                        var orderDetail = OrderDetailMapper.INSTANCE.toEntity(orderDetailDTO);
-                                       var productItem = productItemRepository.findById(
-                                                                                      orderDetailDTO.getProductItemId())
-                                                                              .orElseThrow(
-                                                                                      () -> new ResourceNotFoundException(
-                                                                                              "ProductItem", "id",
-                                                                                              orderDetailDTO.getProductItemId()));
-                                       orderDetail.setOrder(order);
+                                       var productItem = productItemMap.get(orderDetailDTO.getProductItemId());
+
+                                       if (productItem == null) {
+                                           throw new ResourceNotFoundException("ProductItem", "id",
+                                                   orderDetailDTO.getProductItemId());
+                                       }
+
+                                       // Check stock availability
+                                       var orderedQuantity = orderDetailDTO.getQuantity();
+                                       var availableQuantity = productItem.getStockQuantity();
+
+                                       if (availableQuantity < orderedQuantity) {
+                                           throw new ResponseStatusException(
+                                                   HttpStatus.BAD_REQUEST,
+                                                   "Insufficient stock for ProductItem id: " + productItem.getProductItemId()
+                                           );
+                                       }
+
+                                       // Decrease stock quantity
+                                       productItem.setStockQuantity(availableQuantity - orderedQuantity);
+
+                                       orderDetail.setOrder(finalOrder);
                                        orderDetail.setProduct(productItem.getProduct());
                                        orderDetail.setProductItem(productItem);
                                        return orderDetail;
@@ -107,15 +137,17 @@ public class OrderService {
                                    .collect(Collectors.toSet());
 
         order.setOrderDetails(orderDetails);
-        orderRepository.save(order);
 
-        // Convert and sort OrderDetails by orderDetailId
+        // Save the order
+        order = orderRepository.save(order);
+
+        // Sort OrderDetails by orderDetailId and convert to DTOs
         List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
                                                        .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
                                                        .map(OrderDetailMapper.INSTANCE::toDTO)
                                                        .collect(Collectors.toList());
 
-        // Map Order to OrderDTO and set sorted OrderDetails
+        // Convert Order to OrderDTO and set sorted OrderDetails
         OrderDTO savedOrderDTO = OrderMapper.INSTANCE.toDTO(order);
         savedOrderDTO.setOrderDetails(sortedOrderDetails);
 
@@ -145,7 +177,8 @@ public class OrderService {
     }
 
     public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        Order order = orderRepository.findById(orderId)
+                                     .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
         Payment payment = payPalService.createPayment(
                 order.getTotal(),

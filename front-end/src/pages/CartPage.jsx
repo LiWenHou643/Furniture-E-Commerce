@@ -2,6 +2,7 @@ import { Delete as DeleteIcon } from '@mui/icons-material';
 import {
     Box,
     Button,
+    Checkbox,
     Container,
     Divider,
     Grid,
@@ -20,22 +21,34 @@ import {
 } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useFetchCart from '../hooks/useFetchCart';
 import useRemoveCartItem from '../hooks/useRemoveCartItem';
 import useUpdateCartItem from '../hooks/useUpdateCartItem';
+
 function CartPage() {
     const { data: cart, isLoading, error } = useFetchCart();
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (cart && cart.cartItems) {
+            setSelectedItems(cart.cartItems.map((item) => item.cartItemId));
+        }
+    }, [cart]);
+
     if (isLoading) return <Loading marginTop={15} />;
     if (error) return <Error error={error} />;
 
     const cartItems = cart.cartItems || [];
+    const totalItems = cartItems.length;
 
-    // Calculate total price
+    /// Calculate total price of selected items
     const calculateTotal = () => {
         return cartItems
+            .filter((item) => selectedItems.includes(item.cartItemId))
             .reduce((total, cartItem) => {
                 const selectedItem = cartItem?.product?.productItems?.find(
                     (productItem) =>
@@ -45,6 +58,48 @@ function CartPage() {
             }, 0)
             .toFixed(2);
     };
+    const handleCheckout = () => {
+        // Redirect to the checkout page
+        console.log('Redirect to checkout page');
+
+        console.log('Selected items:', selectedItems);
+
+        // Save the selected items to the local storage
+        // localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+
+        // Navigate to the checkout page
+        // navigate('/checkout');
+    };
+
+    // Handle "Select All" checkbox
+    const handleSelectAll = (event) => {
+        const isChecked = event.target.checked;
+        if (isChecked) {
+            // Select all items
+            setSelectedItems(cartItems.map((item) => item.cartItemId));
+        } else {
+            // Deselect all items
+            setSelectedItems([]);
+        }
+    };
+
+    // Handle individual item selection
+    const handleItemSelect = (cartItemId) => (event) => {
+        const isChecked = event.target.checked;
+        if (isChecked) {
+            // Add item to selectedItems
+            setSelectedItems([...selectedItems, cartItemId]);
+        } else {
+            // Remove item from selectedItems
+            setSelectedItems(selectedItems.filter((id) => id !== cartItemId));
+        }
+    };
+
+    // Determine the state of the "Select All" checkbox
+    const isSelectAllChecked =
+        selectedItems.length === totalItems && totalItems > 0;
+    const isIndeterminate =
+        selectedItems.length > 0 && selectedItems.length < totalItems;
 
     return (
         <Container sx={{ mt: 15 }}>
@@ -55,6 +110,14 @@ function CartPage() {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>
+                                <Checkbox
+                                    checked={isSelectAllChecked}
+                                    indeterminate={isIndeterminate}
+                                    disabled={totalItems === 0}
+                                    onChange={handleSelectAll}
+                                />
+                            </TableCell>
                             <TableCell>Product</TableCell>
                             <TableCell align='center'>Color</TableCell>
                             <TableCell align='right'>Price</TableCell>
@@ -76,6 +139,12 @@ function CartPage() {
                                     <CartItem
                                         cartItem={item}
                                         key={item.cartItemId}
+                                        onSelect={handleItemSelect(
+                                            item.cartItemId
+                                        )}
+                                        isSelected={selectedItems.includes(
+                                            item.cartItemId
+                                        )}
                                     />
                                 );
                             })
@@ -97,11 +166,10 @@ function CartPage() {
                 <Divider sx={{ my: 2 }} />
                 <Box display='flex' justifyContent='flex-end'>
                     <Button
-                        component={Link}
-                        to='/checkout'
                         variant='contained'
                         color='primary'
                         size='large'
+                        onClick={handleCheckout}
                     >
                         Checkout
                     </Button>
@@ -111,7 +179,7 @@ function CartPage() {
     );
 }
 
-const CartItem = ({ cartItem }) => {
+const CartItem = ({ cartItem, isSelected, onSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const handleOpen = () => {
         setAnchorEl(tableCellRef.current); // Set the TableCell as the anchor
@@ -199,6 +267,10 @@ const CartItem = ({ cartItem }) => {
 
     return (
         <TableRow key={cartItem.cartItemId}>
+            <TableCell>
+                <Checkbox checked={isSelected} onChange={onSelect} />
+            </TableCell>
+
             <TableCell
                 scope='row'
                 sx={{
