@@ -8,103 +8,107 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import useFetchUserProfile from '../hooks/useFetchUserProfile';
 
-function CheckoutPage({ cartItems = [], userData }) {
-    cartItems = [
-        {
-            id: 1,
-            name: 'Smartphone Model X',
-            colors: [
-                {
-                    name: 'Black',
-                    originalPrice: 500.0,
-                    discountedPrice: 450.0,
-                    image: '/images/smartphone-black.jpg',
-                },
-                {
-                    name: 'White',
-                    originalPrice: 500.0,
-                    discountedPrice: 460.0,
-                    image: '/images/smartphone-white.jpg',
-                },
-            ],
-            selectedColor: 'Black',
-            quantity: 2,
-        },
-        {
-            id: 2,
-            name: 'Wireless Headphones Pro',
-            colors: [
-                {
-                    name: 'Black',
-                    originalPrice: 150.0,
-                    discountedPrice: 120.0,
-                    image: '/images/headphones-black.jpg',
-                },
-                {
-                    name: 'White',
-                    originalPrice: 150.0,
-                    discountedPrice: 130.0,
-                    image: '/images/headphones-white.jpg',
-                },
-            ],
-            selectedColor: 'White',
-            quantity: 1,
-        },
-        {
-            id: 3,
-            name: 'Laptop Pro 15',
-            colors: [
-                {
-                    name: 'Gray',
-                    originalPrice: 1200.0,
-                    discountedPrice: 1100.0,
-                    image: '/images/laptop-gray.jpg',
-                },
-                {
-                    name: 'Silver',
-                    originalPrice: 1200.0,
-                    discountedPrice: 1150.0,
-                    image: '/images/laptop-silver.jpg',
-                },
-            ],
-            selectedColor: 'Silver',
-            quantity: 1,
-        },
-        {
-            id: 4,
-            name: 'Smartwatch 2.0',
-            colors: [
-                {
-                    name: 'Black',
-                    originalPrice: 200.0,
-                    discountedPrice: 180.0,
-                    image: '/images/smartwatch-black.jpg',
-                },
-                {
-                    name: 'Red',
-                    originalPrice: 200.0,
-                    discountedPrice: 190.0,
-                    image: '/images/smartwatch-red.jpg',
-                },
-            ],
-            selectedColor: 'Red',
-            quantity: 1,
-        },
-    ];
+// Import your JSON data
+import citiesData from '../data/cities.json';
+import districtsData from '../data/districts.json';
+import wardsData from '../data/wards.json';
 
-    const [billingInfo] = useState({
-        fullName: userData?.fullName || 'Tester',
-        phone: userData?.phone || '000111222',
-        address: userData?.address || 'abc DDD ZZZ',
+function CheckoutPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // Try to get selectedCartItems from state
+    const stateCartItems = location.state?.selectedCartItems;
+
+    // Fallback to local storage if state is not available
+    const localStorageCartItems =
+        JSON.parse(localStorage.getItem('selectedCartItems')) || [];
+
+    // Use stateCartItems if available, otherwise use localStorageCartItems
+    const selectedCartItems = stateCartItems || localStorageCartItems;
+
+    const { data: profileData, isLoading } = useFetchUserProfile();
+
+    const [billingInfo, setBillingInfo] = useState({
+        fullName: '',
+        phone: '',
+        address: '',
     });
-
-    const { fullName, phone, address } = billingInfo;
 
     const [note, setNote] = useState('');
     const [deliveryMethod, setDeliveryMethod] = useState('standard'); // Default to "standard"
     const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [shippingCost, setShippingCost] = useState(5.0); // Default to standard delivery fee
+    const [addresses, setAddresses] = useState([]);
+
+    const getNameFromCode = (code, data) => {
+        const item = data.find((item) => item.code === code);
+        return item ? item.name : 'Unknown';
+    };
+
+    const formatAddress = (address) => {
+        const cityName = getNameFromCode(address.city, citiesData);
+        const districtName = getNameFromCode(address.district, districtsData);
+        const wardName = getNameFromCode(address.ward, wardsData);
+
+        return {
+            ...address,
+            cityName: cityName,
+            districtName: districtName,
+            wardName: wardName,
+        };
+    };
+
+    const formattedAddresses = addresses.map(formatAddress);
+
+    useEffect(() => {
+        if (profileData) {
+            setAddresses(profileData.addresses);
+        }
+    }, [profileData]);
+
+    console.log('addresses', addresses);
+
+    useEffect(() => {
+        if (formattedAddresses.length > 0) {
+            const defaultAddress = formattedAddresses[0];
+            const newBillingInfo = {
+                fullName: profileData.lastName + ' ' + profileData.firstName,
+                phone: profileData.phoneNumber,
+                address: `${defaultAddress.streetAddress}, ${defaultAddress.wardName}, ${defaultAddress.districtName}, ${defaultAddress.cityName}`,
+            };
+
+            // Only update if billingInfo has changed
+            if (
+                JSON.stringify(newBillingInfo) !== JSON.stringify(billingInfo)
+            ) {
+                setBillingInfo(newBillingInfo);
+            }
+        }
+    }, [formattedAddresses, billingInfo, profileData]); // Add formattedAddresses to the dependency array]);
+
+    // Handle case where no data is available
+    if (selectedCartItems.length === 0) {
+        return (
+            <div>
+                <h1>Checkout</h1>
+                <p>No items selected. Please go back to your cart.</p>
+                <button onClick={() => navigate('/cart')}>Go to Cart</button>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return <p>Loading...</p>;
+    }
+
+    const { fullName, phone, address } = billingInfo;
+
+    // Function to map codes to names
 
     const handleNoteChange = (e) => {
         setNote(e.target.value);
@@ -113,6 +117,7 @@ function CheckoutPage({ cartItems = [], userData }) {
     // Update this function to directly set the delivery method
     const handleDeliveryMethodChange = (method) => {
         setDeliveryMethod(method); // Directly set the selected delivery method
+        setShippingCost(calculateShippingFee(method)); // Update the shipping cost
     };
 
     const handlePaymentMethodChange = (method) => {
@@ -120,14 +125,16 @@ function CheckoutPage({ cartItems = [], userData }) {
     };
 
     const calculateTotalPrice = () => {
-        return cartItems
-            .reduce((total, item) => {
-                const selectedColor = item.colors.find(
-                    (color) => color.name === item.selectedColor
-                );
-                return total + selectedColor.discountedPrice * item.quantity;
-            }, 0)
-            .toFixed(2);
+        const subtotal = selectedCartItems.reduce((total, cartItem) => {
+            const selectedItem = cartItem?.product?.productItems?.find(
+                (productItem) =>
+                    productItem.productItemId === cartItem.productItemId
+            );
+            return total + selectedItem?.salePrice * cartItem.quantity;
+        }, 0);
+
+        const total = subtotal + shippingCost;
+        return total.toFixed(2);
     };
 
     const calculateShippingFee = () => {
@@ -195,15 +202,15 @@ function CheckoutPage({ cartItems = [], userData }) {
                     </Grid>
                 </Grid>
                 <Divider sx={{ my: 1 }} />
-                {cartItems.map((item) => {
-                    const selectedColor = item.colors.find(
-                        (color) => color.name === item.selectedColor
+                {selectedCartItems?.map((item) => {
+                    const selectedColor = item?.product?.productItems?.find(
+                        (item) => item.productItemId === item?.productItemId
                     );
                     return (
                         <Grid
                             container
                             spacing={2}
-                            key={item.id}
+                            key={item.cartItemId}
                             sx={{ mb: 1 }}
                             alignItems='center'
                         >
@@ -223,8 +230,16 @@ function CheckoutPage({ cartItems = [], userData }) {
                                     }}
                                 >
                                     <img
-                                        src='https://placeholder.com/100' // Placeholder image
-                                        alt={item.name}
+                                        src={
+                                            selectedColor?.productImages?.find(
+                                                (image) =>
+                                                    image.mainImage === true
+                                            )?.imageUrl
+                                        }
+                                        alt={
+                                            selectedColor?.product?.name ||
+                                            'Product Image'
+                                        }
                                         style={{
                                             width: 40,
                                             height: 40,
@@ -233,7 +248,9 @@ function CheckoutPage({ cartItems = [], userData }) {
                                         }}
                                     />
                                     <Typography variant='body2'>
-                                        {item.name}
+                                        {item?.product?.productName}
+                                        {' - '}
+                                        {selectedColor?.color?.colorName}
                                     </Typography>
                                 </Box>
                             </Grid>
@@ -246,7 +263,7 @@ function CheckoutPage({ cartItems = [], userData }) {
                                 textAlign='center'
                             >
                                 <Typography variant='body2'>
-                                    ${selectedColor.discountedPrice.toFixed(2)}
+                                    ${selectedColor?.salePrice?.toFixed(2)}
                                 </Typography>
                             </Grid>
                             <Grid
@@ -270,8 +287,7 @@ function CheckoutPage({ cartItems = [], userData }) {
                                 <Typography variant='body2'>
                                     $
                                     {(
-                                        selectedColor.discountedPrice *
-                                        item.quantity
+                                        selectedColor.salePrice * item.quantity
                                     ).toFixed(2)}
                                 </Typography>
                             </Grid>

@@ -58,17 +58,24 @@ function CartPage() {
             }, 0)
             .toFixed(2);
     };
+
     const handleCheckout = () => {
-        // Redirect to the checkout page
-        console.log('Redirect to checkout page');
+        // Filter selected item objects from cartItems
+        const selectedCartItems = cartItems.filter((item) =>
+            selectedItems.includes(item.cartItemId)
+        );
 
-        console.log('Selected items:', selectedItems);
+        // Log selected item objects (optional)
+        console.log('Selected item objects:', selectedCartItems);
 
-        // Save the selected items to the local storage
-        // localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+        // Save the selected item objects to local storage (optional)
+        localStorage.setItem(
+            'selectedCartItems',
+            JSON.stringify(selectedCartItems)
+        );
 
-        // Navigate to the checkout page
-        // navigate('/checkout');
+        // Navigate to the checkout page and pass the selected item objects as state
+        navigate('/checkout', { state: { selectedCartItems } });
     };
 
     // Handle "Select All" checkbox
