@@ -148,8 +148,27 @@ function CheckoutPage() {
     };
 
     const handleSubmitOrder = () => {
-        alert('Order placed successfully!');
-        // In a real app, you would call a backend API to process the payment and order.
+        const order = {
+            shippingAddress: 'Your shipping address here',
+            shippingMethod: deliveryMethod,
+            paymentMethod: paymentMethod,
+            shippingCost: shippingCost,
+            notes: note,
+            orderDetails: selectedCartItems.map((item) => {
+                const selectedColor = item?.product?.productItems?.find(
+                    (item) => item.productItemId === item?.productItemId
+                );
+                return {
+                    productId: item.product.productId,
+                    productItemId: item.productItemId,
+                    quantity: item.quantity,
+                    price: selectedColor?.salePrice,
+                };
+            }),
+        };
+
+        console.log('Order:', order);
+        // You can now send the order to your backend
     };
 
     return (

@@ -103,6 +103,11 @@ public class OrderService {
                                                                              ProductItem::getProductItemId,
                                                                              Function.identity()));
 
+        // Define subtotal and total
+        // Use a single-element array to hold subtotal
+        double[] subtotalHolder = new double[]{0.0};
+        double total = 0.0;
+
         // Process OrderDetails
         Order finalOrder = order;
         var orderDetails = orderDTO.getOrderDetails().stream()
@@ -132,10 +137,22 @@ public class OrderService {
                                        orderDetail.setOrder(finalOrder);
                                        orderDetail.setProduct(productItem.getProduct());
                                        orderDetail.setProductItem(productItem);
+
+                                       // Calculate subtotal and total
+                                       double price = productItem.getSalePrice();
+                                       subtotalHolder[0] += price * orderedQuantity; // Update subtotal
                                        return orderDetail;
                                    })
                                    .collect(Collectors.toSet());
 
+        // Access subtotal from the holder
+        double subtotal = subtotalHolder[0];
+        total = subtotal + order.getShippingCost();
+
+        // Set subtotal and total
+        order.setSubtotal(subtotal);
+        order.setTotal(total);
+        order.setNotes(orderDTO.getNotes());
         order.setOrderDetails(orderDetails);
 
         // Save the order
