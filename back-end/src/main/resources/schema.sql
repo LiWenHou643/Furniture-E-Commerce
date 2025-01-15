@@ -155,13 +155,11 @@ CREATE TABLE cart_items
 (
     cart_item_id    INT AUTO_INCREMENT PRIMARY KEY,
     cart_id         INT NOT NULL,
-    -- product_id      INT NOT NULL,
     product_item_id INT NOT NULL,
     quantity        INT NOT NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (cart_id) REFERENCES carts (cart_id),
-    -- FOREIGN KEY (product_id) REFERENCES products (product_id),
     FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id)
 );
 
@@ -191,7 +189,6 @@ CREATE TABLE order_details
 (
     order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id        INT            NOT NULL,
-    product_id      INT            NOT NULL,
     product_item_id INT            NOT NULL,
     quantity        INT            NOT NULL,
     price           DECIMAL(10, 2) NOT NULL,
@@ -199,7 +196,6 @@ CREATE TABLE order_details
     created_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders (order_id),
-    FOREIGN KEY (product_id) REFERENCES products (product_id),
     FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id)
 );
 

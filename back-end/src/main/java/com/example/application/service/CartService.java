@@ -25,7 +25,7 @@ public class CartService {
     CartRepository cartRepository;
     private final ProductItemRepository productItemRepository;
 
-    public CartDTO getCartById(Long userId) {
+    public CartDTO getCartByUserId(Long userId) {
         // Fetch the cart by userId, or throw an exception if not found
         var cart = cartRepository.findByUser_UserId(userId)
                                  .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));

@@ -21,7 +21,7 @@ public class CartController {
     @GetMapping("/carts")
     public ResponseEntity<ApiResponse<CartDTO>> getCartById() {
         Long userId = getUserId();
-        var cart = cartService.getCartById(userId);
+        var cart = cartService.getCartByUserId(userId);
 
         return ResponseEntity.ok(
                 ApiResponse.<CartDTO>builder()

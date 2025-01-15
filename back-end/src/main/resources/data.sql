@@ -1404,8 +1404,6 @@ VALUES (2),
        (20),
        (21);
 
--- INSERT INTO cart_items (cart_id, product_id, product_item_id, quantity)
--- VALUES (1, 1, 1, 10);
 INSERT INTO cart_items (cart_id, product_item_id, quantity) VALUES (1, 1, 10);
 
 INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, delivery_date, cancel_date,
@@ -1416,6 +1414,6 @@ VALUES (2, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', 
         'I will be at home after 5pm. Please delivery me after that time!', false, '2025-01-07 12:13:38',
         '2025-01-10 12:13:38');
 
-INSERT INTO order_details (order_id, product_id, product_item_id, quantity, price, total, created_at, updated_at)
-VALUES (1, 1, 1, 1, 180, 180, '2025-01-07 12:13:38', '2025-01-07 12:13:38'),
-       (1, 2, 3, 2, 90, 180, '2025-01-07 12:13:38', '2025-01-07 12:13:38');
+INSERT INTO order_details (order_id, product_item_id, quantity, price, total, created_at, updated_at)
+VALUES (1, 1, 1, 180, 180, '2025-01-07 12:13:38', '2025-01-07 12:13:38'),
+       (1, 3, 2, 90, 180, '2025-01-07 12:13:38', '2025-01-07 12:13:38');

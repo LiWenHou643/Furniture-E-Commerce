@@ -2,6 +2,7 @@ package com.example.application.controller;
 
 import com.example.application.dto.ApiResponse;
 import com.example.application.service.CartService;
+import com.example.application.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class test {
 
-    private final CartService cartService;
+    CartService cartService;
+    OrderService orderService;
 
     @GetMapping("auth/test")
     public ResponseEntity<ApiResponse<?>> testing() {
@@ -22,7 +24,19 @@ public class test {
                 ApiResponse.builder()
                         .status("success")
                         .message("Test endpoint")
-                        .data(cartService.getCartById(2L))
+                        .data(cartService.getCartByUserId(2L))
+                        .build()
+        );
+    }
+
+    @GetMapping("auth/test2")
+    public ResponseEntity<ApiResponse<?>> testing2() {
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("success")
+                        .message("Test endpoint")
+                        .data(orderService.getOrdersByUserId(2L))
                         .build()
         );
     }

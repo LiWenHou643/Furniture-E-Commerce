@@ -69,13 +69,13 @@ public class OrderService {
         }
 
         // Convert Set<OrderDetail> to List<OrderDetail> and sort by orderDetailId
-        var sortedOrderDetails = new ArrayList<>(order.getOrderDetails());
-        sortedOrderDetails.sort(Comparator.comparing(OrderDetail::getOrderDetailId));
+        var orderDetails = order.getOrderDetails();
+        var orderDetailsDto = orderDetails.stream().map(OrderDetailMapper.INSTANCE::toDTO)
+                                          .sorted(Comparator.comparing(OrderDetailDTO::getOrderDetailId))
+                                          .collect(Collectors.toList());
 
         var orderDTO = OrderMapper.INSTANCE.toDTO(order);
-        orderDTO.setOrderDetails(sortedOrderDetails.stream()
-                                                   .map(OrderDetailMapper.INSTANCE::toDTO)
-                                                   .collect(Collectors.toList()));
+        orderDTO.setOrderDetails(orderDetailsDto);
 
         return orderDTO;
     }
@@ -106,7 +106,6 @@ public class OrderService {
         // Define subtotal and total
         // Use a single-element array to hold subtotal
         double[] subtotalHolder = new double[]{0.0};
-        double total = 0.0;
 
         // Process OrderDetails
         Order finalOrder = order;
@@ -135,7 +134,6 @@ public class OrderService {
                                        productItem.setStockQuantity(availableQuantity - orderedQuantity);
 
                                        orderDetail.setOrder(finalOrder);
-                                       orderDetail.setProduct(productItem.getProduct());
                                        orderDetail.setProductItem(productItem);
 
                                        // Calculate subtotal and total
@@ -147,7 +145,7 @@ public class OrderService {
 
         // Access subtotal from the holder
         double subtotal = subtotalHolder[0];
-        total = subtotal + order.getShippingCost();
+        double total = subtotal + order.getShippingCost();
 
         // Set subtotal and total
         order.setSubtotal(subtotal);

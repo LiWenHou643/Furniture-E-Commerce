@@ -23,10 +23,6 @@ public class OrderDetail extends BaseEntity{
     Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    Product product;
-
-    @ManyToOne
     @JoinColumn(name = "product_item_id")
     ProductItem productItem;
 

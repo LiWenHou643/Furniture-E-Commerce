@@ -11,8 +11,8 @@ public interface OrderDetailMapper {
 
     OrderDetailMapper INSTANCE = Mappers.getMapper(OrderDetailMapper.class);
 
-    @Mapping(target = "productId", source = "product.productId")
-    @Mapping(target = "productName", source = "product.productName")
+    @Mapping(target = "productId", source = "productItem.product.productId")
+    @Mapping(target = "productName", source = "productItem.product.productName")
     @Mapping(target = "colorType", source = "productItem.color.colorName")
     @Mapping(target = "productItemId", source = "productItem.productItemId")
     OrderDetailDTO toDTO(OrderDetail orderDetail);
