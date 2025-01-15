@@ -14,9 +14,8 @@ import java.util.Date;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItemDTO {
-    Long productItemId;
     Long cartItemId;
-    Long cartId;
+    Long productItemId;
     ProductDTO product;
     Integer quantity;
     Date createdAt;

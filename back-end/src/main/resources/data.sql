@@ -1404,10 +1404,10 @@ VALUES (2),
        (20),
        (21);
 
-INSERT INTO cart_items (cart_id, product_id, product_item_id, quantity)
-VALUES (1, 1, 1, 10);
--- INSERT INTO cart_items (cart_id, product_item_id, quantity) VALUES (1, 1, 10);
--- 2025-01-08 12:13:38
+-- INSERT INTO cart_items (cart_id, product_id, product_item_id, quantity)
+-- VALUES (1, 1, 1, 10);
+INSERT INTO cart_items (cart_id, product_item_id, quantity) VALUES (1, 1, 10);
+
 INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, delivery_date, cancel_date,
                     shipping_address,
                     shipping_method, shipping_cost, notes, leave_feedback, created_at, updated_at)

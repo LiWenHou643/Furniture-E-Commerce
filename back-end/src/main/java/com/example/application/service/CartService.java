@@ -4,6 +4,7 @@ import com.example.application.dto.CartDTO;
 import com.example.application.dto.CartItemDTO;
 import com.example.application.entity.CartItem;
 import com.example.application.exception.ResourceNotFoundException;
+import com.example.application.mapper.CartItemMapper;
 import com.example.application.mapper.CartMapper;
 import com.example.application.repository.CartRepository;
 import com.example.application.repository.ProductItemRepository;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +30,15 @@ public class CartService {
         var cart = cartRepository.findByUser_UserId(userId)
                                  .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
 
+        var cartItemsDTO = cart.getCartItems().stream()
+                               .map(CartItemMapper.INSTANCE::toDTO)
+                               .collect(Collectors.toList());
+
         // Sort cart items by created date in descending order
         var cartDTO = CartMapper.INSTANCE.toDTO(cart);
-        cartDTO.getCartItems().sort((item1, item2) -> item2.getCreatedAt().compareTo(item1.getCreatedAt()));
+
+        cartItemsDTO.sort((item1, item2) -> item2.getCreatedAt().compareTo(item1.getCreatedAt()));
+        cartDTO.setCartItems(cartItemsDTO);
 
         return cartDTO;
     }
@@ -40,7 +49,7 @@ public class CartService {
         );
 
         var cartItem = cart.getCartItems().stream()
-                           .filter(item -> item.getProductItemId().equals(cartItemDTO.getProductItemId()))
+                           .filter(item -> item.getProductItem().getProductItemId().equals(cartItemDTO.getProductItemId()))
                            .findFirst();
 
         if (cartItem.isPresent()) {
@@ -58,8 +67,7 @@ public class CartService {
 
         var newCartItem = CartItem.builder()
                                   .cart(cart)
-                                  .productItemId(cartItemDTO.getProductItemId())
-                                  .product(productItem.getProduct())
+                                  .productItem(productItem)
                                   .quantity(cartItemDTO.getQuantity())
                                   .build();
 
@@ -83,11 +91,15 @@ public class CartService {
                                            cartItemDTO.getCartItemId())
                            );
 
+        var productItem = productItemRepository.findById(cartItemDTO.getProductItemId()).orElseThrow(
+                () -> new ResourceNotFoundException("ProductItem", "id", cartItemDTO.getProductItemId())
+        );
+
         // Update quantity or change variants based on input
         if (cartItemDTO.getQuantity() != null && cartItemDTO.getQuantity() > 0) {
             cartItem.setQuantity(cartItemDTO.getQuantity());
         } else if (cartItemDTO.getProductItemId() != null) {
-            cartItem.setProductItemId(cartItemDTO.getProductItemId());
+            cartItem.setProductItem(productItem);
         }
 
         var savedCart = cartRepository.save(cart);
