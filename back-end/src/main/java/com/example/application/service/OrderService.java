@@ -6,6 +6,7 @@ import com.example.application.constants.PaymentStatus;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
 import com.example.application.entity.*;
+import com.example.application.exception.InsufficientStockException;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
 import com.example.application.mapper.OrderMapper;
@@ -19,9 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.function.Function;
@@ -124,10 +123,9 @@ public class OrderService {
                                        var availableQuantity = productItem.getStockQuantity();
 
                                        if (availableQuantity < orderedQuantity) {
-                                           throw new ResponseStatusException(
-                                                   HttpStatus.BAD_REQUEST,
-                                                   "Insufficient stock for ProductItem id: " + productItem.getProductItemId()
-                                           );
+                                           throw new InsufficientStockException("", productItem.getProduct()
+                                                                                                          .getProductName() + productItem.getColor()
+                                                                                                                                         .getColorName());
                                        }
 
                                        // Decrease stock quantity

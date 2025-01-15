@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useCreateOrder from '../hooks/useCreateOrder';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
 
 // Import your JSON data
@@ -32,6 +33,8 @@ function CheckoutPage() {
     const selectedCartItems = stateCartItems || localStorageCartItems;
 
     const { data: profileData, isLoading } = useFetchUserProfile();
+    const { mutate: createOrder, isLoading: isCreatingOrder } =
+        useCreateOrder();
 
     const [billingInfo, setBillingInfo] = useState({
         fullName: '',
@@ -70,8 +73,6 @@ function CheckoutPage() {
             setAddresses(profileData.addresses);
         }
     }, [profileData]);
-
-    console.log('addresses', addresses);
 
     useEffect(() => {
         if (formattedAddresses.length > 0) {
@@ -125,16 +126,15 @@ function CheckoutPage() {
     };
 
     const calculateTotalPrice = () => {
-        const subtotal = selectedCartItems.reduce((total, cartItem) => {
-            const selectedItem = cartItem?.product?.productItems?.find(
-                (productItem) =>
-                    productItem.productItemId === cartItem.productItemId
-            );
-            return total + selectedItem?.salePrice * cartItem.quantity;
-        }, 0);
-
-        const total = subtotal + shippingCost;
-        return total.toFixed(2);
+        return selectedCartItems
+            .reduce((total, cartItem) => {
+                const selectedItem = cartItem?.product?.productItems?.find(
+                    (productItem) =>
+                        productItem.productItemId === cartItem.productItemId
+                );
+                return total + selectedItem?.salePrice * cartItem.quantity;
+            }, 0)
+            .toFixed(2);
     };
 
     const calculateShippingFee = () => {
@@ -149,7 +149,7 @@ function CheckoutPage() {
 
     const handleSubmitOrder = () => {
         const order = {
-            shippingAddress: 'Your shipping address here',
+            shippingAddress: address,
             shippingMethod: deliveryMethod,
             paymentMethod: paymentMethod,
             shippingCost: shippingCost,
@@ -167,8 +167,8 @@ function CheckoutPage() {
             }),
         };
 
-        console.log('Order:', order);
         // You can now send the order to your backend
+        createOrder(order);
     };
 
     return (
@@ -221,15 +221,15 @@ function CheckoutPage() {
                     </Grid>
                 </Grid>
                 <Divider sx={{ my: 1 }} />
-                {selectedCartItems?.map((item) => {
-                    const selectedColor = item?.product?.productItems?.find(
-                        (item) => item.productItemId === item?.productItemId
+                {selectedCartItems?.map((selected) => {
+                    const selectedColor = selected?.product?.productItems?.find(
+                        (item) => item.productItemId === selected?.productItemId
                     );
                     return (
                         <Grid
                             container
                             spacing={2}
-                            key={item.cartItemId}
+                            key={selected.cartItemId}
                             sx={{ mb: 1 }}
                             alignItems='center'
                         >
@@ -267,7 +267,7 @@ function CheckoutPage() {
                                         }}
                                     />
                                     <Typography variant='body2'>
-                                        {item?.product?.productName}
+                                        {selected?.product?.productName}
                                         {' - '}
                                         {selectedColor?.color?.colorName}
                                     </Typography>
@@ -293,7 +293,7 @@ function CheckoutPage() {
                                 textAlign='center'
                             >
                                 <Typography variant='body2'>
-                                    {item.quantity}
+                                    {selected.quantity}
                                 </Typography>
                             </Grid>
                             <Grid
@@ -306,7 +306,8 @@ function CheckoutPage() {
                                 <Typography variant='body2'>
                                     $
                                     {(
-                                        selectedColor.salePrice * item.quantity
+                                        selectedColor.salePrice *
+                                        selected.quantity
                                     ).toFixed(2)}
                                 </Typography>
                             </Grid>
@@ -426,7 +427,7 @@ function CheckoutPage() {
                     </Grid>
                     <Grid item xs={6} textAlign='right'>
                         <Typography variant='h6'>
-                            ${calculateTotalPrice()}
+                            ${calculateTotalPayment()}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -505,8 +506,9 @@ function CheckoutPage() {
                         color='primary'
                         onClick={handleSubmitOrder}
                         size='large'
+                        disabled={isCreatingOrder}
                     >
-                        Make Order
+                        {isCreatingOrder ? 'Processing...' : 'Place Order'}
                     </Button>
                 </Box>
             </Paper>

@@ -46,16 +46,23 @@ public class GlobalExceptionHandler {
 
     // DataExistedException Handler
     @ExceptionHandler(DataExistedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleUserAlreadyExists(DataExistedException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleDataAlreadyExists(DataExistedException ex) {
         ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    // InsufficientStockException Handler
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInsufficientStockException(InsufficientStockException ex) {
+        ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
     // MethodArgumentTypeMismatchException Handler (Invalid parameter type in a request)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Object>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String message = "Invalid value for parameter: " + ex.getName();
-        ApiResponse<Object> response = new ApiResponse<>("error", message, null);
+        ApiResponse<Object> response = new ApiResponse<>("error", ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

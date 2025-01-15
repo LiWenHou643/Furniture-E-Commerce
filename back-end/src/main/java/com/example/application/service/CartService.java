@@ -91,14 +91,13 @@ public class CartService {
                                            cartItemDTO.getCartItemId())
                            );
 
-        var productItem = productItemRepository.findById(cartItemDTO.getProductItemId()).orElseThrow(
-                () -> new ResourceNotFoundException("ProductItem", "id", cartItemDTO.getProductItemId())
-        );
-
         // Update quantity or change variants based on input
         if (cartItemDTO.getQuantity() != null && cartItemDTO.getQuantity() > 0) {
             cartItem.setQuantity(cartItemDTO.getQuantity());
         } else if (cartItemDTO.getProductItemId() != null) {
+            var productItem = productItemRepository.findById(cartItemDTO.getProductItemId()).orElseThrow(
+                    () -> new ResourceNotFoundException("ProductItem", "id", cartItemDTO.getProductItemId())
+            );
             cartItem.setProductItem(productItem);
         }
 

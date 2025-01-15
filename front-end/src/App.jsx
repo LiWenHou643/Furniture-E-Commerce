@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import { ArticleDetailPage, NewsPage } from './pages/NewsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import OrdersPage from './pages/OrdersPage';
+import PaymentCancelledPage from './pages/PaymentCancelPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
@@ -71,6 +72,12 @@ function App() {
                             />
                             {/* Orders Page */}
                             <Route path='/orders' element={<OrdersPage />} />
+
+                            {/* Cancelled Payment Page */}
+                            <Route
+                                path='/orders/:id/paypal/cancel'
+                                element={<PaymentCancelledPage />}
+                            />
 
                             {/* 404 Page */}
                             <Route path='*' element={<NotFoundPage />} />

@@ -79,7 +79,7 @@ public class OrderController {
             return ResponseEntity.ok(
                     ApiResponse.builder()
                                .status("success")
-                               .message("PayPal payment URL generated successfully")
+                               .message("Order placed successfully")
                                .data(savedOrder)
                                .build()
             );
