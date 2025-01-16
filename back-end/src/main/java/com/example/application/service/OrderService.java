@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -124,8 +126,8 @@ public class OrderService {
 
                                        if (availableQuantity < orderedQuantity) {
                                            throw new InsufficientStockException("", productItem.getProduct()
-                                                                                                          .getProductName() + productItem.getColor()
-                                                                                                                                         .getColorName());
+                                                                                               .getProductName() + productItem.getColor()
+                                                                                                                              .getColorName());
                                        }
 
                                        // Decrease stock quantity
@@ -167,7 +169,7 @@ public class OrderService {
         return savedOrderDTO;
     }
 
-    public OrderDTO cancelOrder( Long orderId) {
+    public OrderDTO cancelOrder(Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
@@ -212,7 +214,7 @@ public class OrderService {
         throw new RuntimeException("Failed to generate PayPal payment URL");
     }
 
-    public String executePayPalPayment(Long orderId, String paymentId, String payerId) throws PayPalRESTException {
+    public String executePayPalPayment(Long orderId, String paymentId, String payerId) throws PayPalRESTException, ParseException {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
 
         // Execute PayPal payment
@@ -220,10 +222,10 @@ public class OrderService {
 
         if (payment.getState().equals("approved")) {
             // Update order status
-            order.setOrderStatus(OrderStatus.valueOf("PAID"));
             Payments payments = Payments.builder()
                                         .order(order)
-                                        .paymentDate(payment.getCreateTime())
+                                        .paymentDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(
+                                                payment.getCreateTime()))
                                         .paymentAmount(order.getTotal())
                                         .paymentMethod(PaymentMethod.paypal)
                                         .paymentStatus(PaymentStatus.paid)

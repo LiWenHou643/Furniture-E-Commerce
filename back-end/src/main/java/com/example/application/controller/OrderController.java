@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.Map;
 
 
@@ -91,7 +92,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/paypal/success")
-    public ResponseEntity<ApiResponse<?>> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam String payerId) throws PayPalRESTException {
+    public ResponseEntity<ApiResponse<?>> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException, ParseException {
         orderService.executePayPalPayment(orderId, paymentId, payerId);
         return ResponseEntity.status(HttpStatus.FOUND).location(
                 URI.create("http" + "://localhost:3000/orders/%d".formatted(orderId))

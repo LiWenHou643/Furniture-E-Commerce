@@ -38,7 +38,7 @@ const LoginPage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                mt: 30,
+                mt: 20,
                 mb: 20,
             }}
         >

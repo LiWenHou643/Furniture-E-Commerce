@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "payments")
 @Getter
@@ -23,7 +25,7 @@ public class Payments extends BaseEntity{
     @JoinColumn(name = "order_id")
     Order order;
 
-    String paymentDate;
+    Date paymentDate;
 
     Double paymentAmount;
 
