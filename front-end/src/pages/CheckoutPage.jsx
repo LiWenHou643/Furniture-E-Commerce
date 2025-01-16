@@ -137,14 +137,13 @@ function CheckoutPage() {
             .toFixed(2);
     };
 
-    const calculateShippingFee = () => {
-        return deliveryMethod === 'express' ? 10.0 : 5.0; // Change fee based on delivery method
+    const calculateShippingFee = (method) => {
+        const fee = method === 'express' ? 10.0 : 5.0;
+        return fee;
     };
 
     const calculateTotalPayment = () => {
-        return (
-            parseFloat(calculateTotalPrice()) + calculateShippingFee()
-        ).toFixed(2);
+        return (parseFloat(calculateTotalPrice()) + shippingCost).toFixed(2);
     };
 
     const handleSubmitOrder = () => {
@@ -166,7 +165,6 @@ function CheckoutPage() {
                 };
             }),
         };
-
         // You can now send the order to your backend
         createOrder(order);
     };
@@ -486,7 +484,7 @@ function CheckoutPage() {
                     </Grid>
                     <Grid item xs={4} textAlign='right'>
                         <Typography variant='body1'>
-                            ${calculateShippingFee().toFixed(2)}
+                            ${shippingCost.toFixed(2)}
                         </Typography>
                     </Grid>
                 </Grid>

@@ -62,8 +62,8 @@ public class OrderController {
         var savedOrder = orderService.createOrder(userId, orderDTO);
 
         // Step 2: If payment method is PayPal, generate the PayPal payment URL
-        var successUrl = "http://localhost:8080/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
-        var cancelUrl = "http://localhost:8080/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
+        var successUrl = "http://localhost:3000/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
+        var cancelUrl = "http://localhost:3000/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
 
         if (paymentMethod.equals(PaymentMethod.paypal)) {
             String paypalUrl = orderService.processPayment(savedOrder.getOrderId(), successUrl, cancelUrl);
@@ -88,7 +88,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{orderId}/paypal/success")
+    @PostMapping("/{orderId}/paypal/success")
     public ResponseEntity<ApiResponse<?>> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam String payerId) throws PayPalRESTException {
         return ResponseEntity.ok(
                 ApiResponse.builder()
@@ -99,7 +99,7 @@ public class OrderController {
         );
     }
 
-    @GetMapping("/{orderId}/paypal/cancel")
+    @PostMapping("/{orderId}/paypal/cancel")
     public ResponseEntity<ApiResponse<?>> cancelPayPalPayment(@PathVariable Long orderId) {
         var orderDTO = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(
