@@ -167,10 +167,9 @@ public class OrderService {
         return savedOrderDTO;
     }
 
-    public OrderDTO cancelOrder(Long orderId) {
+    public OrderDTO cancelOrder( Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
-
 
         order.setOrderStatus(OrderStatus.cancelled);
         order.setCancelDate(Date.from(new Date().toInstant()));

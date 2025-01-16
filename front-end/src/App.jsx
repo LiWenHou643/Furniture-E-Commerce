@@ -75,7 +75,7 @@ function App() {
 
                             {/* Cancelled Payment Page */}
                             <Route
-                                path='/orders/:id/paypal/cancel'
+                                path='/orders/:id/cancel'
                                 element={<PaymentCancelledPage />}
                             />
                             {/* 404 Page */}

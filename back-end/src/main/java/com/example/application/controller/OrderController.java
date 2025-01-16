@@ -8,12 +8,14 @@ import com.paypal.base.rest.PayPalRESTException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Map;
 
 
@@ -62,8 +64,8 @@ public class OrderController {
         var savedOrder = orderService.createOrder(userId, orderDTO);
 
         // Step 2: If payment method is PayPal, generate the PayPal payment URL
-        var successUrl = "http://localhost:3000/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
-        var cancelUrl = "http://localhost:3000/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
+        var successUrl = "http://localhost:8080/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
+        var cancelUrl = "http://localhost:8080/orders/%d/cancel".formatted(savedOrder.getOrderId());
 
         if (paymentMethod.equals(PaymentMethod.paypal)) {
             String paypalUrl = orderService.processPayment(savedOrder.getOrderId(), successUrl, cancelUrl);
@@ -88,28 +90,21 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/{orderId}/paypal/success")
+    @GetMapping("/{orderId}/paypal/success")
     public ResponseEntity<ApiResponse<?>> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam String payerId) throws PayPalRESTException {
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                           .status("success")
-                           .message("PayPal payment executed successfully")
-                           .data(orderService.executePayPalPayment(orderId, paymentId, payerId))
-                           .build()
-        );
+        orderService.executePayPalPayment(orderId, paymentId, payerId);
+        return ResponseEntity.status(HttpStatus.FOUND).location(
+                URI.create("http" + "://localhost:3000/orders/%d".formatted(orderId))
+        ).build();
     }
 
-    @PostMapping("/{orderId}/paypal/cancel")
+    @GetMapping("/{orderId}/cancel")
     public ResponseEntity<ApiResponse<?>> cancelPayPalPayment(@PathVariable Long orderId) {
-        var orderDTO = orderService.cancelOrder(orderId);
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                           .status("success")
-                           .message("Order cancelled successfully")
-                           .build()
-        );
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.FOUND).location(
+                URI.create("http" + "://localhost:3000/orders/%d/cancel".formatted(orderId))
+        ).build();
     }
-
 
     private Long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
