@@ -6,7 +6,7 @@ spring:
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:root}
   jackson:
-    time-zone: Asia/Ho_Chi_Minh
+    time-zone: UTC
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,7 +16,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
         jdbc:
-          time_zone: Asia/Ho_Chi_Minh
+          time_zone: UTC
   web:
     resources:
       add-mappings: false

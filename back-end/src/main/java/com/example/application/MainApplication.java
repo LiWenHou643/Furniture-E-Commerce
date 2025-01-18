@@ -21,7 +21,8 @@ public class MainApplication {
 
     @PostConstruct
     public void init() {
-//        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    //        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+//            TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         System.out.println("JVM Time Zone: " + TimeZone.getDefault().getID());
         System.out.println("Current Time: " + LocalDateTime.now());
     }

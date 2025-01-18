@@ -9,7 +9,7 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -30,11 +30,11 @@ public class OrderDTO {
 
     OrderStatus orderStatus;
 
-    Date shippingDate;
+    LocalDateTime shippingDate;
 
-    Date deliveryDate;
+    LocalDateTime deliveryDate;
 
-    Date cancelDate;
+    LocalDateTime cancelDate;
 
     String shippingAddress;
 
@@ -49,7 +49,7 @@ public class OrderDTO {
 
     Boolean leaveFeedback;
 
-    Date createdAt;
+    LocalDateTime createdAt;
 
     List<OrderDetailDTO> orderDetails;
 }

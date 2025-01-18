@@ -44,4 +44,7 @@ public class ProductItem extends BaseEntity{
     @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ProductImage> productImages = new HashSet<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Feedback> feedbacks = new HashSet<>();
 }

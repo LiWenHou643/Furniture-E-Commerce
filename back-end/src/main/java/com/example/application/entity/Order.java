@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -34,11 +34,11 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     OrderStatus orderStatus;
 
-    Date shippingDate;
+    LocalDateTime shippingDate;
 
-    Date deliveryDate;
+    LocalDateTime deliveryDate;
 
-    Date cancelDate;
+    LocalDateTime cancelDate;
 
     String shippingAddress;
 

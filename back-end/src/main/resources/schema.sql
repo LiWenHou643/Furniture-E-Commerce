@@ -217,15 +217,15 @@ CREATE TABLE feedbacks
 (
     order_id   INT NOT NULL,                                   -- Reference to the order which finished
     user_id    INT NOT NULL,                                   -- Reference to the customer who submitted the feedback
-    product_id INT NOT NULL,                                   -- Reference to the product being reviewed
+    product_item_id INT NOT NULL,                              -- Reference to the product being reviewed
     rating     INT NOT NULL,                                   -- Product rating (e.g., 1-5 stars)
     comment    TEXT,                                           -- Written feedback (optional)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (order_id, user_id, product_id),
+    PRIMARY KEY (order_id, user_id, product_item_id),
     FOREIGN KEY (order_id) REFERENCES orders (order_id),       -- Reference to orders table
     FOREIGN KEY (user_id) REFERENCES users (user_id),          -- Reference to customers table
-    FOREIGN KEY (product_id) REFERENCES products (product_id), -- Reference to products table
+    FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id), -- Reference to products item table
     CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)     -- Ensure rating is between 1 and 5
 );
 

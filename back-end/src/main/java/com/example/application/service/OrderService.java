@@ -13,7 +13,6 @@ import com.example.application.mapper.OrderMapper;
 import com.example.application.repository.OrderRepository;
 import com.example.application.repository.PaymentRepository;
 import com.example.application.repository.ProductItemRepository;
-import com.example.application.repository.ProductRepository;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.transaction.Transactional;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,7 +37,6 @@ public class OrderService {
     PayPalService payPalService;
     PaymentRepository paymentRepository;
     ProductItemRepository productItemRepository;
-    private final ProductRepository productRepository;
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
         // Fetch and sort orders directly in the database using the index
@@ -169,12 +168,16 @@ public class OrderService {
         return savedOrderDTO;
     }
 
-    public OrderDTO cancelOrder(Long orderId) {
+    public OrderDTO cancelOrder(Long userId, Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("You do not have permission to cancel this order.");
+        }
+
         order.setOrderStatus(OrderStatus.cancelled);
-        order.setCancelDate(Date.from(new Date().toInstant()));
+        order.setCancelDate(LocalDateTime.now());
         orderRepository.save(order);
 
         // Convert and sort OrderDetails by orderDetailId
@@ -238,5 +241,10 @@ public class OrderService {
         }
 
         throw new RuntimeException("Payment failed");
+    }
+
+    public String deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
+        return "Order deleted successfully";
     }
 }

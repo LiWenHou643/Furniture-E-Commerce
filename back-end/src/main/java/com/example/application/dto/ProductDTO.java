@@ -23,6 +23,7 @@ public class ProductDTO {
     MaterialDTO material;
     List<AreaDTO> areas;
     List<ProductItemDTO> productItems;
+    List<FeedbackDTO> feedbacks;
 
     @Builder.Default
     double averageRating = 0.0;

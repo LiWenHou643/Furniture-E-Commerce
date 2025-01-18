@@ -99,13 +99,27 @@ public class OrderController {
         ).build();
     }
 
-    @GetMapping("/{orderId}/cancel")
+    @GetMapping("/{orderId}/paypal/cancel")
     public ResponseEntity<ApiResponse<?>> cancelPayPalPayment(@PathVariable Long orderId) {
-        orderService.cancelOrder(orderId);
+        orderService.deleteOrder(orderId);
         return ResponseEntity.status(HttpStatus.FOUND).location(
                 URI.create("http" + "://localhost:3000/orders/%d/cancel".formatted(orderId))
         ).build();
     }
+
+    @GetMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponse<?>> cancelOrder(@PathVariable Long orderId) {
+        var userId = getUserId();
+        var order = orderService.cancelOrder(userId, orderId);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                           .status("success")
+                           .message("Order cancelled successfully")
+                           .data(order)
+                           .build()
+        );
+    }
+
 
     private Long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

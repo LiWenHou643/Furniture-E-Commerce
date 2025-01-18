@@ -26,7 +26,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import useFetchOrders from '../hooks/useFetchOrders';
-
 const statusIcons = {
     pending: <AccessTime color='warning' />,
     processing: <AssignmentTurnedIn color='info' />,
@@ -47,6 +46,14 @@ const OrdersPage = () => {
     const filteredOrders = orders?.filter(
         (order) => order.orderStatus === selectedTab
     );
+
+    const handleCancel = async () => {
+        console.log('Order cancelled');
+    };
+
+    const handleReorder = async () => {
+        console.log('Order reordered');
+    };
 
     return (
         <Box
@@ -156,26 +163,45 @@ const OrdersPage = () => {
                                     <Divider sx={{ mb: 2 }} />
                                     <Typography variant='body1' gutterBottom>
                                         Shipping Address:{' '}
-                                        {order.shipping_address}
+                                        {order.shippingAddress}
                                     </Typography>
-                                    <Typography
-                                        variant='body2'
-                                        color='textSecondary'
-                                    >
-                                        Shipping Date:{' '}
-                                        {new Date(
-                                            order.shipping_date
-                                        ).toLocaleString()}
-                                    </Typography>
-                                    <Typography
-                                        variant='body2'
-                                        color='textSecondary'
-                                    >
-                                        Delivery Date:{' '}
-                                        {new Date(
-                                            order.delivery_date
-                                        ).toLocaleString()}
-                                    </Typography>
+
+                                    {order.shippingDate && (
+                                        <Typography
+                                            variant='body2'
+                                            color='textSecondary'
+                                        >
+                                            Shipping Date:{' '}
+                                            {new Date(
+                                                order?.shippingDate
+                                            ).toLocaleString()}
+                                        </Typography>
+                                    )}
+
+                                    {order.deliveryDate && (
+                                        <Typography
+                                            variant='body2'
+                                            color='textSecondary'
+                                        >
+                                            Delivery Date:{' '}
+                                            {new Date(
+                                                order.deliveryDate
+                                            ).toLocaleString()}
+                                        </Typography>
+                                    )}
+
+                                    {order.cancelDate && (
+                                        <Typography
+                                            variant='body2'
+                                            color='textSecondary'
+                                        >
+                                            Cancelled Date:{' '}
+                                            {new Date(
+                                                order.cancelDate
+                                            ).toLocaleString()}
+                                        </Typography>
+                                    )}
+
                                     <Typography
                                         variant='body2'
                                         color='textSecondary'
@@ -203,7 +229,7 @@ const OrdersPage = () => {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {order.orderDetails.map(
+                                                {order?.orderDetails?.map(
                                                     (item) => (
                                                         <TableRow
                                                             key={
@@ -223,13 +249,13 @@ const OrdersPage = () => {
                                                             </TableCell>
                                                             <TableCell>
                                                                 $
-                                                                {item.price.toFixed(
+                                                                {item.price?.toFixed(
                                                                     2
                                                                 )}
                                                             </TableCell>
                                                             <TableCell>
                                                                 $
-                                                                {item.total.toFixed(
+                                                                {item.total?.toFixed(
                                                                     2
                                                                 )}
                                                             </TableCell>
@@ -252,14 +278,14 @@ const OrdersPage = () => {
                                                 fontWeight='bold'
                                             >
                                                 Subtotal: $
-                                                {order.subtotal.toFixed(2)}
+                                                {order.subtotal?.toFixed(2)}
                                             </Typography>
                                             <Typography
                                                 variant='body1'
                                                 fontWeight='bold'
                                             >
                                                 Shipping Cost: $
-                                                {order.shipping_cost.toFixed(2)}
+                                                {order.shippingCost?.toFixed(2)}
                                             </Typography>
                                             <Typography
                                                 variant='h6'
@@ -270,7 +296,7 @@ const OrdersPage = () => {
                                             </Typography>
                                         </Box>
                                         <Button
-                                            variant='contained'
+                                            variant='outlined'
                                             color='primary'
                                             disabled={order.leaveFeedback}
                                         >
@@ -278,6 +304,30 @@ const OrdersPage = () => {
                                                 ? 'Feedback Submitted'
                                                 : 'Leave Feedback'}
                                         </Button>
+
+                                        {/* Cancel Button (only for pending orders) */}
+                                        {order.orderStatus === 'pending' && (
+                                            <Button
+                                                variant='contained'
+                                                color='error'
+                                                onClick={handleCancel}
+                                            >
+                                                Cancel Order
+                                            </Button>
+                                        )}
+
+                                        {/* Re-order Button (only for delivered and cancelled orders) */}
+                                        {(order.orderStatus === 'delivered' ||
+                                            order.orderStatus ===
+                                                'cancelled') && (
+                                            <Button
+                                                variant='contained'
+                                                color='info'
+                                                onClick={handleReorder}
+                                            >
+                                                Re-order
+                                            </Button>
+                                        )}
                                     </Box>
                                 </CardContent>
                             </Card>
