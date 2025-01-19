@@ -1,11 +1,11 @@
 package com.example.application.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import com.example.application.dto.FeedbackImage;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,17 +14,33 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Builder
-@Table(name = "feedbacks")
-@IdClass(FeedbackID.class)
+@Table(
+        name = "feedbacks",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"order_detail_id", "user_id", "product_item_id"}
+        )
+)
 public class Feedback extends BaseEntity {
     @Id
-    Long orderId;
-    @Id
-    Long userId;
-    @Id
-    Long productItemId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long feedbackId;
+
+    @OneToOne
+    @JoinColumn(name = "order_detail_id", nullable = false)
+    OrderDetail orderDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
+
+    @ManyToOne
+    @JoinColumn(name = "product_item_id", nullable = false)
+    ProductItem productItem;
 
     Integer rating;
 
     String comment;
+
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL)
+    Set<FeedbackImage> feedbackImages;
 }

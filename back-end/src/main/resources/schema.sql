@@ -89,6 +89,7 @@ CREATE TABLE products
     material_id         INT          NOT NULL,
     average_rating      DECIMAL(3, 2)         DEFAULT 0,
     rating_count        INT                   DEFAULT 0,
+    sold_quantity    	INT					NOT NULL DEFAULT 0,
     product_status      BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at          TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -177,9 +178,8 @@ CREATE TABLE orders
     shipping_method  ENUM ('standard', 'express')                                        NOT NULL,
     shipping_cost    DECIMAL(10, 2)                                                      NOT NULL,
     notes            TEXT,
-    leave_feedback   BOOLEAN                                                             NOT NULL DEFAULT FALSE,
-    created_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP                                                                    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     -- Compound Index Declaration
     INDEX idx_user_created_status (user_id, created_at DESC, order_status ASC)
@@ -192,9 +192,10 @@ CREATE TABLE order_details
     product_item_id INT            NOT NULL,
     quantity        INT            NOT NULL,
     price           DECIMAL(10, 2) NOT NULL,
-    total           DECIMAL(10, 2) DEFAULT 0.00,
-    created_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    total           DECIMAL(10, 2)          DEFAULT 0.00,
+    feedback_given  BOOLEAN        NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders (order_id),
     FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id)
 );
@@ -202,11 +203,11 @@ CREATE TABLE order_details
 CREATE TABLE payments
 (
     payment_id            INT AUTO_INCREMENT PRIMARY KEY,
-    order_id              INT                                                                 NOT NULL,
+    order_id              INT                                 NOT NULL,
     payment_date          TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Payment datetime: customer paid for the order successfully
-    payment_amount        DECIMAL(10, 2)                                                      NOT NULL,
+    payment_amount        DECIMAL(10, 2)                      NOT NULL,
     payment_method        ENUM ('paypal', 'cash_on_delivery') NOT NULL,
-    payment_status        ENUM ('unpaid', 'paid')                             NOT NULL,
+    payment_status        ENUM ('unpaid', 'paid')             NOT NULL,
     transaction_reference VARCHAR(255),                        -- Payment gateway or transaction reference
     created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -215,18 +216,28 @@ CREATE TABLE payments
 
 CREATE TABLE feedbacks
 (
-    order_id   INT NOT NULL,                                   -- Reference to the order which finished
-    user_id    INT NOT NULL,                                   -- Reference to the customer who submitted the feedback
-    product_item_id INT NOT NULL,                              -- Reference to the product being reviewed
-    rating     INT NOT NULL,                                   -- Product rating (e.g., 1-5 stars)
-    comment    TEXT,                                           -- Written feedback (optional)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (order_id, user_id, product_item_id),
-    FOREIGN KEY (order_id) REFERENCES orders (order_id),       -- Reference to orders table
-    FOREIGN KEY (user_id) REFERENCES users (user_id),          -- Reference to customers table
-    FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id), -- Reference to products item table
-    CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)     -- Ensure rating is between 1 and 5
+    feedback_id     INT AUTO_INCREMENT PRIMARY KEY,
+    order_detail_id INT NOT NULL,                                             -- Reference to the order detail
+    user_id         INT NOT NULL,                                             -- Reference to the customer who submitted the feedback
+    product_item_id INT NOT NULL,                                             -- Reference to the product being reviewed
+    rating          INT NOT NULL,                                             -- Product rating (e.g., 1-5 stars)
+    comment         TEXT,                                                     -- Written feedback (optional)
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_detail_id) REFERENCES order_details (order_detail_id), -- Reference to orders table
+    FOREIGN KEY (user_id) REFERENCES users (user_id),                         -- Reference to customers table
+    FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id),  -- Reference to products item table
+    CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)                    -- Ensure rating is between 1 and 5
+);
+
+CREATE TABLE feedback_images
+(
+    feedback_image_id INT AUTO_INCREMENT PRIMARY KEY,
+    feedback_id       INT NOT NULL,
+    image_url         VARCHAR(255),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (feedback_id) REFERENCES feedbacks (feedback_id)
 );
 
 CREATE TABLE invalidated_tokens

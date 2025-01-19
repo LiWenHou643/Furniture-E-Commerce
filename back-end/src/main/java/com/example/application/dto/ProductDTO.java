@@ -24,13 +24,10 @@ public class ProductDTO {
     List<AreaDTO> areas;
     List<ProductItemDTO> productItems;
     List<FeedbackDTO> feedbacks;
-
-    @Builder.Default
-    double averageRating = 0.0;
-    @Builder.Default
-    int ratingCount = 0;
-    @Builder.Default
-    boolean productStatus = true;
+    double averageRating;
+    int soldQuantity;
+    int ratingCount;
+    boolean productStatus;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Long categoryId;

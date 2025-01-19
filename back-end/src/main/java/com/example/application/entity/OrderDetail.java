@@ -32,4 +32,6 @@ public class OrderDetail extends BaseEntity{
 
     double total;
 
+    boolean feedbackGiven;
+
 }

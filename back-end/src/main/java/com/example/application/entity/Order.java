@@ -49,8 +49,6 @@ public class Order extends BaseEntity{
 
     String notes;
 
-    boolean leaveFeedback;
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<OrderDetail> orderDetails;
 

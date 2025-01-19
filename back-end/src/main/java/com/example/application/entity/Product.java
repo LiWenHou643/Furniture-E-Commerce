@@ -35,6 +35,9 @@ public class Product extends BaseEntity {
     int ratingCount = 0;
 
     @Builder.Default
+    int soldQuantity = 0;
+
+    @Builder.Default
     boolean productStatus = true;
 
     @ManyToOne
