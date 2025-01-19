@@ -31,4 +31,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice);
 
+    @Query("SELECT p FROM Product p " +
+            "LEFT JOIN FETCH p.productItems pi " +
+            "LEFT JOIN FETCH pi.feedbacks f " +
+            "WHERE p.productId = :productId")
+    Optional<Product> findByIdWithProductItemsAndFeedbacks(@Param("productId") Long productId);
 }

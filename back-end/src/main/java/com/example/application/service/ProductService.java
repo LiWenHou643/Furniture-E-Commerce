@@ -1,16 +1,11 @@
 package com.example.application.service;
 
 import com.example.application.dto.ProductDTO;
-import com.example.application.entity.Brand;
-import com.example.application.entity.Category;
-import com.example.application.entity.Material;
-import com.example.application.entity.Product;
+import com.example.application.entity.*;
 import com.example.application.exception.ResourceNotFoundException;
+import com.example.application.mapper.FeedbackMapper;
 import com.example.application.mapper.ProductMapper;
-import com.example.application.repository.BrandRepository;
-import com.example.application.repository.CategoryRepository;
-import com.example.application.repository.MaterialRepository;
-import com.example.application.repository.ProductRepository;
+import com.example.application.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,6 +36,7 @@ public class ProductService {
 
     // Inject the cached product service
     CachedProductService cachedProductService;
+    private final FeedbackRepository feedbackRepository;
 
     public Page<ProductDTO> getProducts(
             List<String> categories,
@@ -50,7 +46,8 @@ public class ProductService {
             Double maxPrice,
             Pageable pageable
     ) {
-        List<ProductDTO> products = cachedProductService.getFilteredProducts(categories, brands, materials, minPrice, maxPrice);
+        List<ProductDTO> products = cachedProductService.getFilteredProducts(categories, brands, materials, minPrice,
+                maxPrice);
 
         // Paginate the list
         int start = (int) pageable.getOffset();
@@ -63,10 +60,22 @@ public class ProductService {
     // Cache the individual product
     @Cacheable(cacheNames = PRODUCT_CACHE_KEY, key = "#id")
     public ProductDTO getProductById(Long id) {
-        Product product = productRepository.findById(id)
-                                           .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
+        // Fetch the product with its product items and feedbacks in a single query
+        var product = productRepository.findById(id)
+                                       .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
 
-        return ProductMapper.INSTANCE.toDTO(product);
+        // Map the product to DTO
+        var productDTO = ProductMapper.INSTANCE.toDTO(product);
+
+        // Extract feedbacks from the product items and map them to DTOs
+        var feedbacks = product.getProductItems().stream()
+                               .flatMap(pi -> pi.getFeedbacks().stream())
+                               .map(FeedbackMapper.INSTANCE::toDTO)
+                               .collect(Collectors.toList());
+
+        productDTO.setFeedbacks(feedbacks);
+
+        return productDTO;
     }
 
     // Cache the individual product and evict the product list cache on add

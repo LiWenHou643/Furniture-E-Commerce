@@ -1,7 +1,5 @@
-package com.example.application.dto;
+package com.example.application.entity;
 
-import com.example.application.entity.BaseEntity;
-import com.example.application.entity.Feedback;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

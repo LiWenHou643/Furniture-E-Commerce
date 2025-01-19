@@ -1,6 +1,5 @@
 package com.example.application.entity;
 
-import com.example.application.dto.FeedbackImage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
