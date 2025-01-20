@@ -15,7 +15,7 @@ public interface FeedbackMapper {
     @Mapping(target = "userId", source = "user.userId")
     @Mapping(target = "userFirstName", source = "user.firstName")
     @Mapping(target = "userLastName", source = "user.lastName")
-    @Mapping(target = "userImage", source = "user.avatar")
+    @Mapping(target = "userAvatar", source = "user.avatar")
     @Mapping(target = "images", source = "feedbackImages")
     FeedbackDTO toDTO(Feedback feedback);
 

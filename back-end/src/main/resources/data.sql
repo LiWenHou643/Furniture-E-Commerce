@@ -4,9 +4,8 @@ VALUES ('ADMIN'),
        ('USER');
 
 -- Insert admin -- pwd: admin
-INSERT INTO users (email, phone_number, first_name, last_name, avatar, password, role_id)
+INSERT INTO users (email, phone_number, first_name, last_name, password, role_id)
 VALUES ('admin123@gmail.com', '0933000111', 'Shop', 'Admin',
-        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289513/2AE14CDD-1265-470C-9B15F49024186C10_source_va1hoa.webp',
         '{bcrypt}$2a$12$D79WRzamHQ2atDk4QvOUhumU4EGKNrhTaTjBKdN.Y6Wb.k/yT8ymK', 1);
 
 -- Insert users -- pwd: user@123
@@ -51,6 +50,8 @@ VALUES ('user1@example.com', '0931234567', 'Nguyen', 'Anh Tu',
         '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2),
        ('user20@example.com', '0989012346', 'Ho', 'Minh Hieu',
         '{bcrypt}$2a$12$VXmwc5WgvQYW/vLEknysPuyHnSW0VLQCIUHO9FOcUCKsEoyy8SKr2', 2);
+
+UPDATE users SET avatar = 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289513/2AE14CDD-1265-470C-9B15F49024186C10_source_va1hoa.webp' WHERE user_id = 2;
 
 INSERT INTO addresses (user_id, street_address, ward, district, city)
 VALUES (2, '1 Mậu Thân', '31126', '916', '92');
@@ -1415,7 +1416,7 @@ VALUES (2, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', 
         '0931234567 - 123, ABC Street, XYZ Ward, HCM City', 'express', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-07 12:13:38',
         '2025-01-10 12:13:38'),
-		(3, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
+       (3, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
         '0912345678 - 456, ABC Street, XYZ Ward, HCM City', 'express', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-08 12:13:38',
         '2025-01-11 12:13:38');
@@ -1425,16 +1426,26 @@ VALUES (1, 1, 1, 180, 180, true, '2025-01-07 12:13:38', '2025-01-11 12:13:38'),
        (1, 3, 2, 90, 180, false, '2025-01-07 12:13:38', '2025-01-07 12:13:38'),
        (2, 1, 1, 180, 180, true, '2025-01-08 12:13:38', '2025-01-12 12:13:38'),
        (2, 3, 2, 90, 180, false, '2025-01-08 12:13:38', '2025-01-08 12:13:38');
-       
-UPDATE products SET sold_quantity = 2 WHERE product_id = 1;
-UPDATE products SET sold_quantity = 4 WHERE product_id = 2;
+
+UPDATE products
+SET sold_quantity = 2
+WHERE product_id = 1;
+UPDATE products
+SET sold_quantity = 4
+WHERE product_id = 2;
 
 INSERT INTO feedbacks (order_detail_id, user_id, product_item_id, comment, rating, created_at, updated_at)
-VALUES (1, 2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4, '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-		(3, 3, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-01-12 12:13:38', '2025-01-12 12:13:38');
+VALUES (1, 2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,
+        '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
+       (3, 3, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-01-12 12:13:38',
+        '2025-01-12 12:13:38');
 
 INSERT INTO feedback_images (feedback_id, image_url, created_at, updated_at)
-VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289670/BENNETT-CHAIR_wgbahm.png', '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg', '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg', '2025-01-12 12:13:38', '2025-01-12 12:13:38'),
-       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg', '2025-01-12 12:13:38', '2025-01-12 12:13:38');
+VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289670/BENNETT-CHAIR_wgbahm.png',
+        '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
+       (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
+        '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
+       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
+        '2025-01-12 12:13:38', '2025-01-12 12:13:38'),
+       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
+        '2025-01-12 12:13:38', '2025-01-12 12:13:38');

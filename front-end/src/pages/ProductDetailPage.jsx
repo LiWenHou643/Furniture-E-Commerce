@@ -15,8 +15,6 @@ import {
     List,
     ListItem,
     ListItemAvatar,
-    ListItemText,
-    Paper,
     Rating,
     TextField,
     Typography,
@@ -30,49 +28,6 @@ import ImageMagnifier from '../components/ImageMagnifier';
 import Loading from '../components/Loading';
 import useAddToCart from '../hooks/useAddToCart';
 import useFetchProduct from '../hooks/useFetchProduct';
-
-const feedbacks = [
-    {
-        name: 'John Doe',
-        date: 'December 15, 2024',
-        rating: 4.5,
-        feedback:
-            'Great product! Really helped me in organizing my workspace. Would definitely recommend.',
-        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-        productImages: [
-            'https://via.placeholder.com/100', // Product image URL
-            'https://via.placeholder.com/100', // Another product image
-        ],
-    },
-    {
-        name: 'Jane Smith',
-        date: 'December 20, 2024',
-        rating: 3.0,
-        feedback:
-            'The product is good but a bit overpriced. It could use some improvements in durability.',
-        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-        productImages: ['https://via.placeholder.com/100'],
-    },
-    {
-        name: 'Alice Johnson',
-        date: 'December 25, 2024',
-        rating: 5.0,
-        feedback:
-            'Amazing quality! Exceeded my expectations. I am so happy with this purchase!',
-        avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-        productImages: [
-            'https://via.placeholder.com/100',
-            'https://via.placeholder.com/100',
-            'https://via.placeholder.com/100',
-        ],
-    },
-];
-const topProducts = [
-    { name: 'Product 1', price: '$100' },
-    { name: 'Product 2', price: '$120' },
-    { name: 'Product 3', price: '$90' },
-    { name: 'Product 4', price: '$200' },
-];
 
 const ProductDetailPage = () => {
     const theme = useTheme();
@@ -511,13 +466,13 @@ const ProductDetailPage = () => {
 
             <Grid container spacing={3}>
                 {/* Customer Feedbacks */}
-                <Grid item xs={12} sm={12} md={9}>
-                    <Box sx={{ maxWidth: '800px' }}>
+                <Grid item sm={12}>
+                    <Box>
                         <Typography variant='h5' gutterBottom>
                             Customer Feedbacks
                         </Typography>
                         <List>
-                            {feedbacks.map((feedback, index) => (
+                            {product?.feedbacks?.map((feedback, index) => (
                                 <Box key={index}>
                                     <ListItem
                                         alignItems='flex-start'
@@ -525,8 +480,8 @@ const ProductDetailPage = () => {
                                     >
                                         <ListItemAvatar>
                                             <Avatar
-                                                alt={feedback.name}
-                                                src={feedback.avatar}
+                                                alt={feedback.userFirstName}
+                                                src={feedback.userImage}
                                             />
                                         </ListItemAvatar>
 
@@ -548,13 +503,16 @@ const ProductDetailPage = () => {
                                                     variant='body1'
                                                     fontWeight='bold'
                                                 >
-                                                    {feedback.name}
+                                                    {feedback.userLastName}{' '}
+                                                    {feedback.userFirstName}
                                                 </Typography>
                                                 <Typography
                                                     variant='body2'
                                                     color='text.secondary'
                                                 >
-                                                    {feedback.date}
+                                                    {new Date(
+                                                        feedback.createdAt
+                                                    ).toLocaleString()}
                                                 </Typography>
                                             </Box>
                                             <Box>
@@ -565,27 +523,30 @@ const ProductDetailPage = () => {
                                                 />
                                                 <Typography
                                                     variant='body2'
-                                                    color='text.secondary'
                                                     sx={{ mt: 1 }}
                                                 >
-                                                    {feedback.feedback}
+                                                    {feedback.comment}
                                                 </Typography>
 
                                                 {/* Product Images */}
-                                                {feedback?.productImages
-                                                    .length > 0 && (
+                                                {feedback?.images?.length >
+                                                    0 && (
                                                     <Grid
                                                         container
-                                                        sx={{ mt: 2 }}
+                                                        sx={{
+                                                            mt: 2,
+                                                            gap: 1,
+                                                            justifyContent:
+                                                                'flex-start',
+                                                        }}
                                                     >
-                                                        {feedback?.productImages.map(
+                                                        {feedback?.images?.map(
                                                             (
                                                                 image,
                                                                 imageIndex
                                                             ) => (
                                                                 <Grid
                                                                     item
-                                                                    xs={2}
                                                                     key={
                                                                         imageIndex
                                                                     }
@@ -593,7 +554,7 @@ const ProductDetailPage = () => {
                                                                     <CardMedia
                                                                         component='img'
                                                                         image={
-                                                                            image
+                                                                            image.imageUrl
                                                                         }
                                                                         alt={`Product Image ${
                                                                             imageIndex +
@@ -601,9 +562,9 @@ const ProductDetailPage = () => {
                                                                         }`}
                                                                         sx={{
                                                                             width: '100px',
-                                                                            height: 'auto',
+                                                                            height: '100px',
                                                                             objectFit:
-                                                                                'contain',
+                                                                                'fill',
                                                                             borderRadius: 1,
                                                                             boxShadow: 2,
                                                                         }}
@@ -616,32 +577,12 @@ const ProductDetailPage = () => {
                                             </Box>
                                         </Box>
                                     </ListItem>
-                                    {index < feedbacks.length - 1 && (
-                                        <Divider />
+                                    {index < product?.feedbacks?.length - 1 && (
+                                        <Divider sx={{ my: 2 }} />
                                     )}
                                 </Box>
                             ))}
                         </List>
-                    </Box>
-                </Grid>
-                {/* Top Products */}
-                <Grid item lg={3} display={{ xs: 'none', lg: 'flex' }}>
-                    <Box sx={{ width: 300, padding: 2 }}>
-                        <Paper elevation={3} sx={{ padding: 2 }}>
-                            <Typography variant='h6' gutterBottom>
-                                Top Products
-                            </Typography>
-                            <List>
-                                {topProducts.map((product, index) => (
-                                    <ListItem key={index}>
-                                        <ListItemText
-                                            primary={product.name}
-                                            secondary={product.price}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Paper>
                     </Box>
                 </Grid>
             </Grid>
@@ -653,7 +594,7 @@ const ProductDetailPage = () => {
 
 const RelatedProducts = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const handleProductClick = (id) => {
         console.log('Navigate to product ID:', id);

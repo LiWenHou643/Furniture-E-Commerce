@@ -2,6 +2,7 @@ package com.example.application.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
@@ -71,12 +72,20 @@ public class RedisConfig {
 
     @Bean
     public Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
+        // Configure ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(),
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
                 ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY);
+                JsonTypeInfo.As.PROPERTY
+        );
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.findAndRegisterModules(); // Ensures additional modules are registered if present
+
+        // Create the serializer with the configured ObjectMapper
         return new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
     }
+
 
     @Bean(destroyMethod = "shutdown")
     public ClientResources clientResources() {
