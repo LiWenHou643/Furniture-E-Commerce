@@ -1,7 +1,10 @@
 package com.example.application.service;
 
 import com.example.application.dto.ProductDTO;
-import com.example.application.entity.*;
+import com.example.application.entity.Brand;
+import com.example.application.entity.Category;
+import com.example.application.entity.Material;
+import com.example.application.entity.Product;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.FeedbackMapper;
 import com.example.application.mapper.ProductMapper;
@@ -9,10 +12,8 @@ import com.example.application.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -79,10 +80,7 @@ public class ProductService {
     }
 
     // Cache the individual product and evict the product list cache on add
-    @Caching(
-            evict = {@CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)},
-            put = {@CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")}
-    )
+    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
     @Transactional // Ensures the operation is atomic
     public ProductDTO addProduct(ProductDTO productDTO) {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
@@ -113,10 +111,7 @@ public class ProductService {
     }
 
     // Cache the individual product and evict the product list cache on update
-    @Caching(
-            evict = {@CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)},
-            put = {@CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")}
-    )
+    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
     @Transactional  // Ensures the update operation is atomic
     public ProductDTO updateProduct(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getProductId())

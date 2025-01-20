@@ -19,6 +19,7 @@ public class FeedbackDTO {
     Long feedbackId;
     Long orderDetailId;
     Long userId;
+    Long productId;
     Long productItemId;
     String userFirstName;
     String userLastName;

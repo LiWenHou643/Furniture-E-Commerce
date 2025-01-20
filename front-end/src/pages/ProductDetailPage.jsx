@@ -464,128 +464,122 @@ const ProductDetailPage = () => {
                 </Grid>
             </Box>
 
-            <Grid container spacing={3}>
-                {/* Customer Feedbacks */}
-                <Grid item sm={12}>
-                    <Box>
-                        <Typography variant='h5' gutterBottom>
-                            Customer Feedbacks
-                        </Typography>
-                        <List>
-                            {product?.feedbacks?.map((feedback, index) => (
-                                <Box key={index}>
-                                    <ListItem
-                                        alignItems='flex-start'
-                                        sx={{ width: '100%' }}
-                                    >
-                                        <ListItemAvatar>
-                                            <Avatar
-                                                alt={feedback.userFirstName}
-                                                src={feedback.userImage}
-                                            />
-                                        </ListItemAvatar>
+            {/* Customer Feedbacks */}
+            <Box>
+                <Typography variant='h5' gutterBottom>
+                    Customer Feedbacks
+                </Typography>
+                {product?.feedbacks?.length === 0 && (
+                    <Typography variant='body1' color='text.secondary'>
+                        No feedbacks yet
+                    </Typography>
+                )}
+                <List>
+                    {product?.feedbacks?.map((feedback, index) => (
+                        <Box key={index}>
+                            <ListItem
+                                alignItems='flex-start'
+                                sx={{ width: '100%' }}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar
+                                        alt={feedback.userFirstName}
+                                        src={feedback.userImage}
+                                    />
+                                </ListItemAvatar>
 
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                width: '100%',
-                                            }}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        width: '100%',
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        <Typography
+                                            variant='body1'
+                                            fontWeight='bold'
                                         >
-                                            <Box
+                                            {feedback.userLastName}{' '}
+                                            {feedback.userFirstName}
+                                        </Typography>
+                                        <Typography
+                                            variant='body2'
+                                            color='text.secondary'
+                                        >
+                                            {new Date(
+                                                feedback.createdAt
+                                            ).toLocaleString()}
+                                        </Typography>
+                                    </Box>
+                                    <Box>
+                                        <Rating
+                                            value={feedback.rating}
+                                            readOnly
+                                            precision={0.1}
+                                        />
+                                        <Typography
+                                            variant='body2'
+                                            sx={{ mt: 1 }}
+                                        >
+                                            {feedback.comment}
+                                        </Typography>
+
+                                        {/* Product Images */}
+                                        {feedback?.images?.length > 0 && (
+                                            <Grid
+                                                container
                                                 sx={{
-                                                    display: 'flex',
+                                                    mt: 2,
+                                                    gap: 1,
                                                     justifyContent:
-                                                        'space-between',
+                                                        'flex-start',
                                                 }}
                                             >
-                                                <Typography
-                                                    variant='body1'
-                                                    fontWeight='bold'
-                                                >
-                                                    {feedback.userLastName}{' '}
-                                                    {feedback.userFirstName}
-                                                </Typography>
-                                                <Typography
-                                                    variant='body2'
-                                                    color='text.secondary'
-                                                >
-                                                    {new Date(
-                                                        feedback.createdAt
-                                                    ).toLocaleString()}
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Rating
-                                                    value={feedback.rating}
-                                                    readOnly
-                                                    precision={0.1}
-                                                />
-                                                <Typography
-                                                    variant='body2'
-                                                    sx={{ mt: 1 }}
-                                                >
-                                                    {feedback.comment}
-                                                </Typography>
-
-                                                {/* Product Images */}
-                                                {feedback?.images?.length >
-                                                    0 && (
-                                                    <Grid
-                                                        container
-                                                        sx={{
-                                                            mt: 2,
-                                                            gap: 1,
-                                                            justifyContent:
-                                                                'flex-start',
-                                                        }}
-                                                    >
-                                                        {feedback?.images?.map(
-                                                            (
-                                                                image,
-                                                                imageIndex
-                                                            ) => (
-                                                                <Grid
-                                                                    item
-                                                                    key={
-                                                                        imageIndex
-                                                                    }
-                                                                >
-                                                                    <CardMedia
-                                                                        component='img'
-                                                                        image={
-                                                                            image.imageUrl
-                                                                        }
-                                                                        alt={`Product Image ${
-                                                                            imageIndex +
-                                                                            1
-                                                                        }`}
-                                                                        sx={{
-                                                                            width: '100px',
-                                                                            height: '100px',
-                                                                            objectFit:
-                                                                                'fill',
-                                                                            borderRadius: 1,
-                                                                            boxShadow: 2,
-                                                                        }}
-                                                                    />
-                                                                </Grid>
-                                                            )
-                                                        )}
-                                                    </Grid>
+                                                {feedback?.images?.map(
+                                                    (image, imageIndex) => (
+                                                        <Grid
+                                                            item
+                                                            key={imageIndex}
+                                                        >
+                                                            <CardMedia
+                                                                component='img'
+                                                                image={
+                                                                    image.imageUrl
+                                                                }
+                                                                alt={`Product Image ${
+                                                                    imageIndex +
+                                                                    1
+                                                                }`}
+                                                                sx={{
+                                                                    width: '100px',
+                                                                    height: '100px',
+                                                                    objectFit:
+                                                                        'fill',
+                                                                    borderRadius: 1,
+                                                                    boxShadow: 2,
+                                                                }}
+                                                            />
+                                                        </Grid>
+                                                    )
                                                 )}
-                                            </Box>
-                                        </Box>
-                                    </ListItem>
-                                    {index < product?.feedbacks?.length - 1 && (
-                                        <Divider sx={{ my: 2 }} />
-                                    )}
+                                            </Grid>
+                                        )}
+                                    </Box>
                                 </Box>
-                            ))}
-                        </List>
-                    </Box>
-                </Grid>
-            </Grid>
+                            </ListItem>
+                            {index < product?.feedbacks?.length - 1 && (
+                                <Divider sx={{ my: 2 }} />
+                            )}
+                        </Box>
+                    ))}
+                </List>
+            </Box>
 
             <RelatedProducts />
         </Container>

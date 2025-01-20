@@ -11,6 +11,7 @@ public interface FeedbackMapper {
     FeedbackMapper INSTANCE = Mappers.getMapper(FeedbackMapper.class);
 
     @Mapping(target = "orderDetailId", source = "orderDetail.orderDetailId")
+    @Mapping(target = "productId", source = "productItem.product.productId")
     @Mapping(target = "productItemId", source = "productItem.productItemId")
     @Mapping(target = "userId", source = "user.userId")
     @Mapping(target = "userFirstName", source = "user.firstName")

@@ -181,17 +181,17 @@ function CheckoutPage() {
                     Delivery Address
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                         <Typography variant='body1'>
                             <strong>Full Name:</strong> {fullName}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                         <Typography variant='body1'>
                             <strong>Phone:</strong> {phone}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={6}>
                         <Typography variant='body1'>
                             <strong>Full Address:</strong> {address}
                         </Typography>
