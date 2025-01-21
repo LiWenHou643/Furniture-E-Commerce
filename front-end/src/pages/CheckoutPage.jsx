@@ -127,12 +127,8 @@ function CheckoutPage() {
 
     const calculateTotalPrice = () => {
         return selectedCartItems
-            .reduce((total, cartItem) => {
-                const selectedItem = cartItem?.product?.productItems?.find(
-                    (productItem) =>
-                        productItem.productItemId === cartItem.productItemId
-                );
-                return total + selectedItem?.salePrice * cartItem.quantity;
+            .reduce((total, item) => {
+                return total + item.price * item.quantity;
             }, 0)
             .toFixed(2);
     };
@@ -148,20 +144,17 @@ function CheckoutPage() {
 
     const handleSubmitOrder = () => {
         const order = {
-            shippingAddress: address,
+            shippingAddress: phone + ' - ' + address,
             shippingMethod: deliveryMethod,
             paymentMethod: paymentMethod,
             shippingCost: shippingCost,
             notes: note,
-            orderDetails: selectedCartItems.map((item) => {
-                const selectedColor = item?.product?.productItems?.find(
-                    (item) => item.productItemId === item?.productItemId
-                );
+            orderDetails: selectedCartItems.map((selected) => {
                 return {
-                    productId: item.product.productId,
-                    productItemId: item.productItemId,
-                    quantity: item.quantity,
-                    price: selectedColor?.salePrice,
+                    productId: selected.productId,
+                    productItemId: selected.productItemId,
+                    quantity: selected.quantity,
+                    price: selected?.price,
                 };
             }),
         };
@@ -219,15 +212,12 @@ function CheckoutPage() {
                     </Grid>
                 </Grid>
                 <Divider sx={{ my: 1 }} />
-                {selectedCartItems?.map((selected) => {
-                    const selectedColor = selected?.product?.productItems?.find(
-                        (item) => item.productItemId === selected?.productItemId
-                    );
+                {selectedCartItems?.map((selected, index) => {
                     return (
                         <Grid
                             container
                             spacing={2}
-                            key={selected.cartItemId}
+                            key={index}
                             sx={{ mb: 1 }}
                             alignItems='center'
                         >
@@ -247,14 +237,9 @@ function CheckoutPage() {
                                     }}
                                 >
                                     <img
-                                        src={
-                                            selectedColor?.productImages?.find(
-                                                (image) =>
-                                                    image.mainImage === true
-                                            )?.imageUrl
-                                        }
+                                        src={selected.imageUrl}
                                         alt={
-                                            selectedColor?.product?.name ||
+                                            selected?.productName ||
                                             'Product Image'
                                         }
                                         style={{
@@ -265,9 +250,9 @@ function CheckoutPage() {
                                         }}
                                     />
                                     <Typography variant='body2'>
-                                        {selected?.product?.productName}
+                                        {selected?.productName}
                                         {' - '}
-                                        {selectedColor?.color?.colorName}
+                                        {selected?.color}
                                     </Typography>
                                 </Box>
                             </Grid>
@@ -280,7 +265,7 @@ function CheckoutPage() {
                                 textAlign='center'
                             >
                                 <Typography variant='body2'>
-                                    ${selectedColor?.salePrice?.toFixed(2)}
+                                    ${selected?.price?.toFixed(2)}
                                 </Typography>
                             </Grid>
                             <Grid
@@ -304,8 +289,7 @@ function CheckoutPage() {
                                 <Typography variant='body2'>
                                     $
                                     {(
-                                        selectedColor.salePrice *
-                                        selected.quantity
+                                        selected.price * selected.quantity
                                     ).toFixed(2)}
                                 </Typography>
                             </Grid>

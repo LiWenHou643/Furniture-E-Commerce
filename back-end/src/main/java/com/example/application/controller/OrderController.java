@@ -66,7 +66,7 @@ public class OrderController {
 
         // Step 2: If payment method is PayPal, generate the PayPal payment URL
         var successUrl = "http://localhost:8080/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
-        var cancelUrl = "http://localhost:8080/orders/%d/cancel".formatted(savedOrder.getOrderId());
+        var cancelUrl = "http://localhost:8080/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
 
         if (paymentMethod.equals(PaymentMethod.paypal)) {
             String paypalUrl = orderService.processPayment(savedOrder.getOrderId(), successUrl, cancelUrl);
@@ -107,7 +107,7 @@ public class OrderController {
         ).build();
     }
 
-    @GetMapping("/{orderId}/cancel")
+    @PutMapping("/{orderId}/cancel")
     public ResponseEntity<ApiResponse<?>> cancelOrder(@PathVariable Long orderId) {
         var userId = getUserId();
         var order = orderService.cancelOrder(userId, orderId);

@@ -38,6 +38,13 @@ public class ProductItemService {
                 () -> new ResourceNotFoundException("ProductItem", "id", id)));
     }
 
+    public List<ProductItemDTO> getAllProductItemsByIds(List<Long> ids) {
+        return productItemRepository.findAllById(ids).stream()
+                .map(ProductItemMapper.INSTANCE::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
     public ProductItemDTO addProductItem(ProductItemDTO productItemDTO) {
         Product product = productRepository.findById(productItemDTO.getProductId()).orElseThrow(
                 () -> new ResourceNotFoundException("Product", "id", productItemDTO.getProductId()));

@@ -9,6 +9,8 @@ import org.mapstruct.factory.Mappers;
 public interface ProductItemMapper {
     ProductItemMapper INSTANCE = Mappers.getMapper(ProductItemMapper.class);
 
+    @Mapping(target = "productId", source = "product.productId")
+    @Mapping(target = "productName", source = "product.productName")
     ProductItemDTO toDTO(ProductItem productItem);
 
     ProductItem toEntity(ProductItemDTO productItemDTO);

@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -26,6 +28,19 @@ public class ProductItemController {
                            .build()
         );
     }
+
+    @GetMapping("/product-items")
+    public ResponseEntity<ApiResponse<Iterable<ProductItemDTO>>> getAllProductItemsByIds(
+            @RequestParam("productItemIds") List<Long> productItemIds) {
+        return ResponseEntity.ok(
+                ApiResponse.<Iterable<ProductItemDTO>>builder()
+                           .status("success")
+                           .message("Product items retrieved successfully")
+                           .data(productItemService.getAllProductItemsByIds(productItemIds))
+                           .build()
+        );
+    }
+
 
     @PostMapping("/product-items")
     public ResponseEntity<ApiResponse<ProductItemDTO>> addProductItem(@RequestBody ProductItemDTO productItemDTO) {

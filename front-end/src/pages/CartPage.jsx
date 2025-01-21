@@ -61,9 +61,29 @@ function CartPage() {
 
     const handleCheckout = () => {
         // Filter selected item objects from cartItems
-        const selectedCartItems = cartItems.filter((item) =>
+        const filterdCartItems = cartItems.filter((item) =>
             selectedItems.includes(item.cartItemId)
         );
+
+        const selectedCartItems = filterdCartItems.map((item) => {
+            const selectedItem = item.product.productItems.find(
+                (productItem) =>
+                    productItem.productItemId === item.productItemId
+            );
+
+            return {
+                cartItemId: item.cartItemId,
+                productId: item.product.productId,
+                productItemId: item.productItemId,
+                productName: item.product.productName,
+                quantity: item.quantity,
+                price: selectedItem.salePrice,
+                color: selectedItem.color.colorName,
+                imageUrl: selectedItem.productImages.find(
+                    (image) => image.mainImage
+                ).imageUrl,
+            };
+        });
 
         // Log selected item objects (optional)
         console.log('Selected item objects:', selectedCartItems);

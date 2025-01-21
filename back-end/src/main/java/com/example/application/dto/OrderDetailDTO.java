@@ -19,6 +19,8 @@ public class OrderDetailDTO {
 
     String productName;
 
+    String productImage;
+
     String colorType;
 
     Long productItemId;

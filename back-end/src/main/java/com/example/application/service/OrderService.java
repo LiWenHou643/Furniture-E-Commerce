@@ -49,7 +49,21 @@ public class OrderService {
                          List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
                                                                         .sorted(Comparator.comparing(
                                                                                 OrderDetail::getOrderDetailId))
-                                                                        .map(OrderDetailMapper.INSTANCE::toDTO)
+                                                                        .map(
+                                                                                orderDetail -> {
+                                                                                    var orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(
+                                                                                            orderDetail);
+                                                                                    orderDetailDTO.setProductImage(
+                                                                                            orderDetail.getProductItem()
+                                                                                                       .getProductImages()
+                                                                                                       .stream().filter(
+                                                                                                               ProductImage::isMainImage)
+                                                                                                       .findFirst()
+                                                                                                       .map(ProductImage::getImageUrl)
+                                                                                                       .orElse(null));
+                                                                                    return orderDetailDTO;
+                                                                                }
+                                                                        )
                                                                         .collect(Collectors.toList());
 
                          // Map Order to OrderDTO and set sorted OrderDetails
@@ -70,7 +84,14 @@ public class OrderService {
 
         // Convert Set<OrderDetail> to List<OrderDetail> and sort by orderDetailId
         var orderDetails = order.getOrderDetails();
-        var orderDetailsDto = orderDetails.stream().map(OrderDetailMapper.INSTANCE::toDTO)
+        var orderDetailsDto = orderDetails.stream().map(
+                                                  orderDetail -> {
+                                                      var orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(orderDetail);
+                                                      orderDetailDTO.setProductImage(orderDetail.getProductItem().getProductImages().stream().filter(
+                                                              ProductImage::isMainImage).findFirst().map(ProductImage::getImageUrl).orElse(null));
+                                                      return orderDetailDTO;
+                                                  }
+                                          )
                                           .sorted(Comparator.comparing(OrderDetailDTO::getOrderDetailId))
                                           .collect(Collectors.toList());
 
@@ -119,6 +140,10 @@ public class OrderService {
                                                    orderDetailDTO.getProductItemId());
                                        }
 
+                                       if (productItem.getSalePrice() != orderDetail.getPrice()) {
+                                           throw new RuntimeException("Sale price mismatch for product item: " + productItem.getProductItemId());
+                                       }
+
                                        // Check stock availability
                                        var orderedQuantity = orderDetailDTO.getQuantity();
                                        var availableQuantity = productItem.getStockQuantity();
@@ -134,6 +159,7 @@ public class OrderService {
 
                                        orderDetail.setOrder(finalOrder);
                                        orderDetail.setProductItem(productItem);
+                                       orderDetail.setTotal(orderDetailDTO.getQuantity() * orderDetailDTO.getPrice());
 
                                        // Calculate subtotal and total
                                        double price = productItem.getSalePrice();

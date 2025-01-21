@@ -386,10 +386,31 @@ const ProductDetailPage = () => {
                                         variant='body2'
                                         color='text.secondary'
                                     >
-                                        {`Stock Left: ${
-                                            selectedVariant?.stockQuantity -
-                                            quantity
-                                        }`}
+                                        {
+                                            // Display stock quantity and warning message
+                                            selectedVariant?.stockQuantity ==
+                                            0 ? (
+                                                <Typography
+                                                    component='span' // Inline to keep it part of the sentence
+                                                    sx={{
+                                                        color: 'red',
+                                                        marginLeft: 1,
+                                                    }} // Red color and spacing
+                                                >
+                                                    Out of stock
+                                                </Typography>
+                                            ) : (
+                                                <Typography
+                                                    component='span' // Inline to keep it part of the sentence
+                                                    sx={{ marginLeft: 1 }} // Spacing
+                                                >
+                                                    {
+                                                        selectedVariant?.stockQuantity
+                                                    }{' '}
+                                                    in stock
+                                                </Typography>
+                                            )
+                                        }
 
                                         {quantity ===
                                             selectedVariant?.stockQuantity && (
@@ -413,19 +434,12 @@ const ProductDetailPage = () => {
                                         color='primary'
                                         fullWidth
                                         onClick={handleAddToCart}
-                                        disabled={isAdding}
-                                    >
-                                        {isAdding ? 'Adding' : 'Add to Cart'}
-                                    </Button>
-                                    <Button
-                                        variant='outlined'
-                                        color='primary'
-                                        fullWidth
-                                        onClick={() =>
-                                            console.log('Added to wishlist')
+                                        disabled={
+                                            isAdding ||
+                                            selectedVariant?.stockQuantity === 0
                                         }
                                     >
-                                        Add to Wishlist
+                                        {isAdding ? 'Adding' : 'Add to Cart'}
                                     </Button>
                                 </Box>
 

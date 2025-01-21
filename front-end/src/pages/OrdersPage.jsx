@@ -6,11 +6,11 @@ import {
     LocalShipping,
 } from '@mui/icons-material';
 import {
-    Avatar,
     Box,
     Button,
     Card,
     CardContent,
+    Chip,
     Container,
     Divider,
     Grid,
@@ -25,7 +25,11 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axiosPublic from '../api/axiosPublic';
+import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrders from '../hooks/useFetchOrders';
+import useReOrder from '../hooks/useReOrder';
 const statusIcons = {
     pending: <AccessTime color='warning' />,
     processing: <AssignmentTurnedIn color='info' />,
@@ -35,9 +39,12 @@ const statusIcons = {
 };
 
 const OrdersPage = () => {
-    const [selectedTab, setSelectedTab] = useState('delivered');
+    const [selectedTab, setSelectedTab] = useState('pending');
+    const navigate = useNavigate();
 
     const { data: orders, isLoading } = useFetchOrders();
+    const { mutate: cancelOrder, isLoading: isCanceling } = useCancelOrder();
+    const { mutate: reOrder, isLoading: isReordering } = useReOrder();
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -47,12 +54,47 @@ const OrdersPage = () => {
         (order) => order.orderStatus === selectedTab
     );
 
-    const handleCancel = async () => {
-        console.log('Order cancelled');
+    const handleCancel = async (orderId) => {
+        cancelOrder({ orderId });
     };
 
-    const handleReorder = async () => {
-        console.log('Order reordered');
+    const handleReorder = async (order) => {
+        const productItemIds = order.orderDetails.map(
+            (item) => item.productItemId
+        );
+
+        const productItems = await axiosPublic.get('/products/product-items', {
+            params: {
+                productItemIds: productItemIds.join(','),
+            },
+        });
+
+        console.log(productItems);
+
+        const selectedCartItems = productItems.data.data.map((item) => ({
+            productId: item.productId,
+            productItemId: item.productItemId,
+            productName: item.productName,
+            quantity: order.orderDetails.find(
+                (orderItem) => orderItem.productItemId === item.productItemId
+            ).quantity,
+            price: item.salePrice,
+            color: item.color.colorName,
+            imageUrl: item.productImages.find(
+                (image) => image.mainImage === true
+            ).imageUrl,
+        }));
+
+        console.log(selectedCartItems);
+
+        // Save the selected item objects to local storage (optional)
+        // localStorage.setItem(
+        //     'selectedCartItems',
+        //     JSON.stringify(selectedCartItems)
+        // );
+
+        // Navigate to the checkout page and pass the selected item objects as state
+        // navigate('/checkout', { state: { selectedCartItems } });
     };
 
     return (
@@ -131,6 +173,7 @@ const OrdersPage = () => {
                                 }}
                             >
                                 <CardContent sx={{ p: 3 }}>
+                                    {/* Order Header */}
                                     <Box
                                         sx={{
                                             display: 'flex',
@@ -139,28 +182,29 @@ const OrdersPage = () => {
                                             mb: 2,
                                         }}
                                     >
-                                        <Box>
-                                            <Typography
-                                                variant='h6'
-                                                fontWeight='bold'
-                                            >
-                                                Order #{order.orderId}
-                                            </Typography>
-                                            <Typography
-                                                variant='body2'
-                                                color='textSecondary'
-                                            >
-                                                Status:{' '}
-                                                {order.orderStatus.toUpperCase()}
-                                            </Typography>
-                                        </Box>
-                                        <Avatar
-                                            sx={{ backgroundColor: '#f5f5f5' }}
+                                        <Typography
+                                            variant='h6'
+                                            fontWeight='bold'
                                         >
-                                            {statusIcons[order.orderStatus]}
-                                        </Avatar>
+                                            Order #{order.orderId}
+                                        </Typography>
+                                        <Chip
+                                            label={order.orderStatus.toUpperCase()}
+                                            style={{
+                                                backgroundColor: getStatusColor(
+                                                    order.orderStatus
+                                                ),
+                                                color: 'white', // Ensure text is readable on colored backgrounds
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                            }}
+                                            size='small'
+                                        />
                                     </Box>
+
                                     <Divider sx={{ mb: 2 }} />
+
+                                    {/* Customer Details */}
                                     <Typography variant='body1' gutterBottom>
                                         Shipping Address:{' '}
                                         {order.shippingAddress}
@@ -208,6 +252,8 @@ const OrdersPage = () => {
                                     >
                                         Notes: {order.notes}
                                     </Typography>
+
+                                    {/* Order Details */}
                                     <TableContainer sx={{ mt: 2 }}>
                                         <Table>
                                             <TableHead>
@@ -236,11 +282,41 @@ const OrdersPage = () => {
                                                                 item.orderDetailId
                                                             }
                                                         >
-                                                            <TableCell>
+                                                            <TableCell
+                                                                style={{
+                                                                    display:
+                                                                        'flex',
+                                                                    alignItems:
+                                                                        'center',
+                                                                    cursor: 'pointer',
+                                                                }}
+                                                                onClick={() =>
+                                                                    window.open(
+                                                                        `/products/${item.productId}`,
+                                                                        '_blank'
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        item.productImage
+                                                                    }
+                                                                    alt={
+                                                                        item.productName
+                                                                    }
+                                                                    style={{
+                                                                        width: 40,
+                                                                        height: 40,
+                                                                        objectFit:
+                                                                            'cover',
+                                                                        marginRight: 10,
+                                                                    }}
+                                                                />
                                                                 {
                                                                     item.productName
                                                                 }
                                                             </TableCell>
+
                                                             <TableCell>
                                                                 {item.colorType}
                                                             </TableCell>
@@ -265,6 +341,8 @@ const OrdersPage = () => {
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
+
+                                    {/* Order Summary */}
                                     <Box
                                         sx={{
                                             mt: 3,
@@ -274,20 +352,6 @@ const OrdersPage = () => {
                                     >
                                         <Box>
                                             <Typography
-                                                variant='body1'
-                                                fontWeight='bold'
-                                            >
-                                                Subtotal: $
-                                                {order.subtotal?.toFixed(2)}
-                                            </Typography>
-                                            <Typography
-                                                variant='body1'
-                                                fontWeight='bold'
-                                            >
-                                                Shipping Cost: $
-                                                {order.shippingCost?.toFixed(2)}
-                                            </Typography>
-                                            <Typography
                                                 variant='h6'
                                                 color='primary'
                                                 fontWeight='bold'
@@ -295,24 +359,20 @@ const OrdersPage = () => {
                                                 Total: ${order.total.toFixed(2)}
                                             </Typography>
                                         </Box>
-                                        <Button
-                                            variant='outlined'
-                                            color='primary'
-                                            disabled={order.leaveFeedback}
-                                        >
-                                            {order.leaveFeedback
-                                                ? 'Feedback Submitted'
-                                                : 'Leave Feedback'}
-                                        </Button>
 
                                         {/* Cancel Button (only for pending orders) */}
                                         {order.orderStatus === 'pending' && (
                                             <Button
                                                 variant='contained'
                                                 color='error'
-                                                onClick={handleCancel}
+                                                onClick={() =>
+                                                    handleCancel(order.orderId)
+                                                }
+                                                disabled={isCanceling}
                                             >
-                                                Cancel Order
+                                                {isCanceling
+                                                    ? 'Cancelling...'
+                                                    : 'Cancel Order'}
                                             </Button>
                                         )}
 
@@ -323,11 +383,26 @@ const OrdersPage = () => {
                                             <Button
                                                 variant='contained'
                                                 color='info'
-                                                onClick={handleReorder}
+                                                onClick={() =>
+                                                    handleReorder(order)
+                                                }
+                                                disabled={isReordering}
                                             >
-                                                Re-order
+                                                {isReordering
+                                                    ? 'Reordering...'
+                                                    : 'Re-order'}
                                             </Button>
                                         )}
+
+                                        {/* View Order Button */}
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            component={Link}
+                                            to={`/orders/${order.orderId}`}
+                                        >
+                                            View Order Details
+                                        </Button>
                                     </Box>
                                 </CardContent>
                             </Card>
@@ -337,6 +412,23 @@ const OrdersPage = () => {
             </Container>
         </Box>
     );
+};
+
+const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+        case 'pending':
+            return '#FFC107'; // Amber
+        case 'processing':
+            return '#17A2B8'; // Cyan
+        case 'shipped':
+            return '#007BFF'; // Blue
+        case 'delivered':
+            return '#28A745'; // Green
+        case 'cancelled':
+            return '#DC3545'; // Red
+        default:
+            return '#6C757D'; // Gray for unknown status
+    }
 };
 
 export default OrdersPage;

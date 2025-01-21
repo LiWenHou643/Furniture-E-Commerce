@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
+import axiosPrivate from '../api/axiosPrivate';
 const addToCart = async ({ productItemId, quantity }) => {
     const response = await axiosPrivate.post('/carts/items', {
         productItemId,

@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axiosPrivate from '../api/axiosPrivate'; // The Axios instance
-
+import axiosPrivate from '../api/axiosPrivate';
 const fetchOrders = async () => {
     const { data } = await axiosPrivate.get('/orders');
     console.log(data.data);

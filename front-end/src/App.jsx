@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import { ArticleDetailPage, NewsPage } from './pages/NewsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import OrdersPage from './pages/OrdersPage';
 import PaymentCancelledPage from './pages/PaymentCancelPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -72,6 +73,12 @@ function App() {
                             />
                             {/* Orders Page */}
                             <Route path='/orders' element={<OrdersPage />} />
+
+                            {/* Order Detail Page */}
+                            <Route
+                                path='/orders/:id'
+                                element={<OrderDetailPage />}
+                            />
 
                             {/* Cancelled Payment Page */}
                             <Route
