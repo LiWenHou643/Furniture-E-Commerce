@@ -1434,10 +1434,10 @@ UPDATE products
 SET sold_quantity = 4
 WHERE product_id = 2;
 
-INSERT INTO feedbacks (order_detail_id, user_id, product_item_id, comment, rating, created_at, updated_at)
-VALUES (1, 2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,
+INSERT INTO feedbacks (user_id, product_item_id, comment, rating, created_at, updated_at)
+VALUES (2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,
         '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (3, 3, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-01-12 12:13:38',
+       (3, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-01-12 12:13:38',
         '2025-01-12 12:13:38');
 
 INSERT INTO feedback_images (feedback_id, image_url, created_at, updated_at)

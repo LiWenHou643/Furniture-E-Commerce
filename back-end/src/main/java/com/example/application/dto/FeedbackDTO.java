@@ -17,7 +17,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeedbackDTO {
     Long feedbackId;
-    Long orderDetailId;
     Long userId;
     Long productId;
     Long productItemId;

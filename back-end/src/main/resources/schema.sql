@@ -217,14 +217,12 @@ CREATE TABLE payments
 CREATE TABLE feedbacks
 (
     feedback_id     INT AUTO_INCREMENT PRIMARY KEY,
-    order_detail_id INT NOT NULL,                                             -- Reference to the order detail
     user_id         INT NOT NULL,                                             -- Reference to the customer who submitted the feedback
     product_item_id INT NOT NULL,                                             -- Reference to the product being reviewed
     rating          INT NOT NULL,                                             -- Product rating (e.g., 1-5 stars)
     comment         TEXT,                                                     -- Written feedback (optional)
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_detail_id) REFERENCES order_details (order_detail_id), -- Reference to orders table
     FOREIGN KEY (user_id) REFERENCES users (user_id),                         -- Reference to customers table
     FOREIGN KEY (product_item_id) REFERENCES product_item (product_item_id),  -- Reference to products item table
     CONSTRAINT check_rating CHECK (rating BETWEEN 1 AND 5)                    -- Ensure rating is between 1 and 5

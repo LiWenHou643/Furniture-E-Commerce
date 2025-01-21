@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,9 @@ public class FeedbackService {
 
         // Return updated product as DTO
         var productDTO = ProductMapper.INSTANCE.toDTO(product);
+        if (productDTO.getFeedbacks() == null) {
+            productDTO.setFeedbacks(new ArrayList<>());
+        }
         productDTO.getFeedbacks().add(FeedbackMapper.INSTANCE.toDTO(savedFeedback));
         return productDTO;
     }

@@ -24,10 +24,6 @@ public class Feedback extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long feedbackId;
 
-    @OneToOne
-    @JoinColumn(name = "order_detail_id", nullable = false)
-    OrderDetail orderDetail;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
