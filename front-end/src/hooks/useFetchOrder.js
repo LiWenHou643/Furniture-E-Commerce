@@ -8,12 +8,13 @@ const fetchOrder = async ({ orderId }) => {
 };
 
 const useFetchOrder = (orderId) => {
+    console.log('useQuery key:', ['order', orderId]);
     return useQuery(['order', orderId], () => fetchOrder({ orderId }), {
-        keepPreviousData: false,
+        keepPreviousData: true,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
-        refetchInterval: false,
-        staleTime: 30000,
+        staleTime: 0,
+        cacheTime: 0,
         retry: 1,
     });
 };

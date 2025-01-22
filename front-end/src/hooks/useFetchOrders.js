@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import axiosPrivate from '../api/axiosPrivate';
 const fetchOrders = async () => {
     const { data } = await axiosPrivate.get('/orders');
-    console.log(data.data);
     return data.data;
 };
 

@@ -42,8 +42,6 @@ const OrderDetailPage = () => {
         orderDetails,
     } = data;
 
-    console.log(data);
-
     const getStatusColor = (status) => {
         switch (status) {
             case 'pending':

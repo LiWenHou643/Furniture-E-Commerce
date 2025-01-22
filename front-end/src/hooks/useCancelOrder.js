@@ -11,12 +11,14 @@ const useCancelOrder = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: cancelOrder,
-        onSuccess: (data) => {
-            console.log('Order cancelled', data.data.orderId);
-            const orderId = data.data.orderId;
-
+        onSuccess: (data, variables) => {
+            console.log('Invalidating query key:', [
+                'order',
+                variables.orderId,
+            ]);
+            const stringOrderId = String(variables.orderId);
             // Invalidate the specific order query
-            queryClient.invalidateQueries(['order', orderId]);
+            queryClient.invalidateQueries(['order', stringOrderId]);
 
             // Invalidate the list of orders query
             queryClient.invalidateQueries(['orders']);
