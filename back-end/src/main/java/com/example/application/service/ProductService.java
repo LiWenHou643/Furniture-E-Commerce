@@ -45,10 +45,20 @@ public class ProductService {
             List<String> materials,
             Double minPrice,
             Double maxPrice,
+            Integer minRating,
+            String keyword,
             Pageable pageable
     ) {
         List<ProductDTO> products = cachedProductService.getFilteredProducts(categories, brands, materials, minPrice,
-                maxPrice);
+                maxPrice, minRating);
+
+        // Filter by keyword if it's provided
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerCaseKeyword = keyword.toLowerCase(); // Make case-insensitive
+            products = products.stream()
+                               .filter(product -> product.getProductName().toLowerCase().contains(lowerCaseKeyword))
+                               .toList();
+        }
 
         // Paginate the list
         int start = (int) pageable.getOffset();
@@ -57,6 +67,7 @@ public class ProductService {
 
         return new PageImpl<>(paginatedContent, pageable, products.size());
     }
+
 
     // Cache the individual product
     @Cacheable(cacheNames = PRODUCT_CACHE_KEY, key = "#id")

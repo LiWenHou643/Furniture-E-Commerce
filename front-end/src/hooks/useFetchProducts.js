@@ -6,7 +6,17 @@ import axiosPublic from '../api/axiosPublic';
 const fetchProducts = async ({ queryKey }) => {
     const [
         _key,
-        { page, size, categories, brands, materials, minPrice, maxPrice },
+        {
+            page,
+            size,
+            categories,
+            brands,
+            materials,
+            minPrice,
+            maxPrice,
+            minRating,
+            keyword,
+        },
     ] = queryKey;
     const response = await axiosPublic.get('/products', {
         params: {
@@ -17,6 +27,8 @@ const fetchProducts = async ({ queryKey }) => {
             materials,
             minPrice,
             maxPrice,
+            minRating,
+            keyword,
         }, // Pass page and size as query params
     });
     return response.data?.data; // Axios automatically parses JSON
@@ -31,11 +43,23 @@ const useFetchProducts = ({
     materials,
     minPrice,
     maxPrice,
+    minRating,
+    keyword,
 }) => {
     return useQuery(
         [
             'products',
-            { page, size, categories, brands, materials, minPrice, maxPrice },
+            {
+                page,
+                size,
+                categories,
+                brands,
+                materials,
+                minPrice,
+                maxPrice,
+                minRating,
+                keyword,
+            },
         ],
         fetchProducts,
         {

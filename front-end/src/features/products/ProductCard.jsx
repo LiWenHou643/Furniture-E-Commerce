@@ -87,9 +87,29 @@ const ProductCard = ({ product }) => {
             </div>
 
             <CardContent>
-                <Typography variant='h6' gutterBottom>
-                    {selectedVariant.color.colorName} Sofa
-                </Typography>
+                <CustomTooltip
+                    title={
+                        product.productName +
+                        ' - ' +
+                        selectedVariant.color.colorName
+                    }
+                >
+                    <Typography
+                        variant='h6'
+                        gutterBottom
+                        sx={{
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 1,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        {product.productName} {' - '}{' '}
+                        {selectedVariant.color.colorName}
+                    </Typography>
+                </CustomTooltip>
+
                 <Box
                     display='flex'
                     justifyContent='space-between'

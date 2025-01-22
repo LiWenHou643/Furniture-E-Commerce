@@ -23,13 +23,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (:brands IS NULL OR p.brand.brandId IN :brands) " +
             "AND (:materials IS NULL OR p.material.materialId IN :materials) " +
             "AND (:minPrice IS NULL OR v.salePrice >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR v.salePrice <= :maxPrice)")
+            "AND (:maxPrice IS NULL OR v.salePrice <= :maxPrice)" +
+            "AND (:minRating IS NULL OR p.averageRating >= :minRating)"
+    )
     List<Product> findFilteredProductsWithVariations(
             @Param("categories") List<String> categories,
             @Param("brands") List<String> brands,
             @Param("materials") List<String> materials,
             @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice);
+            @Param("maxPrice") Double maxPrice,
+            @Param("minRating") Integer minRating);
 
     @Query("SELECT p FROM Product p " +
             "LEFT JOIN FETCH p.productItems pi " +

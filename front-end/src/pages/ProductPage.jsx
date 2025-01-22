@@ -8,6 +8,8 @@ import {
     Typography,
 } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
+import { debounce } from 'lodash';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loading from '../components/Loading';
 import ProductCard from '../features/products/ProductCard';
@@ -29,7 +31,8 @@ const ProductPage = () => {
         materials: searchParams.get('materials'),
         minPrice: searchParams.get('minPrice'),
         maxPrice: searchParams.get('maxPrice'),
-        minRating: searchParams.get('minRating'),
+        minRating: searchParams.get('stars'),
+        keyword: searchParams.get('keyword'),
     });
 
     // Calculate the page range based on the current page and total items
@@ -42,6 +45,31 @@ const ProductPage = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // Create a ref to hold the debounced function
+    const debouncedSearchRef = useRef(
+        debounce((keyword) => {
+            const currentParams = Object.fromEntries(searchParams.entries());
+            const updatedParams = { ...currentParams, keyword };
+            setSearchParams(updatedParams);
+            navigate(`?${new URLSearchParams(updatedParams).toString()}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500) // Adjust debounce delay as needed
+    );
+
+    // Handle search input change
+    const handleSearch = (event) => {
+        const keyword = event.target.value;
+        debouncedSearchRef.current(keyword); // Call the debounced function
+    };
+
+    // Clean up debounce function on component unmount
+    useEffect(() => {
+        const debouncedFn = debouncedSearchRef.current;
+        return () => {
+            debouncedFn.cancel(); // Cancel any pending debounced calls
+        };
+    }, []);
+
     return (
         <Container maxWidth='lg' sx={{ marginTop: 15 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -53,6 +81,7 @@ const ProductPage = () => {
                         variant='outlined'
                         size='small'
                         sx={{ marginBottom: 2 }}
+                        onChange={(e) => handleSearch(e)}
                     />
                 </Box>
                 <Grid container spacing={2}>
@@ -83,7 +112,7 @@ const ProductPage = () => {
                                             <ProductCard
                                                 key={
                                                     product.productId +
-                                                    product.name
+                                                    product.productName
                                                 }
                                                 product={product}
                                             />

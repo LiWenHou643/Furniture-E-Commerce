@@ -44,11 +44,12 @@ const Footer = () => {
                     {/* Column 1: About Us */}
                     <Grid item xs={12} sm={4}>
                         <Typography variant='h6' gutterBottom color='primary'>
-                            MyShop
+                            LuxeHouse
                         </Typography>
                         <Typography variant='body2' color='textSecondary'>
-                            MyShop is your one-stop shop for all your needs. We
-                            offer the best products at affordable prices.
+                            LuxeHouse is your one-stop shop for all your
+                            furnitures needs. We offer the best products at
+                            affordable prices.
                         </Typography>
                     </Grid>
 
@@ -118,7 +119,7 @@ const Footer = () => {
                     </Typography>
                     <Typography variant='body2' color='textSecondary' paragraph>
                         Stay updated with the latest news and offers from
-                        MyShop.
+                        LuxeHouse.
                     </Typography>
                     <Box
                         display='flex'

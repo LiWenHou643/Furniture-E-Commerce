@@ -32,7 +32,9 @@ public class ProductController {
             @RequestParam(required = false) String brands,
             @RequestParam(required = false) String materials,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Integer minRating,
+            @RequestParam(required = false) String keyword
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -42,7 +44,7 @@ public class ProductController {
         List<String> materialList = materials != null ? Arrays.asList(materials.split(",")) : null;
 
         // Pass filtering parameters to the service
-        Page<ProductDTO> products = productService.getProducts(categoryList, brandList, materialList, minPrice, maxPrice, pageable);
+        Page<ProductDTO> products = productService.getProducts(categoryList, brandList, materialList, minPrice, maxPrice, minRating, keyword,pageable);
 
         return ResponseEntity.ok(
                 ApiResponse.<Page<ProductDTO>>builder()

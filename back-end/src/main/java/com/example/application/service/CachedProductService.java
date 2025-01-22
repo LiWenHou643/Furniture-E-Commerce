@@ -19,15 +19,16 @@ public class CachedProductService {
 
     ProductRepository productRepository;
 
-    @Cacheable(value = "products", key = "#categories + ':' + #brands + ':' + #materials + ':' + #minPrice + ':' + #maxPrice")
+    @Cacheable(value = "products", key = "#categories + ':' + #brands + ':' + #materials + ':' + #minPrice + ':' + #maxPrice + ':' + #minRating")
     public List<ProductDTO> getFilteredProducts(
             List<String> categories,
             List<String> brands,
             List<String> materials,
             Double minPrice,
-            Double maxPrice
+            Double maxPrice,
+            Integer minRating
     ) {
-        List<Product> products = productRepository.findFilteredProductsWithVariations(categories, brands, materials, minPrice, maxPrice);
+        List<Product> products = productRepository.findFilteredProductsWithVariations(categories, brands, materials, minPrice, maxPrice, minRating);
         return products.stream()
                        .map(ProductMapper.INSTANCE::toDTO)
                        .collect(Collectors.toList());
