@@ -9,19 +9,21 @@ import {
     Typography,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import axiosPublic from '../api/axiosPublic';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
+import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrder from '../hooks/useFetchOrder';
 const OrderDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { data, isLoading, isError, error } = useFetchOrder(id);
-
+    const { data, isLoading, error } = useFetchOrder(id);
+    const { mutate: cancelOrder, isLoading: isCanceling } = useCancelOrder();
     if (isLoading) {
         return <Loading />;
     }
 
-    if (isError) {
+    if (error) {
         return <Error error={error} />;
     }
 
@@ -40,6 +42,8 @@ const OrderDetailPage = () => {
         orderDetails,
     } = data;
 
+    console.log(data);
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'pending':
@@ -57,12 +61,47 @@ const OrderDetailPage = () => {
         }
     };
 
-    const handleCancel = async () => {
-        console.log('Order cancelled');
+    const handleCancel = async (orderId) => {
+        cancelOrder({ orderId });
     };
 
-    const handleReorder = async () => {
-        console.log('Order reordered');
+    const handleReorder = async (order) => {
+        const productItemIds = order.orderDetails.map(
+            (item) => item.productItemId
+        );
+
+        const productItems = await axiosPublic.get('/products/product-items', {
+            params: {
+                productItemIds: productItemIds.join(','),
+            },
+        });
+
+        console.log(productItems);
+
+        const selectedCartItems = productItems.data.data.map((item) => ({
+            productId: item.productId,
+            productItemId: item.productItemId,
+            productName: item.productName,
+            quantity: order.orderDetails.find(
+                (orderItem) => orderItem.productItemId === item.productItemId
+            ).quantity,
+            price: item.salePrice,
+            color: item.color.colorName,
+            imageUrl: item.productImages.find(
+                (image) => image.mainImage === true
+            ).imageUrl,
+        }));
+
+        console.log(selectedCartItems);
+
+        // Save the selected item objects to local storage (optional)
+        localStorage.setItem(
+            'selectedCartItems',
+            JSON.stringify(selectedCartItems)
+        );
+
+        // Navigate to the checkout page and pass the selected item objects as state
+        navigate('/checkout', { state: { selectedCartItems } });
     };
 
     return (
@@ -88,7 +127,7 @@ const OrderDetailPage = () => {
                     {/* Back Button */}
                     <Button
                         variant='outlined'
-                        onClick={() => navigate(-1)} // Navigate to the previous page
+                        onClick={() => navigate('/orders')} // Navigate to the previous page
                         startIcon={<ArrowBackIcon />} // Add the left arrow icon
                         sx={{
                             position: 'absolute', // Position the button at the left
@@ -294,9 +333,12 @@ const OrderDetailPage = () => {
                                 <Button
                                     variant='contained'
                                     color='error'
-                                    onClick={handleCancel}
+                                    onClick={() => handleCancel(orderId)}
+                                    disabled={isCanceling}
                                 >
-                                    Cancel Order
+                                    {isCanceling
+                                        ? 'Cancelling...'
+                                        : 'Cancel Order'}
                                 </Button>
                             )}
 
@@ -306,7 +348,7 @@ const OrderDetailPage = () => {
                                 <Button
                                     variant='contained'
                                     color='info'
-                                    onClick={handleReorder}
+                                    onClick={() => handleReorder(data)}
                                     sx={{
                                         padding: '8px 24px',
                                         textTransform: 'uppercase',

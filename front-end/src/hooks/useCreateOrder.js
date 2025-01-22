@@ -39,7 +39,7 @@ const useCreateOrder = () => {
             } else if (variables.paymentMethod === 'cod') {
                 toast.success('Order created successfully!');
                 // Optional: Navigate to a confirmation page or display additional UI
-                // navigate('/order-success');
+                navigate(`/orders/${data.data.orderId}`);
             } else {
                 toast.error('Unexpected response from the server.');
             }

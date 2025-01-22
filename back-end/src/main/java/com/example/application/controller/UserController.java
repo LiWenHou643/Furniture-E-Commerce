@@ -6,7 +6,6 @@ import com.example.application.dto.AddressDTO;
 import com.example.application.dto.ApiResponse;
 import com.example.application.dto.UserDTO;
 import com.example.application.service.UserService;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -70,9 +69,10 @@ public class UserController {
 
     @PutMapping("/password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<UserDTO>> updatePassword(@RequestBody @Valid UserDTO request) {
+    public ResponseEntity<ApiResponse<UserDTO>> updatePassword(@RequestBody UserDTO request) {
+        var userId = getUserId();
         return ResponseEntity.ok(
-                new ApiResponse<>("success", "Password updated successfully", userService.updatePassword(request)));
+                new ApiResponse<>("success", "Password updated successfully", userService.updatePassword(userId, request)));
     }
 
     private Long getUserId() {

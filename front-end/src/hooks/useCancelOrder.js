@@ -12,9 +12,15 @@ const useCancelOrder = () => {
     return useMutation({
         mutationFn: cancelOrder,
         onSuccess: (data) => {
-            console.log('Order cancelled', data);
-            queryClient.invalidateQueries(['order', data.id]);
+            console.log('Order cancelled', data.data.orderId);
+            const orderId = data.data.orderId;
+
+            // Invalidate the specific order query
+            queryClient.invalidateQueries(['order', orderId]);
+
+            // Invalidate the list of orders query
             queryClient.invalidateQueries(['orders']);
+
             toast.success('Order cancelled');
         },
         onError: (error) => {

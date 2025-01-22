@@ -91,12 +91,15 @@ public class UserService {
         return UserMapper.INSTANCE.toDTO(user);
     }
 
-    public UserDTO updatePassword(UserDTO userDTO) {
-        var user = userRepository.findById(userDTO.getUserId())
-                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDTO.getUserId()));
+    public UserDTO updatePassword(Long userId, UserDTO userDTO) {
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
         // Check if old password is correct
         if (!passwordEncoder.matches(userDTO.getOldPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Old password is incorrect");
+        } else if (passwordEncoder.matches(userDTO.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("New password should not be the same as old password");
         }
 
         user.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));

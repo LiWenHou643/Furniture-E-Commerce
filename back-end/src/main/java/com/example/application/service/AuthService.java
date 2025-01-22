@@ -115,25 +115,29 @@ public class AuthService {
                                        .orElseThrow(
                                                () -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
 
-        Address address = Address.builder()
-                                 .streetAddress(request.getAddress().getStreetAddress())
-                                 .ward(request.getAddress().getWard())
-                                 .district(request.getAddress().getDistrict())
-                                 .city(request.getAddress().getCity())
-                                 .build();
 
         User user = User.builder()
                         .firstName(request.getFirstName())
                         .lastName(request.getLastName())
                         .avatar(request.getAvatar())
                         .email(request.getEmail())
-                        .addresses(Set.of(address))
                         .phoneNumber(request.getPhoneNumber())
                         .password(passwordEncoder.encode(request.getPassword()))
                         .role(roleUser)
                         .build();
 
-        address.setUser(user);
+        if (request.getAddress() != null) {
+            Address address = Address.builder()
+                                     .city(request.getAddress().getCity())
+                                     .district(request.getAddress().getDistrict())
+                                     .ward(request.getAddress().getWard())
+                                     .streetAddress(request.getAddress().getStreetAddress())
+                                     .user(user)
+                                     .build();
+
+            user.setAddresses(Set.of(address));
+        }
+
         User isSaved = userRepository.save(user);
 
         // Create a cart for the user

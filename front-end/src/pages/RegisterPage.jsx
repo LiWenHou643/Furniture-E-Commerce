@@ -1,3 +1,4 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -5,12 +6,15 @@ import {
     Container,
     FormControlLabel,
     Grid,
+    IconButton,
+    InputAdornment,
     TextField,
     Typography,
 } from '@mui/material';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { useState } from 'react';
 import * as Yup from 'yup';
-
+import useRegister from '../hooks/useRegister';
 // Validation Schema using Yup
 const validationSchema = Yup.object({
     firstName: Yup.string()
@@ -37,9 +41,22 @@ const validationSchema = Yup.object({
 });
 
 const RegisterPage = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { mutate: register, isLoading, error } = useRegister();
     const handleSubmit = (values) => {
-        console.log('Form values', values);
-        // Handle form submission (e.g., send to backend)
+        const data = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+            confirmPassword: values.confirmPassword,
+        };
+
+        console.log('Form values', data);
+
+        register(data);
     };
 
     return (
@@ -50,7 +67,7 @@ const RegisterPage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: 15,
+                marginTop: 20,
             }}
         >
             <Box
@@ -62,8 +79,18 @@ const RegisterPage = () => {
                 }}
             >
                 <Typography variant='h5' sx={{ marginBottom: 2 }}>
-                    Register
+                    Register Account
                 </Typography>
+
+                {/* Error when register */}
+                {error && (
+                    <Typography
+                        variant='body2'
+                        sx={{ color: 'red', marginBottom: 2 }}
+                    >
+                        {error?.response?.data?.message}
+                    </Typography>
+                )}
 
                 <Formik
                     initialValues={{
@@ -166,7 +193,9 @@ const RegisterPage = () => {
                                     <Field
                                         name='password'
                                         as={TextField}
-                                        type='password'
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        } // Toggle visibility
                                         label='Password'
                                         variant='outlined'
                                         fullWidth
@@ -179,13 +208,39 @@ const RegisterPage = () => {
                                             touched.password &&
                                             Boolean(errors.password)
                                         }
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position='end'>
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                (prev) => !prev
+                                                            )
+                                                        }
+                                                        edge='end'
+                                                    >
+                                                        {showPassword ? (
+                                                            <VisibilityOff />
+                                                        ) : (
+                                                            <Visibility />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
                                     />
                                 </Grid>
+
+                                {/* Confirm Password Field */}
                                 <Grid item xs={12} sm={6}>
                                     <Field
                                         name='confirmPassword'
                                         as={TextField}
-                                        type='password'
+                                        type={
+                                            showConfirmPassword
+                                                ? 'text'
+                                                : 'password'
+                                        } // Toggle visibility
                                         label='Confirm Password'
                                         variant='outlined'
                                         fullWidth
@@ -198,6 +253,26 @@ const RegisterPage = () => {
                                             touched.confirmPassword &&
                                             Boolean(errors.confirmPassword)
                                         }
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position='end'>
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            setShowConfirmPassword(
+                                                                (prev) => !prev
+                                                            )
+                                                        }
+                                                        edge='end'
+                                                    >
+                                                        {showConfirmPassword ? (
+                                                            <VisibilityOff />
+                                                        ) : (
+                                                            <Visibility />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
@@ -228,9 +303,14 @@ const RegisterPage = () => {
                                 color='primary'
                                 fullWidth
                                 type='submit'
-                                disabled={!dirty || !isValid || !values.terms} // Disable button until terms are checked
+                                disabled={
+                                    !dirty ||
+                                    !isValid ||
+                                    !values.terms ||
+                                    isLoading
+                                } // Disable button until terms are checked
                             >
-                                Register
+                                {isLoading ? 'Loading...' : 'Register'}
                             </Button>
                         </Form>
                     )}

@@ -29,7 +29,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axiosPublic from '../api/axiosPublic';
 import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrders from '../hooks/useFetchOrders';
-import useReOrder from '../hooks/useReOrder';
 const statusIcons = {
     pending: <AccessTime color='warning' />,
     processing: <AssignmentTurnedIn color='info' />,
@@ -44,7 +43,6 @@ const OrdersPage = () => {
 
     const { data: orders, isLoading } = useFetchOrders();
     const { mutate: cancelOrder, isLoading: isCanceling } = useCancelOrder();
-    const { mutate: reOrder, isLoading: isReordering } = useReOrder();
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -88,13 +86,13 @@ const OrdersPage = () => {
         console.log(selectedCartItems);
 
         // Save the selected item objects to local storage (optional)
-        // localStorage.setItem(
-        //     'selectedCartItems',
-        //     JSON.stringify(selectedCartItems)
-        // );
+        localStorage.setItem(
+            'selectedCartItems',
+            JSON.stringify(selectedCartItems)
+        );
 
         // Navigate to the checkout page and pass the selected item objects as state
-        // navigate('/checkout', { state: { selectedCartItems } });
+        navigate('/checkout', { state: { selectedCartItems } });
     };
 
     return (
@@ -386,11 +384,8 @@ const OrdersPage = () => {
                                                 onClick={() =>
                                                     handleReorder(order)
                                                 }
-                                                disabled={isReordering}
                                             >
-                                                {isReordering
-                                                    ? 'Reordering...'
-                                                    : 'Re-order'}
+                                                Re-order
                                             </Button>
                                         )}
 

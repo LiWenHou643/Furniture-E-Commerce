@@ -1,9 +1,12 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
     Button,
     Checkbox,
     Container,
     FormControlLabel,
+    IconButton,
+    InputAdornment,
     TextField,
     Typography,
 } from '@mui/material';
@@ -15,6 +18,7 @@ const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [persistent, setPersistent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
         if (isAuthenticated()) {
@@ -71,15 +75,32 @@ const LoginPage = () => {
                     />
                     <TextField
                         label='Password'
-                        type='password'
+                        type={showPassword ? 'text' : 'password'} // Toggle password visibility
                         variant='outlined'
                         fullWidth
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         sx={{ marginBottom: 2 }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <IconButton
+                                        onClick={() =>
+                                            setShowPassword((prev) => !prev)
+                                        }
+                                        edge='end'
+                                    >
+                                        {showPassword ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
-
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -91,9 +112,22 @@ const LoginPage = () => {
                             />
                         }
                         label='Remember me'
-                        sx={{ marginBottom: 2 }}
                     />
-
+                    {/* Register Link */}
+                    <Typography
+                        variant='body2'
+                        color='textSecondary'
+                        sx={{ marginBottom: 2 }}
+                    >
+                        Don’t have an account?{' '}
+                        <Button
+                            variant='text'
+                            color='primary'
+                            onClick={() => navigate('/register')}
+                        >
+                            Register
+                        </Button>
+                    </Typography>
                     <Button
                         variant='contained'
                         color='primary'

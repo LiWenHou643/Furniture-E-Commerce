@@ -1,4 +1,5 @@
 // App.js (or ProfilePage.js)
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,6 +12,7 @@ import {
     FormControl,
     Grid,
     IconButton,
+    InputAdornment,
     InputLabel,
     MenuItem,
     Paper,
@@ -22,9 +24,11 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
 import AvatarUploader from '../components/AvatarUploader';
 import Loading from '../components/Loading';
+import useChangePwd from '../hooks/useChangePwd';
 import useDeleteAddress from '../hooks/useDeleteAddress';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
 import useUpdateAddress from '../hooks/useUpdateAddress';
@@ -581,53 +585,118 @@ const PasswordTab = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { mutate: changePassword, isLoading } = useChangePwd();
 
     const handleChangePassword = () => {
         if (newPassword === confirmPassword) {
-            // Handle password change logic
-            console.log('Password changed');
+            changePassword({ oldPassword, newPassword });
         } else {
-            console.log('Passwords do not match');
+            toast.error('Passwords do not match');
         }
     };
 
     return (
         <Box>
             <form onSubmit={handleChangePassword}>
+                {/* Old Password */}
                 <TextField
                     label='Old Password'
-                    type='password'
+                    type={showOldPassword ? 'text' : 'password'} // Toggle password visibility
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     fullWidth
                     margin='none'
                     sx={{ marginBottom: 3 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position='end'>
+                                <IconButton
+                                    onClick={() =>
+                                        setShowOldPassword((prev) => !prev)
+                                    }
+                                    edge='end'
+                                >
+                                    {showOldPassword ? (
+                                        <VisibilityOff />
+                                    ) : (
+                                        <Visibility />
+                                    )}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
+
+                {/* New Password */}
                 <TextField
                     label='New Password'
-                    type='password'
+                    type={showNewPassword ? 'text' : 'password'} // Toggle password visibility
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     fullWidth
                     margin='none'
                     sx={{ marginBottom: 3 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position='end'>
+                                <IconButton
+                                    onClick={() =>
+                                        setShowNewPassword((prev) => !prev)
+                                    }
+                                    edge='end'
+                                >
+                                    {showNewPassword ? (
+                                        <VisibilityOff />
+                                    ) : (
+                                        <Visibility />
+                                    )}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
+
+                {/* Confirm Password */}
                 <TextField
                     label='Confirm Password'
-                    type='password'
+                    type={showConfirmPassword ? 'text' : 'password'} // Toggle password visibility
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     fullWidth
                     margin='none'
                     sx={{ marginBottom: 3 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position='end'>
+                                <IconButton
+                                    onClick={() =>
+                                        setShowConfirmPassword((prev) => !prev)
+                                    }
+                                    edge='end'
+                                >
+                                    {showConfirmPassword ? (
+                                        <VisibilityOff />
+                                    ) : (
+                                        <Visibility />
+                                    )}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
+
+                {/* Submit Button */}
                 <Button
-                    type='submit'
                     variant='contained'
                     color='primary'
                     sx={{ marginTop: 2 }}
+                    onClick={handleChangePassword}
+                    disabled={isLoading}
                 >
-                    Change Password
+                    {isLoading ? 'Changing...' : 'Change Password'}
                 </Button>
             </form>
         </Box>
