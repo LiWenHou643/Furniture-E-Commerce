@@ -44,7 +44,8 @@ public class ProductController {
         List<String> materialList = materials != null ? Arrays.asList(materials.split(",")) : null;
 
         // Pass filtering parameters to the service
-        Page<ProductDTO> products = productService.getProducts(categoryList, brandList, materialList, minPrice, maxPrice, minRating, keyword,pageable);
+        Page<ProductDTO> products = productService.getProducts(categoryList, brandList, materialList, minPrice,
+                maxPrice, minRating, keyword, pageable);
 
         return ResponseEntity.ok(
                 ApiResponse.<Page<ProductDTO>>builder()
