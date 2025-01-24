@@ -13,13 +13,11 @@ import {
     Typography,
 } from '@mui/material';
 import { LineChart } from '../components/Charts';
-import { Sidebar } from '../components/Sidebar';
 
 export default function Dashboard() {
     return (
         <Box sx={{ display: 'flex' }}>
             {/* Sidebar */}
-            <Sidebar />
 
             {/* Main Content */}
             <Box

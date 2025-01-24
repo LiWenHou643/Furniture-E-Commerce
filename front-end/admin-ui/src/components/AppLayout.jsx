@@ -1,9 +1,17 @@
+import { Box } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-
+import { Sidebar } from '../components/Sidebar';
 const AppLayout = () => {
     return (
         <div>
-            <Outlet />
+            <Sidebar />
+            <Box
+                sx={{
+                    ml: 20,
+                }}
+            >
+                <Outlet />
+            </Box>
         </div>
     );
 };

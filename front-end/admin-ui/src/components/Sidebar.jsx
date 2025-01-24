@@ -9,18 +9,32 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
+import { NavLink } from 'react-router-dom';
 
 export function Sidebar() {
+    const menuItems = [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+        { text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
+        { text: 'Customers', icon: <PeopleIcon />, path: '/customers' },
+        { text: 'Products', icon: <BarChartIcon />, path: '/products' },
+    ];
+
     return (
         <Drawer variant='permanent' anchor='left'>
             <List>
-                {[
-                    { text: 'Dashboard', icon: <DashboardIcon /> },
-                    { text: 'Orders', icon: <ShoppingCartIcon /> },
-                    { text: 'Customers', icon: <PeopleIcon /> },
-                    { text: 'Analytics', icon: <BarChartIcon /> },
-                ].map((item, index) => (
-                    <ListItem key={index}>
+                {menuItems.map((item, index) => (
+                    <ListItem
+                        key={index}
+                        component={NavLink}
+                        to={item.path}
+                        style={({ isActive }) => ({
+                            textDecoration: 'none',
+                            color: isActive ? 'blue' : 'inherit',
+                            backgroundColor: isActive
+                                ? '#f0f0f0'
+                                : 'transparent',
+                        })}
+                    >
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
                     </ListItem>
