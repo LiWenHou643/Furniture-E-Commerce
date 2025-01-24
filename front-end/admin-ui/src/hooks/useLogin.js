@@ -7,6 +7,7 @@ const login = async ({ username, password, persistent }) => {
         username,
         password,
         persistent,
+        isAdmin: true,
     });
     return response.data;
 };
