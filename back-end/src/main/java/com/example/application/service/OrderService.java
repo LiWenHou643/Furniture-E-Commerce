@@ -24,7 +24,10 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +43,12 @@ public class OrderService {
 
     public List<OrderDTO> getOrdersByUserId(Long userId) {
         // Fetch and sort orders directly in the database using the index
-        var orders = orderRepository.findByUser_UserIdOrderByCreatedAtDescOrderStatusAsc(userId);
+        List<Order> orders;
+        if (userId == null) {
+            orders = orderRepository.findAllByOrderByCreatedAtDescOrderStatusAsc();
+        } else {
+            orders = orderRepository.findByUser_UserIdOrderByCreatedAtDescOrderStatusAsc(userId);
+        }
 
         // Map orders to DTOs
         return orders.stream()
@@ -141,7 +149,8 @@ public class OrderService {
                                        }
 
                                        if (productItem.getSalePrice() != orderDetail.getPrice()) {
-                                           throw new RuntimeException("Sale price mismatch for product item: " + productItem.getProductItemId());
+                                           throw new RuntimeException(
+                                                   "Sale price mismatch for product item: " + productItem.getProductItemId());
                                        }
 
                                        // Check stock availability
@@ -194,7 +203,7 @@ public class OrderService {
         return savedOrderDTO;
     }
 
-    public OrderDTO cancelOrder(Long userId, Long orderId) {
+    public void cancelOrder(Long userId, Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
@@ -202,21 +211,31 @@ public class OrderService {
             throw new RuntimeException("You do not have permission to cancel this order.");
         }
 
+        // Update order status to cancelled
         order.setOrderStatus(OrderStatus.cancelled);
         order.setCancelDate(LocalDateTime.now());
+
+        // Update stock quantity for each product item
+        order.getOrderDetails().forEach(orderDetail -> {
+            var productItem = orderDetail.getProductItem();
+            productItem.setStockQuantity(productItem.getStockQuantity() + orderDetail.getQuantity());
+        });
+
         orderRepository.save(order);
+    }
 
-        // Convert and sort OrderDetails by orderDetailId
-        List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
-                                                       .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
-                                                       .map(OrderDetailMapper.INSTANCE::toDTO)
-                                                       .collect(Collectors.toList());
+    public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+        var order = orderRepository.findById(orderId)
+                                   .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
-        // Map Order to OrderDTO and set sorted OrderDetails
-        OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
-        orderDTO.setOrderDetails(sortedOrderDetails);
+        order.setOrderStatus(orderStatus);
+        if (orderStatus == OrderStatus.shipped) {
+            order.setShippingDate(LocalDateTime.now());
+        } else if (orderStatus == OrderStatus.delivered) {
+            order.setDeliveryDate(LocalDateTime.now());
+        }
 
-        return orderDTO;
+        orderRepository.save(order);
     }
 
     public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {

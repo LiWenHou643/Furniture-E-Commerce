@@ -1,5 +1,6 @@
 package com.example.application.controller;
 
+import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.dto.ApiResponse;
 import com.example.application.dto.OrderDTO;
@@ -29,8 +30,7 @@ public class OrderController {
     OrderService orderService;
 
     @GetMapping("")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<?>> getOrders() {
+    public ResponseEntity<ApiResponse<?>> getOrdersByUserId() {
         var userId = getUserId();
         var orders = orderService.getOrdersByUserId(userId);
         return ResponseEntity.ok(
@@ -43,7 +43,6 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long orderId) {
         var userId = getUserId();
         var order = orderService.getOrderById(userId, orderId);
@@ -57,7 +56,6 @@ public class OrderController {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<?>> processPayment(@RequestBody OrderDTO orderDTO) throws PayPalRESTException {
         var userId = getUserId();
         var paymentMethod = orderDTO.getPaymentMethod();
@@ -110,12 +108,36 @@ public class OrderController {
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<ApiResponse<?>> cancelOrder(@PathVariable Long orderId) {
         var userId = getUserId();
-        var order = orderService.cancelOrder(userId, orderId);
+        orderService.cancelOrder(userId, orderId);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")
                            .message("Order cancelled successfully")
-                           .data(order)
+                           .build()
+        );
+    }
+
+    @GetMapping("/management")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<?>> getAllOrders() {
+        var orders = orderService.getOrdersByUserId(null);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                           .status("success")
+                           .message("Orders retrieved successfully")
+                           .data(orders)
+                           .build()
+        );
+    }
+
+    @PutMapping("/management")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<?>> confirmOrder(@RequestBody Long orderId) {
+        orderService.updateOrderStatus(orderId, OrderStatus.processing);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                           .status("success")
+                           .message("Orders updated successfully")
                            .build()
         );
     }
