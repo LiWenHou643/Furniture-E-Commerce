@@ -42,19 +42,15 @@ public class BrandService {
             evict = {@CacheEvict(cacheNames = BRAND_LIST_CACHE_KEY, allEntries = true)},
             put = {@CachePut(cacheNames = BRAND_CACHE_KEY, key = "#result.brandId")}
     )
-    public BrandDTO addBrand(BrandDTO brandDTO) {
-        var brand = BrandMapper.INSTANCE.toEntity(brandDTO);
-        return BrandMapper.INSTANCE.toDTO(brandRepository.save(brand));
-    }
+    public BrandDTO addOrUpdateBrand(BrandDTO brandDTO) {
+        if (brandDTO.getBrandId() == null) {
+            return BrandMapper.INSTANCE.toDTO(brandRepository.save(BrandMapper.INSTANCE.toEntity(brandDTO)));
+        }
 
-    @Caching(
-            evict = {@CacheEvict(cacheNames = BRAND_LIST_CACHE_KEY, allEntries = true)},
-            put = {@CachePut(cacheNames = BRAND_CACHE_KEY, key = "#result.brandId")}
-    )
-    public BrandDTO updateBrand(BrandDTO brandDTO) {
-        var brand = brandRepository.findById(brandDTO.getBrandId())
-                                   .orElseThrow(
-                                           () -> new ResourceNotFoundException("Brand", "id", brandDTO.getBrandId()));
+        var brand = brandRepository.findById(brandDTO.getBrandId()).orElseThrow(
+                () -> new ResourceNotFoundException("Brand", "id", brandDTO.getBrandId())
+        );
+
         brand.setBrandName(brandDTO.getBrandName());
         brand.setBrandDescription(brandDTO.getBrandDescription());
         return BrandMapper.INSTANCE.toDTO(brandRepository.save(brand));

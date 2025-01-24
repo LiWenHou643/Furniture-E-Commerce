@@ -41,24 +41,12 @@ public class BrandController {
 
     @PostMapping("/brands")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<BrandDTO>> addBrand(@RequestBody BrandDTO brandDTO) {
+    public ResponseEntity<ApiResponse<BrandDTO>> addOrUpdateBrand(@RequestBody BrandDTO brandDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<BrandDTO>builder()
                            .status("success")
                            .message("Brand added")
-                           .data(brandService.addBrand(brandDTO))
-                           .build()
-        );
-    }
-
-    @PutMapping("/brands")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<BrandDTO>> updateBrand(@RequestBody BrandDTO brandDTO) {
-        return ResponseEntity.ok(
-                ApiResponse.<BrandDTO>builder()
-                           .status("success")
-                           .message("Brand updated")
-                           .data(brandService.updateBrand(brandDTO))
+                           .data(brandService.addOrUpdateBrand(brandDTO))
                            .build()
         );
     }

@@ -5,7 +5,7 @@ VALUES ('ADMIN'),
 
 -- Insert admin -- pwd: admin
 INSERT INTO users (email, phone_number, first_name, last_name, password, role_id)
-VALUES ('admin123@gmail.com', '0933000111', 'Shop', 'Admin',
+VALUES ('admin@example.com', '0933000111', 'Shop', 'Admin',
         '{bcrypt}$2a$12$D79WRzamHQ2atDk4QvOUhumU4EGKNrhTaTjBKdN.Y6Wb.k/yT8ymK', 1);
 
 -- Insert users -- pwd: user@123
