@@ -2,9 +2,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
     Button,
-    Checkbox,
     Container,
-    FormControlLabel,
     IconButton,
     InputAdornment,
     TextField,
@@ -17,7 +15,6 @@ import { isAuthenticated } from '../utils/auth';
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [persistent, setPersistent] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
@@ -31,7 +28,7 @@ const LoginPage = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         // Call the login mutation
-        loginMutation.mutate({ username, password, persistent });
+        loginMutation.mutate({ username, password, persistent: true });
     };
 
     return (
@@ -42,10 +39,20 @@ const LoginPage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                mt: 20,
-                mb: 20,
+                height: '100vh',
             }}
         >
+            <Typography variant='h4' sx={{ marginBottom: 1 }}>
+                LuxeHouse Management
+            </Typography>
+            <Typography
+                variant='body2'
+                color='textSecondary'
+                sx={{ marginBottom: 2 }}
+            >
+                Login to access the admin dashboard
+            </Typography>
+
             <Box
                 sx={{
                     padding: 3,
@@ -101,33 +108,7 @@ const LoginPage = () => {
                             ),
                         }}
                     />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={persistent}
-                                onChange={(e) =>
-                                    setPersistent(e.target.checked)
-                                }
-                                color='primary'
-                            />
-                        }
-                        label='Remember me'
-                    />
-                    {/* Register Link */}
-                    <Typography
-                        variant='body2'
-                        color='textSecondary'
-                        sx={{ marginBottom: 2 }}
-                    >
-                        Don’t have an account?{' '}
-                        <Button
-                            variant='text'
-                            color='primary'
-                            onClick={() => navigate('/register')}
-                        >
-                            Register
-                        </Button>
-                    </Typography>
+
                     <Button
                         variant='contained'
                         color='primary'
