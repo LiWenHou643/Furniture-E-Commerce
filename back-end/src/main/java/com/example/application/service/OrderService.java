@@ -19,6 +19,8 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -41,45 +43,40 @@ public class OrderService {
     PaymentRepository paymentRepository;
     ProductItemRepository productItemRepository;
 
-    public List<OrderDTO> getOrdersByUserId(Long userId) {
-        // Fetch and sort orders directly in the database using the index
-        List<Order> orders;
-        if (userId == null) {
-            orders = orderRepository.findAllByOrderByCreatedAtDescOrderStatusAsc();
-        } else {
-            orders = orderRepository.findByUser_UserIdOrderByCreatedAtDescOrderStatusAsc(userId);
-        }
+    public Page<OrderDTO> getOrdersByUserId(Long userId, String status, Pageable pageable) {
+        OrderStatus orderStatus = OrderStatus.valueOf(status);
+        // Fetch orders based on the userId
+        Page<Order> orders = (userId == null) ?
+                orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable) :
+                orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
 
-        // Map orders to DTOs
-        return orders.stream()
-                     .map(order -> {
-                         // Convert and sort OrderDetails by orderDetailId
-                         List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
-                                                                        .sorted(Comparator.comparing(
-                                                                                OrderDetail::getOrderDetailId))
-                                                                        .map(
-                                                                                orderDetail -> {
-                                                                                    var orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(
-                                                                                            orderDetail);
-                                                                                    orderDetailDTO.setProductImage(
-                                                                                            orderDetail.getProductItem()
-                                                                                                       .getProductImages()
-                                                                                                       .stream().filter(
-                                                                                                               ProductImage::isMainImage)
-                                                                                                       .findFirst()
-                                                                                                       .map(ProductImage::getImageUrl)
-                                                                                                       .orElse(null));
-                                                                                    return orderDetailDTO;
-                                                                                }
-                                                                        )
-                                                                        .collect(Collectors.toList());
+        // Use the `map()` method to transform the Page<Order> into Page<OrderDTO>
+        return orders.map(order -> {
+            // Convert and sort OrderDetails by orderDetailId
+            List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
+                                                           .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
+                                                           .map(orderDetail -> {
+                                                               OrderDetailDTO orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(orderDetail);
 
-                         // Map Order to OrderDTO and set sorted OrderDetails
-                         OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
-                         orderDTO.setOrderDetails(sortedOrderDetails);
-                         return orderDTO;
-                     })
-                     .collect(Collectors.toList());
+                                                               // Set the main product image URL
+                                                               orderDetailDTO.setProductImage(
+                                                                       orderDetail.getProductItem()
+                                                                                  .getProductImages()
+                                                                                  .stream()
+                                                                                  .filter(ProductImage::isMainImage)
+                                                                                  .findFirst()
+                                                                                  .map(ProductImage::getImageUrl)
+                                                                                  .orElse(null)
+                                                               );
+                                                               return orderDetailDTO;
+                                                           })
+                                                           .collect(Collectors.toList());
+
+            // Map Order to OrderDTO and set sorted OrderDetails
+            OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
+            orderDTO.setOrderDetails(sortedOrderDetails);
+            return orderDTO;
+        });
     }
 
     public OrderDTO getOrderById(Long userId, Long orderId) {

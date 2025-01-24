@@ -9,6 +9,8 @@ import com.paypal.base.rest.PayPalRESTException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,9 +32,14 @@ public class OrderController {
     OrderService orderService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<?>> getOrdersByUserId() {
+    public ResponseEntity<ApiResponse<?>> getOrdersByUserId(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "pending") String status
+    ) {
         var userId = getUserId();
-        var orders = orderService.getOrdersByUserId(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        var orders = orderService.getOrdersByUserId(userId, status, pageable);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")
@@ -119,8 +126,14 @@ public class OrderController {
 
     @GetMapping("/management")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<?>> getAllOrders() {
-        var orders = orderService.getOrdersByUserId(null);
+    public ResponseEntity<ApiResponse<?>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "pending") String status
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        // If userId is null, get all orders of all users for admin
+        var orders = orderService.getOrdersByUserId(null, status, pageable);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")

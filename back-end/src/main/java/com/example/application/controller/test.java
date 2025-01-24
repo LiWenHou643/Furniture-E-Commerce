@@ -28,16 +28,4 @@ public class test {
                         .build()
         );
     }
-
-    @GetMapping("auth/test2")
-    public ResponseEntity<ApiResponse<?>> testing2() {
-
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .status("success")
-                        .message("Test endpoint")
-                        .data(orderService.getOrdersByUserId(2L))
-                        .build()
-        );
-    }
 }

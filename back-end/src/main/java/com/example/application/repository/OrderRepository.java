@@ -1,16 +1,18 @@
 package com.example.application.repository;
 
+import com.example.application.constants.OrderStatus;
 import com.example.application.entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface OrderRepository  extends JpaRepository<Order, Long> {
-    Optional<Order> findByUser_UserId(Long userId);
+    // Find orders by user ID and status
+    Page<Order> findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(
+            Long userId, OrderStatus status, Pageable pageable);
 
-    List<Order> findByUser_UserIdOrderByCreatedAtDescOrderStatusAsc(Long userId);
-
-    List<Order> findAllByOrderByCreatedAtDescOrderStatusAsc();
+    // Find all orders filtered by status
+    Page<Order> findByOrderStatusOrderByCreatedAtDesc(
+            OrderStatus status, Pageable pageable);
 
 }
