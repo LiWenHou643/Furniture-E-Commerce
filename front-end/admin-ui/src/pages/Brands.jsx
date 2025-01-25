@@ -18,6 +18,7 @@ import { useState } from 'react';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useAddBrand from '../hooks/useAddBrand';
+import useDeleteBrand from '../hooks/useDeleteBrand';
 import useFetchBrand from '../hooks/useFetchBrand';
 
 export default function Brands() {
@@ -27,6 +28,7 @@ export default function Brands() {
 
     const { data: brands, isLoading, error } = useFetchBrand();
     const { mutate: addBrand, isLoading: isSaving } = useAddBrand();
+    const { mutate: deleteBrand } = useDeleteBrand();
 
     if (isLoading) return <Loading />;
 
@@ -45,7 +47,7 @@ export default function Brands() {
     const handleSave = (brand) => {
         if (editingBrand) {
             addBrand(
-                { ...brand, brand_id: editingBrand.brand_id },
+                { ...brand, brandId: editingBrand.brandId },
                 {
                     onSettled: () => {
                         handleClose();
@@ -63,7 +65,9 @@ export default function Brands() {
     };
 
     const handleDelete = (brandId) => {
-        console.log('Delete brand:', brandId);
+        if (window.confirm('Are you sure you want to delete this brand?')) {
+            deleteBrand(brandId);
+        }
     };
 
     return (
@@ -108,7 +112,7 @@ export default function Brands() {
                                     />
                                     <DeleteIcon
                                         onClick={() =>
-                                            handleDelete(brand.brand_id)
+                                            handleDelete(brand.brandId)
                                         }
                                         color='error'
                                         sx={{ mr: 2, cursor: 'pointer' }}

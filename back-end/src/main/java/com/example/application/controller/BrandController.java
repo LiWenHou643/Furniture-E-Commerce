@@ -50,4 +50,16 @@ public class BrandController {
                            .build()
         );
     }
+
+    @DeleteMapping("/brands/{brandId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteBrand(@PathVariable Long brandId) {
+        brandService.deleteBrand(brandId);
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                           .status("success")
+                           .message("Brand deleted")
+                           .build()
+        );
+    }
 }

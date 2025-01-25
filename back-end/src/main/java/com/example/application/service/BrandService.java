@@ -55,4 +55,13 @@ public class BrandService {
         brand.setBrandDescription(brandDTO.getBrandDescription());
         return BrandMapper.INSTANCE.toDTO(brandRepository.save(brand));
     }
+
+    @Caching(
+            evict = {@CacheEvict(cacheNames = BRAND_LIST_CACHE_KEY, allEntries = true)},
+            put = {@CachePut(cacheNames = BRAND_CACHE_KEY, key = "#brandId")}
+    )
+    public void deleteBrand(Long brandId) {
+        var brand = brandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Brand", "id", brandId));
+        brandRepository.delete(brand);
+    }
 }
