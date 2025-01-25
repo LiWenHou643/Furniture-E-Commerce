@@ -11,6 +11,7 @@ import {
 import AppLayout from './components/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import AddProductPage from './pages/AddProductPage';
 import Brands from './pages/Brands';
 import Categories from './pages/Categories';
 import DashBoard from './pages/Dashboard';
@@ -18,6 +19,7 @@ import LoginPage from './pages/LoginPage';
 import Materials from './pages/Materials';
 import NotFoundPage from './pages/NotFoundPage';
 import Orders from './pages/Orders';
+import ProductDetailPage from './pages/ProductDetailPage';
 import Products from './pages/Products';
 
 const queryClient = new QueryClient();
@@ -68,6 +70,14 @@ function App() {
                             <Route
                                 path='/products-management/products'
                                 element={<Products />}
+                            />
+                            <Route
+                                path='/products-management/add'
+                                element={<AddProductPage />}
+                            />
+                            <Route
+                                path='/products-management/edit/:productId'
+                                element={<ProductDetailPage />}
                             />
                             <Route
                                 path='/products-management/categories'

@@ -4,7 +4,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
     Box,
     Button,
-    Modal,
     Paper,
     Table,
     TableBody,
@@ -15,7 +14,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import ProductForm from '../components/ProductForm';
+import { useNavigate } from 'react-router-dom';
 
 const initialProducts = [
     {
@@ -52,35 +51,8 @@ const initialProducts = [
 ];
 
 export default function ProductManagement() {
+    const navigate = useNavigate();
     const [products, setProducts] = useState(initialProducts);
-    const [open, setOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-
-    const handleOpen = (product = null) => {
-        setEditingProduct(product);
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setEditingProduct(null);
-    };
-
-    const handleSave = (product) => {
-        if (editingProduct) {
-            // Update product
-            setProducts((prev) =>
-                prev.map((p) =>
-                    p.productId === editingProduct.productId ? product : p
-                )
-            );
-        } else {
-            // Add new product
-            const newProduct = { ...product, productId: Date.now() };
-            setProducts((prev) => [...prev, newProduct]);
-        }
-        handleClose();
-    };
 
     const handleDelete = (productId) => {
         setProducts((prev) => prev.filter((p) => p.productId !== productId));
@@ -96,7 +68,7 @@ export default function ProductManagement() {
             <Button
                 variant='contained'
                 startIcon={<AddIcon />}
-                onClick={() => handleOpen()}
+                onClick={() => navigate('/products-management/add')}
                 sx={{ mb: 2 }}
             >
                 Add Product
@@ -139,7 +111,12 @@ export default function ProductManagement() {
                                 </TableCell>
                                 <TableCell>
                                     <EditIcon
-                                        onClick={() => handleOpen(product)}
+                                        onClick={() =>
+                                            navigate(
+                                                '/products-management/edit/' +
+                                                    product.productId
+                                            )
+                                        }
                                         color='success'
                                         sx={{ mr: 2, cursor: 'pointer' }}
                                     ></EditIcon>
@@ -156,29 +133,6 @@ export default function ProductManagement() {
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            {/* Product Form Modal */}
-            <Modal open={open} onClose={handleClose}>
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 600,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 2,
-                    }}
-                >
-                    <ProductForm
-                        product={editingProduct}
-                        onCancel={handleClose}
-                        onSave={handleSave}
-                    />
-                </Box>
-            </Modal>
         </Box>
     );
 }
