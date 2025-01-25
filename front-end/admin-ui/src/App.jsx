@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import Brands from './pages/Brands';
 import Categories from './pages/Categories';
@@ -34,8 +35,17 @@ function App() {
                 <Router>
                     <ScrollToTop />
                     <Routes>
-                        {/* The AppLayout will wrap around these routes */}
-                        <Route element={<AppLayout />}>
+                        {/* Public routes */}
+                        <Route path='/login' element={<LoginPage />} />
+
+                        {/* Protected routes */}
+                        <Route
+                            element={
+                                <ProtectedRoute>
+                                    <AppLayout />
+                                </ProtectedRoute>
+                            }
+                        >
                             <Route path='/' element={<DashBoard />} />
                             <Route path='/orders' element={<Orders />} />
                             <Route path='/products' element={<Products />} />
@@ -51,10 +61,10 @@ function App() {
                                 path='/products/materials'
                                 element={<Materials />}
                             />
-
-                            <Route path='*' element={<NotFoundPage />} />
                         </Route>
-                        <Route path='/login' element={<LoginPage />} />
+
+                        {/* 404 Not Found */}
+                        <Route path='*' element={<NotFoundPage />} />
                     </Routes>
                 </Router>
                 <ReactQueryDevtools initialIsOpen={false} />

@@ -11,14 +11,14 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
-import { isAuthenticated } from '../utils/auth';
+import { isAdmin, isAuthenticated } from '../utils/auth';
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
-        if (isAuthenticated()) {
+        if (isAuthenticated() && isAdmin()) {
             navigate('/'); // Redirect to homepage if already logged in
         }
     }, [navigate]);

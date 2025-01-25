@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from './auth';
+import { isAdmin, isAuthenticated } from '../utils/auth';
 
 const ProtectedRoute = ({ children }) => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() || !isAdmin()) {
         return <Navigate to='/login' />;
     }
     return children;
