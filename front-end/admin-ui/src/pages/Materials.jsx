@@ -14,7 +14,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const initialMaterials = [
     {
@@ -90,10 +90,15 @@ export default function Materials() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Created At</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Name
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Description
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Actions
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -103,15 +108,18 @@ export default function Materials() {
                                 <TableCell>
                                     {material.material_description}
                                 </TableCell>
-                                <TableCell>{material.created_at}</TableCell>
                                 <TableCell>
                                     <EditIcon
                                         onClick={() => handleOpen(material)}
+                                        color='success'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
                                     />
                                     <DeleteIcon
                                         onClick={() =>
                                             handleDelete(material.material_id)
                                         }
+                                        color='error'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
                                     />
                                 </TableCell>
                             </TableRow>

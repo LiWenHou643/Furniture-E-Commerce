@@ -4,7 +4,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
     Box,
     Button,
-    IconButton,
     Modal,
     Paper,
     Table,
@@ -15,7 +14,7 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ProductForm from '../components/ProductForm';
 
 const initialProducts = [
@@ -108,11 +107,21 @@ export default function ProductManagement() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Category</TableCell>
-                            <TableCell>Brand</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Name
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Category
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Brand
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Status
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Actions
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -129,18 +138,18 @@ export default function ProductManagement() {
                                         : 'Out of Stock'}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton
+                                    <EditIcon
                                         onClick={() => handleOpen(product)}
-                                    >
-                                        <EditIcon />
-                                    </IconButton>
-                                    <IconButton
+                                        color='success'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
+                                    ></EditIcon>
+                                    <DeleteIcon
                                         onClick={() =>
                                             handleDelete(product.productId)
                                         }
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
+                                        color='error'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
+                                    ></DeleteIcon>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -19,22 +19,6 @@ import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useAddBrand from '../hooks/useAddBrand';
 import useFetchBrand from '../hooks/useFetchBrand';
-const initialBrands = [
-    {
-        brand_id: 1,
-        brandName: 'Herman Miller',
-        brandDescription:
-            'Renowned for ergonomic and functional office furniture.',
-        created_at: '2023-01-01',
-    },
-    {
-        brand_id: 2,
-        brandName: 'Ikea',
-        brandDescription:
-            'Popular Swedish brand for affordable and modern furniture.',
-        created_at: '2023-01-02',
-    },
-];
 
 export default function Brands() {
     // const [brands, setBrands] = useState(initialBrands);
@@ -42,7 +26,7 @@ export default function Brands() {
     const [editingBrand, setEditingBrand] = useState(null);
 
     const { data: brands, isLoading, error } = useFetchBrand();
-    const { mutate: addBrand, isLoading: isAdding } = useAddBrand();
+    const { mutate: addBrand, isLoading: isSaving } = useAddBrand();
 
     if (isLoading) return <Loading />;
 
@@ -60,12 +44,22 @@ export default function Brands() {
 
     const handleSave = (brand) => {
         if (editingBrand) {
-            addBrand({ ...brand, brand_id: editingBrand.brand_id });
+            addBrand(
+                { ...brand, brand_id: editingBrand.brand_id },
+                {
+                    onSettled: () => {
+                        handleClose();
+                    },
+                }
+            );
         } else {
             // Add new brand
-            addBrand(brand);
+            addBrand(brand, {
+                onSettled: () => {
+                    handleClose();
+                },
+            });
         }
-        handleClose();
     };
 
     const handleDelete = (brandId) => {
@@ -90,9 +84,15 @@ export default function Brands() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Name
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Description
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                Actions
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -103,11 +103,15 @@ export default function Brands() {
                                 <TableCell>
                                     <EditIcon
                                         onClick={() => handleOpen(brand)}
+                                        color='success'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
                                     />
                                     <DeleteIcon
                                         onClick={() =>
                                             handleDelete(brand.brand_id)
                                         }
+                                        color='error'
+                                        sx={{ mr: 2, cursor: 'pointer' }}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -132,6 +136,7 @@ export default function Brands() {
                 >
                     <BrandForm
                         brand={editingBrand}
+                        isSaving={isSaving}
                         onSave={handleSave}
                         onCancel={handleClose}
                     />
@@ -141,7 +146,7 @@ export default function Brands() {
     );
 }
 
-function BrandForm({ brand, onSave, onCancel }) {
+function BrandForm({ brand, onSave, onCancel, isSaving }) {
     const [formState, setFormState] = useState(
         brand || { brandName: '', brandDescription: '' }
     );
@@ -180,8 +185,12 @@ function BrandForm({ brand, onSave, onCancel }) {
                 <Button onClick={onCancel} sx={{ mr: 2 }}>
                     Cancel
                 </Button>
-                <Button variant='contained' onClick={handleSubmit}>
-                    Save
+                <Button
+                    variant='contained'
+                    onClick={handleSubmit}
+                    disabled={isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
                 </Button>
             </Box>
         </Box>
