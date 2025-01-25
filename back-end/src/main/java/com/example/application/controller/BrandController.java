@@ -45,7 +45,7 @@ public class BrandController {
         return ResponseEntity.ok(
                 ApiResponse.<BrandDTO>builder()
                            .status("success")
-                           .message("Brand added")
+                           .message("Brand updated")
                            .data(brandService.addOrUpdateBrand(brandDTO))
                            .build()
         );

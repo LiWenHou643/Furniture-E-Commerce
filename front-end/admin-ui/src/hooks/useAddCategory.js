@@ -2,17 +2,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import axiosPrivate from '../api/axiosPrivate';
 
-const addBrand = async (brand) => {
-    const { data } = await axiosPrivate.post('/brands', brand);
+const addCategory = async (category) => {
+    const { data } = await axiosPrivate.post('/categories', category);
     return data;
 };
 
-const useAddBrand = () => {
+const useAddCategory = () => {
     const queryClient = useQueryClient();
-    return useMutation(addBrand, {
+    return useMutation(addCategory, {
         onSuccess: () => {
-            queryClient.invalidateQueries('brands');
-            toast.success('Brand updated successfully');
+            queryClient.invalidateQueries('categories');
+            toast.success('Category updated successfully');
         },
         onError: (error) => {
             toast.error(error.response.data.message);
@@ -20,4 +20,4 @@ const useAddBrand = () => {
     });
 };
 
-export default useAddBrand;
+export default useAddCategory;

@@ -6,6 +6,8 @@ import com.example.application.mapper.CategoryMapper;
 import com.example.application.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -38,26 +40,31 @@ public class CategoryService {
     }
 
     @Caching(
-            evict = {@org.springframework.cache.annotation.CacheEvict(cacheNames = CATEGORY_LIST_CACHE_KEY, allEntries = true)},
-            put = {@org.springframework.cache.annotation.CachePut(cacheNames = CATEGORY_CACHE_KEY, key = "#result.categoryId")}
+            evict = {@CacheEvict(cacheNames = CATEGORY_LIST_CACHE_KEY, allEntries = true)},
+            put = {@CachePut(cacheNames = CATEGORY_CACHE_KEY, key = "#result.categoryId")}
     )
-    public CategoryDTO addCategory(CategoryDTO categoryDTO) {
-        var category = CategoryMapper.INSTANCE.toEntity(categoryDTO);
-        categoryRepository.save(category);
-        return CategoryMapper.INSTANCE.toDTO(category);
-    }
+    public CategoryDTO addOrUpdateCategory(CategoryDTO categoryDTO) {
+        if (categoryDTO.getCategoryId() == null) {
+            return CategoryMapper.INSTANCE.toDTO(categoryRepository.save(CategoryMapper.INSTANCE.toEntity(categoryDTO)));
+        }
 
-    @Caching(
-            evict = {@org.springframework.cache.annotation.CacheEvict(cacheNames = CATEGORY_LIST_CACHE_KEY, allEntries = true)},
-            put = {@org.springframework.cache.annotation.CachePut(cacheNames = CATEGORY_CACHE_KEY, key = "#result.categoryId")}
-    )
-    public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
         var category = categoryRepository.findById(categoryDTO.getCategoryId()).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "id", categoryDTO.getCategoryId())
         );
+
         category.setCategoryName(categoryDTO.getCategoryName());
         category.setCategoryDescription(categoryDTO.getCategoryDescription());
-        categoryRepository.save(category);
-        return CategoryMapper.INSTANCE.toDTO(category);
+        return CategoryMapper.INSTANCE.toDTO(categoryRepository.save(category));
     }
+
+    @Caching(
+            evict = {@CacheEvict(cacheNames = CATEGORY_LIST_CACHE_KEY, allEntries = true)}
+    )
+    public void deleteCategory(Long categoryId) {
+        var category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "id", categoryId)
+        );
+        categoryRepository.delete(category);
+    }
+
 }

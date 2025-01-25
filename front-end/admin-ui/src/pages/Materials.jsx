@@ -15,29 +15,22 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
-
-const initialMaterials = [
-    {
-        material_id: 1,
-        material_name: 'Fabric',
-        material_description:
-            'Soft materials like cotton, linen, or polyester used for upholstery.',
-        created_at: '2023-01-01',
-    },
-    {
-        material_id: 2,
-        material_name: 'Wood',
-        material_description:
-            'Hard material commonly used in furniture making.',
-        created_at: '2023-01-02',
-    },
-];
+import Error from '../components/Error';
+import Loading from '../components/Loading';
+import useAddMaterial from '../hooks/useAddMaterial';
+import useDeleteMaterial from '../hooks/useDeleteMaterial';
+import useFetchMaterial from '../hooks/useFetchMaterial';
 
 export default function Materials() {
-    const [materials, setMaterials] = useState(initialMaterials);
     const [open, setOpen] = useState(false);
     const [editingMaterial, setEditingMaterial] = useState(null);
+    const { data: materials, isLoading, error } = useFetchMaterial();
+    const { mutate: addMaterial, isLoading: isSaving } = useAddMaterial();
+    const { mutate: deleteMaterial } = useDeleteMaterial();
 
+    if (isLoading) return <Loading />;
+
+    if (error) return <Error error={error} />;
     const handleOpen = (material = null) => {
         setEditingMaterial(material);
         setOpen(true);
@@ -51,25 +44,31 @@ export default function Materials() {
     const handleSave = (material) => {
         if (editingMaterial) {
             // Update material
-            setMaterials((prev) =>
-                prev.map((mat) =>
-                    mat.material_id === editingMaterial.material_id
-                        ? material
-                        : mat
-                )
+            addMaterial(
+                { ...material, materialId: editingMaterial.materialId },
+                {
+                    onSettled: () => {
+                        handleClose();
+                    },
+                }
             );
         } else {
             // Add new material
-            const newMaterial = { ...material, material_id: Date.now() };
-            setMaterials((prev) => [...prev, newMaterial]);
+            const newMaterial = { ...material };
+
+            addMaterial(newMaterial, {
+                onSettled: () => {
+                    handleClose();
+                },
+            });
         }
         handleClose();
     };
 
     const handleDelete = (materialId) => {
-        setMaterials((prev) =>
-            prev.filter((mat) => mat.material_id !== materialId)
-        );
+        if (window.confirm('Are you sure you want to delete this material?')) {
+            deleteMaterial(materialId);
+        }
     };
 
     return (
@@ -103,10 +102,10 @@ export default function Materials() {
                     </TableHead>
                     <TableBody>
                         {materials.map((material) => (
-                            <TableRow key={material.material_id}>
-                                <TableCell>{material.material_name}</TableCell>
+                            <TableRow key={material.materialId}>
+                                <TableCell>{material.materialName}</TableCell>
                                 <TableCell>
-                                    {material.material_description}
+                                    {material.materialDescription}
                                 </TableCell>
                                 <TableCell>
                                     <EditIcon
@@ -116,7 +115,7 @@ export default function Materials() {
                                     />
                                     <DeleteIcon
                                         onClick={() =>
-                                            handleDelete(material.material_id)
+                                            handleDelete(material.materialId)
                                         }
                                         color='error'
                                         sx={{ mr: 2, cursor: 'pointer' }}
@@ -144,6 +143,7 @@ export default function Materials() {
                 >
                     <MaterialForm
                         material={editingMaterial}
+                        isSaving={isSaving}
                         onSave={handleSave}
                         onCancel={handleClose}
                     />
@@ -153,9 +153,9 @@ export default function Materials() {
     );
 }
 
-function MaterialForm({ material, onSave, onCancel }) {
+function MaterialForm({ material, onSave, onCancel, isSaving }) {
     const [formState, setFormState] = useState(
-        material || { material_name: '', material_description: '' }
+        material || { materialName: '', materialDescription: '' }
     );
 
     const handleChange = (e) => {
@@ -175,16 +175,16 @@ function MaterialForm({ material, onSave, onCancel }) {
             <TextField
                 fullWidth
                 label='Name'
-                name='material_name'
-                value={formState.material_name}
+                name='materialName'
+                value={formState.materialName}
                 onChange={handleChange}
                 margin='normal'
             />
             <TextField
                 fullWidth
                 label='Description'
-                name='material_description'
-                value={formState.material_description}
+                name='materialDescription'
+                value={formState.materialDescription}
                 onChange={handleChange}
                 margin='normal'
             />
@@ -192,8 +192,12 @@ function MaterialForm({ material, onSave, onCancel }) {
                 <Button onClick={onCancel} sx={{ mr: 2 }}>
                     Cancel
                 </Button>
-                <Button variant='contained' onClick={handleSubmit}>
-                    Save
+                <Button
+                    variant='contained'
+                    onClick={handleSubmit}
+                    disabled={isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
                 </Button>
             </Box>
         </Box>

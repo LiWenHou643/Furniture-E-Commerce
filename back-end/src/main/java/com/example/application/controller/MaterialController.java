@@ -37,21 +37,22 @@ public class MaterialController {
 
     @PostMapping("/materials")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<MaterialDTO>> addMaterial(@RequestBody MaterialDTO materialDTO) {
-        return ResponseEntity.ok(ApiResponse.<MaterialDTO>builder()
-                .status("success")
-                .message("Material added")
-                .data(materialService.addMaterial(materialDTO))
-                .build());
-    }
-
-    @PutMapping("/materials")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<MaterialDTO>> updateMaterial(@RequestBody MaterialDTO materialDTO) {
+    public ResponseEntity<ApiResponse<MaterialDTO>> addOrUpdateMaterial(@RequestBody MaterialDTO materialDTO) {
         return ResponseEntity.ok(ApiResponse.<MaterialDTO>builder()
                 .status("success")
                 .message("Material updated")
-                .data(materialService.updateMaterial(materialDTO))
+                .data(materialService.addOrUpdateMaterial(materialDTO))
                 .build());
     }
+
+    @DeleteMapping("/materials/{materialId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteMaterial(@PathVariable Long materialId) {
+        materialService.deleteMaterial(materialId);
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .status("success")
+                .message("Material deleted")
+                .build());
+    }
+
 }

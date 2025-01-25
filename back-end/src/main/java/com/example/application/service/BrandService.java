@@ -57,8 +57,7 @@ public class BrandService {
     }
 
     @Caching(
-            evict = {@CacheEvict(cacheNames = BRAND_LIST_CACHE_KEY, allEntries = true)},
-            put = {@CachePut(cacheNames = BRAND_CACHE_KEY, key = "#brandId")}
+            evict = {@CacheEvict(cacheNames = BRAND_LIST_CACHE_KEY, allEntries = true)}
     )
     public void deleteBrand(Long brandId) {
         var brand = brandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Brand", "id", brandId));

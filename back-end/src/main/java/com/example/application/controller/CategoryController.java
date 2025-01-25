@@ -41,25 +41,26 @@ public class CategoryController {
 
     @PostMapping("/categories")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<CategoryDTO>> addCategory(@RequestBody CategoryDTO categoryDTO) {
-        return ResponseEntity.ok(
-                ApiResponse.<CategoryDTO>builder()
-                           .status("success")
-                           .message("Category added")
-                           .data(categoryService.addCategory(categoryDTO))
-                           .build()
-        );
-    }
-
-    @PutMapping("/categories")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> addOrUpdateCategory(@RequestBody CategoryDTO categoryDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<CategoryDTO>builder()
                            .status("success")
                            .message("Category updated")
-                           .data(categoryService.updateCategory(categoryDTO))
+                           .data(categoryService.addOrUpdateCategory(categoryDTO))
                            .build()
         );
     }
+
+    @DeleteMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                           .status("success")
+                           .message("Category deleted")
+                           .build()
+        );
+    }
+
 }

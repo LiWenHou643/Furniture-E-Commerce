@@ -15,28 +15,23 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
-
-const initialCategories = [
-    {
-        category_id: 1,
-        category_name: 'Seating',
-        category_description: 'Furniture designed for sitting.',
-        image_url: 'https://via.placeholder.com/150',
-        created_at: '2023-01-01',
-    },
-    {
-        category_id: 2,
-        category_name: 'Tables',
-        category_description: 'Furniture designed for working or dining.',
-        image_url: 'https://via.placeholder.com/150',
-        created_at: '2023-01-02',
-    },
-];
+import Error from '../components/Error';
+import Loading from '../components/Loading';
+import useAddCategory from '../hooks/useAddCategory';
+import useDeleteCategory from '../hooks/useDeleteCategory';
+import useFetchCategory from '../hooks/useFetchCategory';
 
 export default function Categories() {
-    const [categories, setCategories] = useState(initialCategories);
     const [open, setOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+
+    const { data: categories, isLoading, error } = useFetchCategory();
+    const { mutate: addCategory, isLoading: isSaving } = useAddCategory();
+    const { mutate: deleteCategory } = useDeleteCategory();
+
+    if (isLoading) return <Loading />;
+
+    if (error) return <Error error={error} />;
 
     const handleOpen = (category = null) => {
         setEditingCategory(category);
@@ -51,25 +46,34 @@ export default function Categories() {
     const handleSave = (category) => {
         if (editingCategory) {
             // Update category
-            setCategories((prev) =>
-                prev.map((cat) =>
-                    cat.category_id === editingCategory.category_id
-                        ? category
-                        : cat
-                )
-            );
+            const updatedCategory = {
+                ...category,
+                categoryId: editingCategory.categoryId,
+            };
+
+            // Call update category API
+            addCategory(updatedCategory, {
+                onSettled: () => {
+                    handleClose();
+                },
+            });
         } else {
             // Add new category
-            const newCategory = { ...category, category_id: Date.now() };
-            setCategories((prev) => [...prev, newCategory]);
+            const newCategory = { ...category };
+
+            // Call add category API
+            addCategory(newCategory, {
+                onSettled: () => {
+                    handleClose();
+                },
+            });
         }
-        handleClose();
     };
 
     const handleDelete = (categoryId) => {
-        setCategories((prev) =>
-            prev.filter((cat) => cat.category_id !== categoryId)
-        );
+        // Call delete category API
+        if (window.confirm('Are you sure you want to delete this category?'))
+            deleteCategory(categoryId);
     };
 
     return (
@@ -103,10 +107,10 @@ export default function Categories() {
                     </TableHead>
                     <TableBody>
                         {categories.map((category) => (
-                            <TableRow key={category.category_id}>
-                                <TableCell>{category.category_name}</TableCell>
+                            <TableRow key={category.categoryId}>
+                                <TableCell>{category.categoryName}</TableCell>
                                 <TableCell>
-                                    {category.category_description}
+                                    {category.categoryDescription}
                                 </TableCell>
                                 <TableCell>
                                     <EditIcon
@@ -116,7 +120,7 @@ export default function Categories() {
                                     />
                                     <DeleteIcon
                                         onClick={() =>
-                                            handleDelete(category.category_id)
+                                            handleDelete(category.categoryId)
                                         }
                                         color='error'
                                         sx={{ mr: 2, cursor: 'pointer' }}
@@ -144,6 +148,7 @@ export default function Categories() {
                 >
                     <CategoryForm
                         category={editingCategory}
+                        isSaving={isSaving}
                         onSave={handleSave}
                         onCancel={handleClose}
                     />
@@ -153,12 +158,11 @@ export default function Categories() {
     );
 }
 
-function CategoryForm({ category, onSave, onCancel }) {
+function CategoryForm({ category, onSave, onCancel, isSaving }) {
     const [formState, setFormState] = useState(
         category || {
-            category_name: '',
-            category_description: '',
-            image_url: '',
+            categoryName: '',
+            categoryDescription: '',
         }
     );
 
@@ -179,24 +183,16 @@ function CategoryForm({ category, onSave, onCancel }) {
             <TextField
                 fullWidth
                 label='Name'
-                name='category_name'
-                value={formState.category_name}
+                name='categoryName'
+                value={formState.categoryName}
                 onChange={handleChange}
                 margin='normal'
             />
             <TextField
                 fullWidth
                 label='Description'
-                name='category_description'
-                value={formState.category_description}
-                onChange={handleChange}
-                margin='normal'
-            />
-            <TextField
-                fullWidth
-                label='Image URL'
-                name='image_url'
-                value={formState.image_url}
+                name='categoryDescription'
+                value={formState.categoryDescription}
                 onChange={handleChange}
                 margin='normal'
             />
@@ -204,8 +200,12 @@ function CategoryForm({ category, onSave, onCancel }) {
                 <Button onClick={onCancel} sx={{ mr: 2 }}>
                     Cancel
                 </Button>
-                <Button variant='contained' onClick={handleSubmit}>
-                    Save
+                <Button
+                    variant='contained'
+                    onClick={handleSubmit}
+                    disabled={isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
                 </Button>
             </Box>
         </Box>

@@ -1,7 +1,6 @@
 package com.example.application.service;
 
 import com.example.application.dto.MaterialDTO;
-import com.example.application.entity.Material;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.MaterialMapper;
 import com.example.application.repository.MaterialRepository;
@@ -41,20 +40,26 @@ public class MaterialService {
             evict = {@CacheEvict(cacheNames = MATERIAL_LIST_CACHE_KEY, allEntries = true)},
             put = {@CachePut(cacheNames = MATERIAL_CACHE_KEY, key = "#result.materialId")}
     )
-    public MaterialDTO addMaterial(MaterialDTO materialDTO) {
-        return MaterialMapper.INSTANCE.toDTO(materialRepository.save(MaterialMapper.INSTANCE.toEntity(materialDTO)));
-    }
+    public MaterialDTO addOrUpdateMaterial(MaterialDTO materialDTO) {
+        if (materialDTO.getMaterialId() == null) {
+            return MaterialMapper.INSTANCE.toDTO(materialRepository.save(MaterialMapper.INSTANCE.toEntity(materialDTO)));
+        }
 
-    @Caching(
-            evict = {@CacheEvict(cacheNames = MATERIAL_LIST_CACHE_KEY, allEntries = true)},
-            put = {@CachePut(cacheNames = MATERIAL_CACHE_KEY, key = "#result.materialId")}
-    )
-    public MaterialDTO updateMaterial(MaterialDTO materialDTO) {
-        Material material = materialRepository.findById(materialDTO.getMaterialId()).orElseThrow(
-                () -> new ResourceNotFoundException("Material", "id", materialDTO.getMaterialId())
-        );
+        var material = materialRepository.findById(materialDTO
+                .getMaterialId()).orElseThrow(() -> new ResourceNotFoundException("Material", "id", materialDTO.getMaterialId()));
+
         material.setMaterialName(materialDTO.getMaterialName());
         material.setMaterialDescription(materialDTO.getMaterialDescription());
         return MaterialMapper.INSTANCE.toDTO(materialRepository.save(material));
+    }
+
+    @Caching(
+            evict = {@CacheEvict(cacheNames = MATERIAL_LIST_CACHE_KEY, allEntries = true)}
+    )
+    public void deleteMaterial(Long materialId) {
+        var material = materialRepository.findById(materialId).orElseThrow(
+                () -> new ResourceNotFoundException("Material", "id", materialId)
+        );
+        materialRepository.delete(material);
     }
 }
