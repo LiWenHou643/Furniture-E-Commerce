@@ -2,6 +2,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LivingIcon from '@mui/icons-material/Living';
 import PeopleIcon from '@mui/icons-material/People';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
@@ -12,32 +13,43 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export function Sidebar() {
-    const location = useLocation();
+    const theme = useTheme();
     const [openProducts, setOpenProducts] = useState(false);
 
     const menuItems = [
         { id: 1, text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-        { id: 2, text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
+        {
+            id: 2,
+            text: 'Orders',
+            icon: <ShoppingCartIcon />,
+            path: '/orders-management',
+        },
         {
             id: 3,
             text: 'Products',
-            icon: <BarChartIcon />,
-            path: '/products',
+            icon: <LivingIcon />,
+            path: '/products-management',
             hasSubMenu: true,
         },
-        { id: 4, text: 'Customers', icon: <PeopleIcon />, path: '/customers' },
+        {
+            id: 4,
+            text: 'Customers',
+            icon: <PeopleIcon />,
+            path: '/customers-management',
+        },
         { id: 5, text: 'Chat', icon: <BarChartIcon />, path: '/chat' },
     ];
 
     const subTabs = [
-        { id: 1, text: 'Products', path: '/products' },
-        { id: 2, text: 'Categories', path: '/products/categories' },
-        { id: 3, text: 'Brands', path: '/products/brands' },
-        { id: 4, text: 'Materials', path: '/products/materials' },
+        { id: 1, text: 'Products', path: '/products-management/products' },
+        { id: 2, text: 'Categories', path: '/products-management/categories' },
+        { id: 3, text: 'Brands', path: '/products-management/brands' },
+        { id: 4, text: 'Materials', path: '/products-management/materials' },
     ];
 
     return (
@@ -50,9 +62,11 @@ export function Sidebar() {
                             to={item.path}
                             style={({ isActive }) => ({
                                 textDecoration: 'none',
-                                color: isActive ? 'blue' : 'inherit',
+                                color: isActive
+                                    ? '#fff'
+                                    : theme.palette.secondary.main,
                                 backgroundColor: isActive
-                                    ? '#f0f0f0'
+                                    ? theme.palette.primary.main
                                     : 'transparent',
                             })}
                             onClick={() =>
@@ -60,7 +74,13 @@ export function Sidebar() {
                                 setOpenProducts(!openProducts)
                             }
                         >
-                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemIcon
+                                sx={{
+                                    color: 'inherit',
+                                }}
+                            >
+                                {item.icon}
+                            </ListItemIcon>
                             <ListItemText primary={item.text} />
                             {item.hasSubMenu &&
                                 (openProducts ? (
@@ -86,7 +106,7 @@ export function Sidebar() {
                                             style={({ isActive }) => ({
                                                 textDecoration: 'none',
                                                 color: isActive
-                                                    ? 'green'
+                                                    ? theme.palette.primary.main
                                                     : 'inherit',
                                                 paddingLeft: '40px',
                                                 backgroundColor: isActive

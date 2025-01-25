@@ -2,7 +2,12 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import {
+    Navigate,
+    Route,
+    BrowserRouter as Router,
+    Routes,
+} from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
@@ -23,7 +28,7 @@ const theme = createTheme({
             main: '#944300FF',
         },
         secondary: {
-            main: '#B33F68FF',
+            main: '#333333',
         },
     },
 });
@@ -47,18 +52,33 @@ function App() {
                             }
                         >
                             <Route path='/' element={<DashBoard />} />
-                            <Route path='/orders' element={<Orders />} />
-                            <Route path='/products' element={<Products />} />
                             <Route
-                                path='/products/categories'
+                                path='/orders-management'
+                                element={<Orders />}
+                            />
+                            <Route
+                                path='/products-management'
+                                element={
+                                    <Navigate
+                                        to='/products-management/products'
+                                        replace
+                                    />
+                                }
+                            />
+                            <Route
+                                path='/products-management/products'
+                                element={<Products />}
+                            />
+                            <Route
+                                path='/products-management/categories'
                                 element={<Categories />}
                             />
                             <Route
-                                path='/products/brands'
+                                path='/products-management/brands'
                                 element={<Brands />}
                             />
                             <Route
-                                path='/products/materials'
+                                path='/products-management/materials'
                                 element={<Materials />}
                             />
                         </Route>
