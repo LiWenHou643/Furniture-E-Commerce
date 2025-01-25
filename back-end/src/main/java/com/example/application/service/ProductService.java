@@ -12,8 +12,10 @@ import com.example.application.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -106,23 +108,24 @@ public class ProductService {
                                               .orElseThrow(() -> new ResourceNotFoundException(
                                                       "Material", "id", productDTO.getMaterialId()));
 
-        Product product = Product.builder()
-                                 .productName(productDTO.getProductName())
-                                 .productDescription(productDTO.getProductDescription())
-                                 .category(category)
-                                 .brand(brand)
-                                 .material(material)
-                                 .averageRating(productDTO.getAverageRating())
-                                 .ratingCount(productDTO.getRatingCount())
-                                 .productStatus(productDTO.isProductStatus())
-                                 .build();
+        Product product = ProductMapper.INSTANCE.toEntity(productDTO);
+        product.setCategory(category);
+        product.setBrand(brand);
+        product.setMaterial(material);
 
         productRepository.save(product);  // Save the new product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the DTO
     }
 
     // Cache the individual product and evict the product list cache on update
-    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
+            },
+            put = {
+                    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+            }
+    )
     @Transactional  // Ensures the update operation is atomic
     public ProductDTO updateProduct(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getProductId())
@@ -133,15 +136,10 @@ public class ProductService {
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
     }
 
-    public List<ProductDTO> searchProducts(String query) {
-        List<Product> products = productRepository.findByProductNameContaining(query)
-                                                  .orElse(Collections.emptyList());
 
-        return products.stream()
-                       .map((ProductMapper.INSTANCE::toDTO))
-                       .collect(Collectors.toList());
-    }
-
+    @Caching(put = {
+            @CachePut(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features", key = "#result")
+    })
     public List<ProductDTO> getTopFeatureProducts() {
         List<Product> products = productRepository.findTopFeatureProducts()
                                                   .orElse(Collections.emptyList());

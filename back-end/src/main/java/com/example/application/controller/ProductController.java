@@ -56,7 +56,6 @@ public class ProductController {
         );
     }
 
-
     @GetMapping("/products/{id}")
     public ResponseEntity<ApiResponse<ProductDTO>> getItemById(@PathVariable Long id) {
         return ResponseEntity.ok(
@@ -64,17 +63,6 @@ public class ProductController {
                            .status("success")
                            .message("Product found")
                            .data(productService.getProductById(id))
-                           .build()
-        );
-    }
-
-    @GetMapping("/products/search")
-    public ResponseEntity<ApiResponse<List<ProductDTO>>> searchProducts(@RequestParam(name = "productName") String query) {
-        return ResponseEntity.ok(
-                ApiResponse.<List<ProductDTO>>builder()
-                           .status("success")
-                           .message("Products found by query: " + query)
-                           .data(productService.searchProducts(query))
                            .build()
         );
     }
