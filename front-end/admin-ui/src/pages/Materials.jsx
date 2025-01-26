@@ -31,6 +31,7 @@ export default function Materials() {
     if (isLoading) return <Loading />;
 
     if (error) return <Error error={error} />;
+
     const handleOpen = (material = null) => {
         setEditingMaterial(material);
         setOpen(true);
