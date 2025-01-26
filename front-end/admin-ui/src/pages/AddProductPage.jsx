@@ -5,9 +5,13 @@ import {
     Avatar,
     Box,
     Button,
+    FormControl,
     IconButton,
+    InputLabel,
+    MenuItem,
     Modal,
     Paper,
+    Select,
     Table,
     TableBody,
     TableCell,
@@ -23,7 +27,11 @@ import CustomTooltip from '../components/CustomTooltip';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useAddColor from '../hooks/useAddColor';
+import useAddProduct from '../hooks/useAddProduct';
+import useFetchBrand from '../hooks/useFetchBrand';
+import useFetchCategory from '../hooks/useFetchCategory';
 import useFetchColor from '../hooks/useFetchColor';
+import useFetchMaterial from '../hooks/useFetchMaterial';
 
 const emptyProduct = {
     productName: '',
@@ -39,12 +47,37 @@ export default function AddProductPage() {
         hexCode: '#000000',
     });
 
-    const { data: colors, isLoading, error } = useFetchColor();
+    const {
+        data: colors,
+        isLoading: loadingColor,
+        error: errorColor,
+    } = useFetchColor();
+    const {
+        data: brands,
+        isLoading: loadingBrand,
+        error: errorBrand,
+    } = useFetchBrand();
+    const {
+        data: categories,
+        isLoading: loadingCategory,
+        error: errorCategory,
+    } = useFetchCategory();
+    const {
+        data: materials,
+        isLoading: loadingMaterial,
+        error: errorMaterial,
+    } = useFetchMaterial();
+
     const { mutate: addColor } = useAddColor();
+    const { mutate: addProduct } = useAddProduct();
 
-    if (isLoading) return <Loading />;
+    if (loadingBrand || loadingCategory || loadingMaterial || loadingColor)
+        return <Loading />;
 
-    if (error) return <Error error={error} />;
+    if (errorBrand) return <Error error={errorBrand} />;
+    if (errorCategory) return <Error error={errorCategory} />;
+    if (errorMaterial) return <Error error={errorMaterial} />;
+    if (errorColor) return <Error error={errorColor} />;
 
     const handleAddVariant = () => {
         setProduct((prev) => ({
@@ -52,7 +85,6 @@ export default function AddProductPage() {
             productItems: [
                 ...prev.productItems,
                 {
-                    productItemId: Date.now(),
                     color: { colorName: '', hexCode: '' },
                     sku: '',
                     originalPrice: 0,
@@ -122,7 +154,6 @@ export default function AddProductPage() {
                               productImages: [
                                   ...item.productImages,
                                   {
-                                      imageId: Date.now(),
                                       file, // Store the actual file for submission
                                       previewUrl, // Store the preview URL for display
                                       mainImage:
@@ -140,8 +171,8 @@ export default function AddProductPage() {
 
     const handleSaveProduct = () => {
         console.log('Saving product:', product);
-        alert('Product saved successfully!');
-        setProduct(emptyProduct);
+        addProduct(product);
+        // setProduct(emptyProduct);
     };
 
     const handleSelectColor = (itemId, color) => {
@@ -204,6 +235,78 @@ export default function AddProductPage() {
                     multiline
                     rows={4}
                 />
+
+                {/* Category Selection */}
+                <FormControl fullWidth margin='normal' required>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                        value={product.category?.categoryId || ''}
+                        onChange={(e) =>
+                            setProduct({
+                                ...product,
+                                category: categories.find(
+                                    (cat) => cat.categoryId === e.target.value
+                                ),
+                            })
+                        }
+                    >
+                        {categories.map((category) => (
+                            <MenuItem
+                                key={category.categoryId}
+                                value={category.categoryId}
+                            >
+                                {category.categoryName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                {/* Brand Selection */}
+                <FormControl fullWidth margin='normal' required>
+                    <InputLabel>Brand</InputLabel>
+                    <Select
+                        value={product.brand?.brandId || ''}
+                        onChange={(e) =>
+                            setProduct({
+                                ...product,
+                                brand: brands.find(
+                                    (brand) => brand.brandId === e.target.value
+                                ),
+                            })
+                        }
+                    >
+                        {brands.map((brand) => (
+                            <MenuItem key={brand.brandId} value={brand.brandId}>
+                                {brand.brandName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                {/* Material Selection */}
+                <FormControl fullWidth margin='normal' required>
+                    <InputLabel>Material</InputLabel>
+                    <Select
+                        value={product.material?.materialId || ''}
+                        onChange={(e) =>
+                            setProduct({
+                                ...product,
+                                material: materials.find(
+                                    (mat) => mat.materialId === e.target.value
+                                ),
+                            })
+                        }
+                    >
+                        {materials.map((material) => (
+                            <MenuItem
+                                key={material.materialId}
+                                value={material.materialId}
+                            >
+                                {material.materialName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             </Box>
 
             {/* Product Variants */}
@@ -549,7 +652,21 @@ export default function AddProductPage() {
                     color='primary'
                     onClick={handleSaveProduct}
                     disabled={
-                        !product.productName || !product.productDescription
+                        !product.productName || // Check if product name is empty
+                        !product.productDescription || // Check if product description is empty
+                        !product.category || // Check if category is selected
+                        !product.brand || // Check if brand is selected
+                        !product.material || // Check if material is selected
+                        product.productItems.length === 0 || // Ensure there is at least one variant
+                        product.productItems.some(
+                            (item) =>
+                                !item.sku || // Check if SKU is empty
+                                !item.originalPrice || // Check if original price is empty
+                                !item.salePrice || // Check if sale price is empty
+                                !item.stockQuantity || // Check if stock quantity is empty
+                                !item.color || // Check if color is selected
+                                item.productImages.length === 0 // Ensure at least one image exists
+                        )
                     }
                 >
                     Save Product

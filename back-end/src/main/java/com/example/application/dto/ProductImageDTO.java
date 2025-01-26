@@ -1,8 +1,8 @@
 package com.example.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -14,4 +14,6 @@ public class ProductImageDTO {
     Long imageId;
     String imageUrl;
     boolean mainImage;
+
+    MultipartFile file;
 }

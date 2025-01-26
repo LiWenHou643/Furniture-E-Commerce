@@ -91,7 +91,7 @@ public class UserController {
             String url = (String) uploadResult.get("secure_url"); // Get the image URL
 
             // Save the URL to your database associated with the userId
-            UserDTO userDTO = userService.updateAvatar(userId, url);
+            userService.updateAvatar(userId, url);
 
             return ResponseEntity.ok(
                     ApiResponse.builder()
