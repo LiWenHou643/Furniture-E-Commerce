@@ -6,6 +6,7 @@ import {
     Box,
     Button,
     IconButton,
+    Modal,
     Paper,
     Table,
     TableBody,
@@ -16,7 +17,13 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
+
+import CustomTooltip from '../components/CustomTooltip';
+import Error from '../components/Error';
+import Loading from '../components/Loading';
+import useAddColor from '../hooks/useAddColor';
+import useFetchColor from '../hooks/useFetchColor';
 
 const emptyProduct = {
     productName: '',
@@ -26,6 +33,18 @@ const emptyProduct = {
 
 export default function AddProductPage() {
     const [product, setProduct] = useState(emptyProduct);
+    const [openAddColorModal, setOpenAddColorModal] = useState(false);
+    const [newColor, setNewColor] = useState({
+        colorName: '',
+        hexCode: '#000000',
+    });
+
+    const { data: colors, isLoading, error } = useFetchColor();
+    const { mutate: addColor } = useAddColor();
+
+    if (isLoading) return <Loading />;
+
+    if (error) return <Error error={error} />;
 
     const handleAddVariant = () => {
         setProduct((prev) => ({
@@ -125,6 +144,31 @@ export default function AddProductPage() {
         setProduct(emptyProduct);
     };
 
+    const handleSelectColor = (itemId, color) => {
+        setProduct((prev) => ({
+            ...prev,
+            productItems: prev.productItems.map((item) =>
+                item.productItemId === itemId ? { ...item, color } : item
+            ),
+        }));
+    };
+
+    const handleAddNewColor = () => {
+        if (newColor.colorName && newColor.hexCode) {
+            const addedColor = { ...newColor };
+
+            console.log('Adding new color:', addedColor);
+            addColor(addedColor, {
+                onSettled: () => {
+                    setOpenAddColorModal(false);
+                    setNewColor({ colorName: '', hexCode: '' });
+                },
+            });
+        } else {
+            alert('Please provide both a color name and a hex code.');
+        }
+    };
+
     return (
         <Box sx={{ p: 4 }}>
             <Typography variant='h4' gutterBottom>
@@ -190,18 +234,87 @@ export default function AddProductPage() {
                         {product.productItems.map((item) => (
                             <TableRow key={item.productItemId}>
                                 <TableCell>
-                                    <TextField
-                                        label='Color Name'
-                                        value={item.color.colorName}
-                                        onChange={(e) =>
-                                            handleVariantChange(
-                                                item.productItemId,
-                                                'color.colorName',
-                                                e.target.value
-                                            )
-                                        }
-                                        size='small'
-                                    />
+                                    <Box>
+                                        <Typography variant='body2'>
+                                            Select Color:{' '}
+                                            {item.color.colorName && (
+                                                <Typography
+                                                    component='span'
+                                                    variant='body2'
+                                                    sx={{
+                                                        mt: 1,
+                                                        fontWeight: 'bold',
+                                                    }}
+                                                >
+                                                    {item.color.colorName}
+                                                </Typography>
+                                            )}
+                                        </Typography>
+
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                flexWrap: 'wrap',
+                                                gap: 1,
+                                                width: 250,
+                                                mt: 1,
+                                            }}
+                                        >
+                                            {colors?.map((color) => (
+                                                <CustomTooltip
+                                                    key={color.colorId}
+                                                    title={color.colorName}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            width: 30,
+                                                            height: 30,
+                                                            backgroundColor:
+                                                                color.hexCode,
+                                                            borderRadius: '50%',
+                                                            cursor: 'pointer',
+                                                            border:
+                                                                item.color
+                                                                    .colorId ===
+                                                                color.colorId
+                                                                    ? '3px solid #000'
+                                                                    : '1px solid #ddd',
+                                                        }}
+                                                        onClick={() =>
+                                                            handleSelectColor(
+                                                                item.productItemId,
+                                                                color
+                                                            )
+                                                        }
+                                                    />
+                                                </CustomTooltip>
+                                            ))}
+                                            <CustomTooltip title='Add New Color'>
+                                                <Box
+                                                    sx={{
+                                                        width: 30,
+                                                        height: 30,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent:
+                                                            'center',
+                                                        backgroundColor:
+                                                            '#f0f0f0',
+                                                        borderRadius: '50%',
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #ddd',
+                                                    }}
+                                                    onClick={() =>
+                                                        setOpenAddColorModal(
+                                                            true
+                                                        )
+                                                    }
+                                                >
+                                                    +
+                                                </Box>
+                                            </CustomTooltip>
+                                        </Box>
+                                    </Box>
                                 </TableCell>
                                 <TableCell>
                                     <TextField
@@ -371,6 +484,63 @@ export default function AddProductPage() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Modal for Adding New Colors */}
+            <Modal
+                open={openAddColorModal}
+                onClose={() => setOpenAddColorModal(false)}
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 300,
+                        bgcolor: 'background.paper',
+                        p: 4,
+                        borderRadius: 2,
+                        boxShadow: 24,
+                    }}
+                >
+                    <Typography variant='h6' gutterBottom>
+                        Add New Color
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        label='Color Name'
+                        value={newColor.colorName}
+                        onChange={(e) =>
+                            setNewColor((prev) => ({
+                                ...prev,
+                                colorName: e.target.value,
+                            }))
+                        }
+                        margin='normal'
+                    />
+                    <TextField
+                        fullWidth
+                        label='Hex Code'
+                        value={newColor.hexCode}
+                        onChange={(e) =>
+                            setNewColor((prev) => ({
+                                ...prev,
+                                hexCode: e.target.value,
+                            }))
+                        }
+                        margin='normal'
+                        type='color'
+                    />
+                    <Button
+                        variant='contained'
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        onClick={handleAddNewColor}
+                    >
+                        Add Color
+                    </Button>
+                </Box>
+            </Modal>
 
             {/* Save Button */}
             <Box sx={{ mt: 4 }}>

@@ -6,10 +6,7 @@ import com.example.application.service.ColorService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,7 +27,7 @@ public class ColorController {
     }
 
     @GetMapping("/colors/{id}")
-    public ResponseEntity<ApiResponse<ColorDTO>> getColorById(Long id) {
+    public ResponseEntity<ApiResponse<ColorDTO>> getColorById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.<ColorDTO>builder()
                            .status("success")
@@ -40,22 +37,12 @@ public class ColorController {
     }
 
     @PostMapping("/colors")
-    public ResponseEntity<ApiResponse<ColorDTO>> addColor(ColorDTO colorDTO) {
+    public ResponseEntity<ApiResponse<ColorDTO>> addOrUpdateColor(@RequestBody ColorDTO colorDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ColorDTO>builder()
                            .status("success")
                            .message("Color added successfully")
-                           .data(colorService.addColor(colorDTO))
-                           .build());
-    }
-
-    @PutMapping("/colors")
-    public ResponseEntity<ApiResponse<ColorDTO>> updateColor(ColorDTO colorDTO) {
-        return ResponseEntity.ok(
-                ApiResponse.<ColorDTO>builder()
-                           .status("success")
-                           .message("Color updated successfully")
-                           .data(colorService.updateColor(colorDTO))
+                           .data(colorService.addOrUpdateColor(colorDTO))
                            .build());
     }
 
