@@ -93,7 +93,14 @@ public class ProductService {
     }
 
     // Cache the individual product and evict the product list cache on add
-    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
+            },
+            put = {
+                    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+            }
+    )
     @Transactional // Ensures the operation is atomic
     public ProductDTO addProduct(ProductDTO productDTO) {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
@@ -115,8 +122,8 @@ public class ProductService {
         product.getProductItems().forEach(pi -> {
             pi.setProduct(product);  // Set the product for each product item
             pi.setProductImages(pi.getProductImages().stream()
-                                   .peek(piImage -> piImage.setProductItem(pi))  // Set the product item for each image
-                                   .collect(Collectors.toSet()));
+                                  .peek(piImage -> piImage.setProductItem(pi))  // Set the product item for each image
+                                  .collect(Collectors.toSet()));
         });  // Set the product for each product item
 
         productRepository.save(product);  // Save the new product
@@ -140,6 +147,24 @@ public class ProductService {
         ProductMapper.INSTANCE.updateProductFromDTO(productDTO, product);  // Update fields from DTO
         productRepository.save(product);  // Save the updated product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
+    }
+
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
+            },
+            put = {
+                    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+            }
+    )
+    @Transactional
+    public ProductDTO deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                                           .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        product.setProductStatus(false);  // Set the product status to false
+        return ProductMapper.INSTANCE.toDTO(
+                productRepository.save(product) // Save the updated product
+        );  // Return the updated DTO
     }
 
 

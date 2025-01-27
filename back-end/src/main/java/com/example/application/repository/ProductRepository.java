@@ -24,7 +24,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (:materials IS NULL OR p.material.materialId IN :materials) " +
             "AND (:minPrice IS NULL OR v.salePrice >= :minPrice) " +
             "AND (:maxPrice IS NULL OR v.salePrice <= :maxPrice)" +
-            "AND (:minRating IS NULL OR p.averageRating >= :minRating)"
+            "AND (:minRating IS NULL OR p.averageRating >= :minRating)" +
+            "AND p.productStatus = true"
     )
     List<Product> findFilteredProductsWithVariations(
             @Param("categories") List<String> categories,

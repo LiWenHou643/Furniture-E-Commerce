@@ -24,11 +24,14 @@ import useFetchProducts from '../hooks/useFetchProducts';
 
 import { useEffect, useRef } from 'react';
 
+import useDeleteProduct from '../hooks/useDeleteProduct';
+
 const itemPerPage = 10;
 
 export default function ProductManagement() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { mutation: deleteProduct } = useDeleteProduct();
 
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
@@ -90,7 +93,9 @@ export default function ProductManagement() {
         // Scroll to top of the page
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    const handleDelete = (productId) => {};
+    const handleDelete = (productId) => {
+        deleteProduct(productId);
+    };
 
     return (
         <Box sx={{ p: 4 }}>
