@@ -41,6 +41,9 @@ const emptyProduct = {
 
 export default function AddProductPage() {
     const [product, setProduct] = useState(emptyProduct);
+    const [category, setCategory] = useState('');
+    const [brand, setBrand] = useState('');
+    const [material, setMaterial] = useState('');
     const [openAddColorModal, setOpenAddColorModal] = useState(false);
     const [newColor, setNewColor] = useState({
         colorName: '',
@@ -96,13 +99,16 @@ export default function AddProductPage() {
         }));
     };
 
-    const handleVariantChange = (id, field, value) => {
-        setProduct((prev) => ({
-            ...prev,
-            productItems: prev.productItems.map((item) =>
-                item.productItemId === id ? { ...item, [field]: value } : item
-            ),
-        }));
+    const handleVariantChange = (itemId, field, value) => {
+        setProduct((prev) => {
+            const updatedItems = prev.productItems.map((item) =>
+                item.productItemId === itemId
+                    ? { ...item, [field]: value }
+                    : item
+            );
+
+            return { ...prev, productItems: updatedItems };
+        });
     };
 
     const handleDeleteImage = (itemId, imageId) => {
@@ -170,8 +176,14 @@ export default function AddProductPage() {
     };
 
     const handleSaveProduct = () => {
-        console.log('Saving product:', product);
-        addProduct(product);
+        const data = {
+            ...product,
+            categoryId: category.categoryId,
+            brandId: brand.brandId,
+            materialId: material.materialId,
+        };
+        console.log('Saving product:', data);
+        addProduct(data);
         // setProduct(emptyProduct);
     };
 
@@ -240,14 +252,14 @@ export default function AddProductPage() {
                 <FormControl fullWidth margin='normal' required>
                     <InputLabel>Category</InputLabel>
                     <Select
-                        value={product.category?.categoryId || ''}
+                        value={category.categoryId || ''}
                         onChange={(e) =>
-                            setProduct({
-                                ...product,
-                                category: categories.find(
-                                    (cat) => cat.categoryId === e.target.value
-                                ),
-                            })
+                            setCategory(
+                                categories.find(
+                                    (category) =>
+                                        category.categoryId === e.target.value
+                                )
+                            )
                         }
                     >
                         {categories.map((category) => (
@@ -265,14 +277,13 @@ export default function AddProductPage() {
                 <FormControl fullWidth margin='normal' required>
                     <InputLabel>Brand</InputLabel>
                     <Select
-                        value={product.brand?.brandId || ''}
+                        value={brand.brandId || ''}
                         onChange={(e) =>
-                            setProduct({
-                                ...product,
-                                brand: brands.find(
+                            setBrand(
+                                brands.find(
                                     (brand) => brand.brandId === e.target.value
-                                ),
-                            })
+                                )
+                            )
                         }
                     >
                         {brands.map((brand) => (
@@ -287,14 +298,14 @@ export default function AddProductPage() {
                 <FormControl fullWidth margin='normal' required>
                     <InputLabel>Material</InputLabel>
                     <Select
-                        value={product.material?.materialId || ''}
+                        value={material.materialId || ''}
                         onChange={(e) =>
-                            setProduct({
-                                ...product,
-                                material: materials.find(
-                                    (mat) => mat.materialId === e.target.value
-                                ),
-                            })
+                            setMaterial(
+                                materials.find(
+                                    (material) =>
+                                        material.materialId === e.target.value
+                                )
+                            )
                         }
                     >
                         {materials.map((material) => (
@@ -334,8 +345,8 @@ export default function AddProductPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {product.productItems.map((item) => (
-                            <TableRow key={item.productItemId}>
+                        {product.productItems.map((item, index) => (
+                            <TableRow key={index}>
                                 <TableCell>
                                     <Box>
                                         <Typography variant='body2'>
@@ -365,7 +376,10 @@ export default function AddProductPage() {
                                         >
                                             {colors?.map((color) => (
                                                 <CustomTooltip
-                                                    key={color.colorId}
+                                                    key={
+                                                        color.colorId +
+                                                        color.colorName
+                                                    }
                                                     title={color.colorName}
                                                 >
                                                     <Box
@@ -508,77 +522,85 @@ export default function AddProductPage() {
                                                 overflowX: 'auto',
                                             }}
                                         >
-                                            {item.productImages.map((img) => (
-                                                <Box
-                                                    key={img.imageId}
-                                                    sx={{
-                                                        position: 'relative',
-                                                        display: 'inline-block',
-                                                        width: 80,
-                                                        height: 80,
-                                                        border: img.mainImage
-                                                            ? '2px solid green'
-                                                            : '1px solid #ddd',
-                                                        borderRadius: 2,
-                                                        cursor: 'pointer',
-                                                    }}
-                                                    onClick={() =>
-                                                        handleSetMainImage(
-                                                            item.productItemId,
-                                                            img.imageId
-                                                        )
-                                                    }
-                                                >
-                                                    <Avatar
-                                                        src={img.previewUrl} // Use the preview URL here
-                                                        variant='square'
-                                                        sx={{
-                                                            width: '100%',
-                                                            height: '100%',
-                                                        }}
-                                                    />
-                                                    <IconButton
-                                                        size='small'
+                                            {item.productImages.map(
+                                                (img, index) => (
+                                                    <Box
+                                                        key={
+                                                            index +
+                                                            img.file.name
+                                                        }
                                                         sx={{
                                                             position:
-                                                                'absolute',
-                                                            top: -10,
-                                                            right: -10,
-                                                            bgcolor: 'white',
+                                                                'relative',
+                                                            display:
+                                                                'inline-block',
+                                                            width: 80,
+                                                            height: 80,
+                                                            border: img.mainImage
+                                                                ? '2px solid green'
+                                                                : '1px solid #ddd',
+                                                            borderRadius: 2,
+                                                            cursor: 'pointer',
                                                         }}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDeleteImage(
+                                                        onClick={() =>
+                                                            handleSetMainImage(
                                                                 item.productItemId,
                                                                 img.imageId
-                                                            );
-                                                        }}
+                                                            )
+                                                        }
                                                     >
-                                                        <DeleteIcon fontSize='small' />
-                                                    </IconButton>
-                                                    {img.mainImage && (
-                                                        <Typography
+                                                        <Avatar
+                                                            src={img.previewUrl} // Use the preview URL here
+                                                            variant='square'
+                                                            sx={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                            }}
+                                                        />
+                                                        <IconButton
+                                                            size='small'
                                                             sx={{
                                                                 position:
                                                                     'absolute',
-                                                                bottom: 2,
-                                                                left: '50%',
-                                                                transform:
-                                                                    'translateX(-50%)',
+                                                                top: -10,
+                                                                right: -10,
                                                                 bgcolor:
-                                                                    'rgba(0, 0, 0, 0.6)',
-                                                                color: 'white',
-                                                                fontSize:
-                                                                    '0.75rem',
-                                                                borderRadius: 1,
-                                                                px: 0.5,
+                                                                    'white',
+                                                            }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteImage(
+                                                                    item.productItemId,
+                                                                    img.imageId
+                                                                );
                                                             }}
                                                         >
-                                                            Main
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                            ))}
+                                                            <DeleteIcon fontSize='small' />
+                                                        </IconButton>
+                                                        {img.mainImage && (
+                                                            <Typography
+                                                                sx={{
+                                                                    position:
+                                                                        'absolute',
+                                                                    bottom: 2,
+                                                                    left: '50%',
+                                                                    transform:
+                                                                        'translateX(-50%)',
+                                                                    bgcolor:
+                                                                        'rgba(0, 0, 0, 0.6)',
+                                                                    color: 'white',
+                                                                    fontSize:
+                                                                        '0.75rem',
+                                                                    borderRadius: 1,
+                                                                    px: 0.5,
+                                                                }}
+                                                            >
+                                                                Main
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                )
+                                            )}
                                         </Box>
                                     </Box>
                                 </TableCell>
@@ -654,9 +676,9 @@ export default function AddProductPage() {
                     disabled={
                         !product.productName || // Check if product name is empty
                         !product.productDescription || // Check if product description is empty
-                        !product.category || // Check if category is selected
-                        !product.brand || // Check if brand is selected
-                        !product.material || // Check if material is selected
+                        !category || // Check if category is selected
+                        !brand || // Check if brand is selected
+                        !material || // Check if material is selected
                         product.productItems.length === 0 || // Ensure there is at least one variant
                         product.productItems.some(
                             (item) =>

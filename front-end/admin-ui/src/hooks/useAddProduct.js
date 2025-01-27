@@ -8,6 +8,9 @@ const addProduct = async (product) => {
     // Append general product details
     formData.append('productName', product.productName);
     formData.append('productDescription', product.productDescription);
+    formData.append('categoryId', product.categoryId);
+    formData.append('brandId', product.brandId);
+    formData.append('materialId', product.materialId);
 
     // Append product items
     product.productItems.forEach((item, itemIndex) => {
@@ -48,6 +51,11 @@ const addProduct = async (product) => {
             );
         });
     });
+
+    console.log('FormData Contents:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
 
     const { data } = await axiosPrivate.post('/products', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },

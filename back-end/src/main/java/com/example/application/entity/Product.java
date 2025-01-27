@@ -55,7 +55,7 @@ public class Product extends BaseEntity {
     @ManyToMany(mappedBy = "products")
     Set<Area> areas = new HashSet<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ProductItem> productItems = new HashSet<>();
 
 }

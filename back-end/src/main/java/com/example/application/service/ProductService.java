@@ -108,10 +108,16 @@ public class ProductService {
                                               .orElseThrow(() -> new ResourceNotFoundException(
                                                       "Material", "id", productDTO.getMaterialId()));
 
-        Product product = ProductMapper.INSTANCE.toEntity(productDTO);
+        Product product = ProductMapper.INSTANCE.toEntity(productDTO);  // Map DTO to entity
         product.setCategory(category);
         product.setBrand(brand);
         product.setMaterial(material);
+        product.getProductItems().forEach(pi -> {
+            pi.setProduct(product);  // Set the product for each product item
+            pi.setProductImages(pi.getProductImages().stream()
+                                   .peek(piImage -> piImage.setProductItem(pi))  // Set the product item for each image
+                                   .collect(Collectors.toSet()));
+        });  // Set the product for each product item
 
         productRepository.save(product);  // Save the new product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the DTO
