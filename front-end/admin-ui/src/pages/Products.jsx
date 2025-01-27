@@ -31,7 +31,7 @@ const itemPerPage = 10;
 export default function ProductManagement() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { mutation: deleteProduct } = useDeleteProduct();
+    const { mutate: deleteProduct } = useDeleteProduct();
 
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
 

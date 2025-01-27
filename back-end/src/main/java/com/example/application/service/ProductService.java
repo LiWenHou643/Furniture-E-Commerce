@@ -78,6 +78,7 @@ public class ProductService {
         var product = productRepository.findById(id)
                                        .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
 
+
         // Map the product to DTO
         var productDTO = ProductMapper.INSTANCE.toDTO(product);
 
@@ -149,22 +150,14 @@ public class ProductService {
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
     }
 
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
-            },
-            put = {
-                    @CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
-            }
-    )
+
+    @CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
     @Transactional
-    public ProductDTO deleteProduct(Long id) {
+    public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                                            .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
         product.setProductStatus(false);  // Set the product status to false
-        return ProductMapper.INSTANCE.toDTO(
-                productRepository.save(product) // Save the updated product
-        );  // Return the updated DTO
+        productRepository.save(product);  // Save the updated product
     }
 
 

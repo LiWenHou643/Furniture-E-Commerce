@@ -130,12 +130,12 @@ public class ProductController {
 
     @DeleteMapping("/products/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<ProductDTO>> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<?>> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
         return ResponseEntity.ok(
                 ApiResponse.<ProductDTO>builder()
                            .status("success")
                            .message("Product deleted")
-                           .data(productService.deleteProduct(id))
                            .build()
         );
     }
