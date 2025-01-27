@@ -15,98 +15,74 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-
-const initialData = {
-    productId: 2,
-    productName: 'Hobro Don Sofa',
-    productDescription:
-        'The sofa mattress is made of polyester fabric that is dust-proof, mold-resistant and the mattress cover can be easily removed for cleaning. Gray sofa cushions create a modern beauty, but no less luxurious and gentle',
-    category: { categoryId: 1, categoryName: 'Seating' },
-    brand: { brandId: 5, brandName: 'Herman Miller' },
-    material: { materialId: 3, materialName: 'Fabric' },
-    productItems: [
-        {
-            productItemId: 3,
-            color: {
-                colorId: 1,
-                colorName: 'Antique Taupe',
-                hexCode: '#d4c1b1',
-            },
-            sku: 'SEAT02',
-            originalPrice: 100.0,
-            salePrice: 90.0,
-            stockQuantity: 50,
-            productImages: [
-                {
-                    imageId: 15,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524464/don-sofa-4_vgppso.png',
-                    mainImage: false,
-                },
-                {
-                    imageId: 11,
-                    imageUrl:
-                        'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734524463/don-sofa-2_ys9d1c.png',
-                    mainImage: true,
-                },
-            ],
-        },
-    ],
-};
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Error from '../components/Error';
+import Loading from '../components/Loading';
+import useFetchBrand from '../hooks/useFetchBrand';
+import useFetchCategory from '../hooks/useFetchCategory';
+import useFetchColor from '../hooks/useFetchColor';
+import useFetchMaterial from '../hooks/useFetchMaterial';
+import useFetchProduct from '../hooks/useFetchProduct';
 
 export default function ProductDetailPage() {
-    const [product, setProduct] = useState(initialData);
+    const { productId } = useParams();
+    const { data: product, isLoading, error } = useFetchProduct(productId);
+    const {
+        data: colors,
+        isLoading: loadingColor,
+        error: errorColor,
+    } = useFetchColor();
+    const {
+        data: brands,
+        isLoading: loadingBrand,
+        error: errorBrand,
+    } = useFetchBrand();
+    const {
+        data: categories,
+        isLoading: loadingCategory,
+        error: errorCategory,
+    } = useFetchCategory();
+    const {
+        data: materials,
+        isLoading: loadingMaterial,
+        error: errorMaterial,
+    } = useFetchMaterial();
+    const [category, setCategory] = useState('');
+    const [brand, setBrand] = useState('');
+    const [material, setMaterial] = useState('');
     const [openImageModal, setOpenImageModal] = useState(false);
     const [editingProductItemId, setEditingProductItemId] = useState(null);
 
+    if (
+        isLoading ||
+        loadingBrand ||
+        loadingCategory ||
+        loadingMaterial ||
+        loadingColor
+    )
+        return <Loading />;
+
+    if (error) return <Error error={error} />;
+    if (errorBrand) return <Error error={errorBrand} />;
+    if (errorCategory) return <Error error={errorCategory} />;
+    if (errorMaterial) return <Error error={errorMaterial} />;
+    if (errorColor) return <Error error={errorColor} />;
+
     const handleProductChange = (e) => {
         const { name, value } = e.target;
-        setProduct((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleProductItemChange = (productItemId, field, value) => {
-        setProduct((prev) => ({
-            ...prev,
-            productItems: prev.productItems.map((item) =>
-                item.productItemId === productItemId
-                    ? { ...item, [field]: value }
-                    : item
-            ),
-        }));
-    };
+    const handleProductItemChange = (productItemId, field, value) => {};
 
     const handleAddImage = (productItemId) => {
         setEditingProductItemId(productItemId);
         setOpenImageModal(true);
     };
 
-    const handleAddProductItem = () => {
-        setProduct((prev) => ({
-            ...prev,
-            productItems: [
-                ...prev.productItems,
-                {
-                    productItemId: Date.now(),
-                    color: { colorId: null, colorName: '', hexCode: '' },
-                    sku: '',
-                    originalPrice: 0,
-                    salePrice: 0,
-                    stockQuantity: 0,
-                    productImages: [],
-                },
-            ],
-        }));
-    };
+    const handleAddProductItem = () => {};
 
-    const handleDeleteProductItem = (productItemId) => {
-        setProduct((prev) => ({
-            ...prev,
-            productItems: prev.productItems.filter(
-                (item) => item.productItemId !== productItemId
-            ),
-        }));
-    };
+    const handleDeleteProductItem = (productItemId) => {};
 
     return (
         <Box sx={{ p: 4 }}>

@@ -4,11 +4,11 @@ import axiosPublic from '../api/axiosPublic';
 
 const fetchProductById = async ({ queryKey }) => {
     const [_key, { productId }] = queryKey;
-    const response = await axiosPublic.get(`/products/${productId}`);
+    const response = await axiosPublic.get(`/products/${parseInt(productId)}`);
     return response.data?.data; // Axios automatically parses JSON
 };
 
-const useFetchProduct = ({ productId }) => {
+const useFetchProduct = (productId) => {
     return useQuery(['product', { productId }], fetchProductById, {
         // Keep previous data when fetching new data
         keepPreviousData: true, // Avoid loading state when changing pages
