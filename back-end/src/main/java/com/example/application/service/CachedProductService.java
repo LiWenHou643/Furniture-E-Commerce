@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class CachedProductService {
+    private static final String PRODUCT_LIST_CACHE_KEY = "productList";
 
     ProductRepository productRepository;
 
-    @Cacheable(value = "products", key = "#categories + ':' + #brands + ':' + #materials + ':' + #minPrice + ':' + #maxPrice + ':' + #minRating")
+    @Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY, key = "#categories + ':' + #brands + ':' + #materials + ':' + #minPrice + ':' + #maxPrice + ':' + #minRating")
     public List<ProductDTO> getFilteredProducts(
             List<String> categories,
             List<String> brands,
