@@ -12,11 +12,11 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,41 +75,34 @@ public class ProductController {
 
     @PostMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@ModelAttribute ProductDTO productDTO) {
-        try {
-            // Upload images to Cloudinary and update productDTO with secure URLs
-            for (ProductItemDTO productItem : productDTO.getProductItems()) {
-                for (ProductImageDTO productImage : productItem.getProductImages()) {
-                    if (productImage.getFile() != null) {
-                        var uploadResult = cloudinary.uploader().upload(
-                                productImage.getFile().getBytes(),
-                                ObjectUtils.asMap("folder", "Products/")
-                        );
+    public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@ModelAttribute ProductDTO productDTO) throws IOException {
+        // Upload images to Cloudinary and update productDTO with secure URLs
+        for (ProductItemDTO productItem : productDTO.getProductItems()) {
+            for (ProductImageDTO productImage : productItem.getProductImages()) {
+                if (productImage.getFile() != null) {
+                    var uploadResult = cloudinary.uploader().upload(
+                            productImage.getFile().getBytes(),
+                            ObjectUtils.asMap("folder", "Products/")
+                    );
 
-                        String secureUrl = (String) uploadResult.get("secure_url");
-                        productImage.setImageUrl(secureUrl); // Replace file with URL
-                        productImage.setFile(null); // Remove file data to avoid sending it further
-                    }
+                    String secureUrl = (String) uploadResult.get("secure_url");
+                    productImage.setImageId(null); // Remove image ID
+                    productImage.setImageUrl(secureUrl); // Replace file with URL
+                    productImage.setFile(null); // Remove file data to avoid sending it further
                 }
             }
-
-            // Save the product with updated URLs
-            ProductDTO savedProduct = productService.addProduct(productDTO);
-
-            return ResponseEntity.ok(
-                    ApiResponse.<ProductDTO>builder()
-                               .status("success")
-                               .message("Product added successfully")
-                               .data(savedProduct)
-                               .build()
-            );
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(ApiResponse.<ProductDTO>builder()
-                                                  .status("error")
-                                                  .message("Failed to add product: " + e.getMessage())
-                                                  .build());
         }
+
+        // Save the product with updated URLs
+        ProductDTO savedProduct = productService.addProduct(productDTO);
+
+        return ResponseEntity.ok(
+                ApiResponse.<ProductDTO>builder()
+                           .status("success")
+                           .message("Product added successfully")
+                           .data(savedProduct)
+                           .build()
+        );
     }
 
     @PutMapping("/products")

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import axiosPrivate from '../api/axiosPrivate';
 
 const addProduct = async (product) => {
@@ -65,14 +66,16 @@ const addProduct = async (product) => {
 };
 
 const useAddProduct = () => {
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const mutation = useMutation(addProduct, {
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries('products');
             toast.success('Product added successfully');
+            navigate('/products-management/edit/' + data.data.productId);
         },
-        onError: () => {
-            toast.error('Failed to add product');
+        onError: (data) => {
+            toast.error('Failed to add product:' + data.response.data.message);
         },
     });
 

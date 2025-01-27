@@ -50,6 +50,9 @@ export default function AddProductPage() {
         hexCode: '#000000',
     });
 
+    const { mutate: addColor } = useAddColor();
+    const { mutate: addProduct, isLoading: isAdding } = useAddProduct();
+
     const {
         data: colors,
         isLoading: loadingColor,
@@ -70,9 +73,6 @@ export default function AddProductPage() {
         isLoading: loadingMaterial,
         error: errorMaterial,
     } = useFetchMaterial();
-
-    const { mutate: addColor } = useAddColor();
-    const { mutate: addProduct } = useAddProduct();
 
     if (loadingBrand || loadingCategory || loadingMaterial || loadingColor)
         return <Loading />;
@@ -160,6 +160,7 @@ export default function AddProductPage() {
                               productImages: [
                                   ...item.productImages,
                                   {
+                                      imageId: Date.now(), // Generate a unique ID
                                       file, // Store the actual file for submission
                                       previewUrl, // Store the preview URL for display
                                       mainImage:
@@ -329,6 +330,7 @@ export default function AddProductPage() {
                 startIcon={<AddIcon />}
                 onClick={handleAddVariant}
                 sx={{ mb: 2 }}
+                disabled={isAdding}
             >
                 Add Variant
             </Button>
@@ -522,85 +524,77 @@ export default function AddProductPage() {
                                                 overflowX: 'auto',
                                             }}
                                         >
-                                            {item.productImages.map(
-                                                (img, index) => (
-                                                    <Box
-                                                        key={
-                                                            index +
-                                                            img.file.name
-                                                        }
+                                            {item.productImages.map((img) => (
+                                                <Box
+                                                    key={img.imageId}
+                                                    sx={{
+                                                        position: 'relative',
+                                                        display: 'inline-block',
+                                                        width: 80,
+                                                        height: 80,
+                                                        border: img.mainImage
+                                                            ? '2px solid green'
+                                                            : '1px solid #ddd',
+                                                        borderRadius: 2,
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    onClick={() =>
+                                                        handleSetMainImage(
+                                                            item.productItemId,
+                                                            img.imageId
+                                                        )
+                                                    }
+                                                >
+                                                    <Avatar
+                                                        src={img.previewUrl} // Use the preview URL here
+                                                        variant='square'
+                                                        sx={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                        }}
+                                                    />
+                                                    <IconButton
+                                                        size='small'
                                                         sx={{
                                                             position:
-                                                                'relative',
-                                                            display:
-                                                                'inline-block',
-                                                            width: 80,
-                                                            height: 80,
-                                                            border: img.mainImage
-                                                                ? '2px solid green'
-                                                                : '1px solid #ddd',
-                                                            borderRadius: 2,
-                                                            cursor: 'pointer',
+                                                                'absolute',
+                                                            top: -10,
+                                                            right: -10,
+                                                            bgcolor: 'white',
                                                         }}
-                                                        onClick={() =>
-                                                            handleSetMainImage(
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDeleteImage(
                                                                 item.productItemId,
                                                                 img.imageId
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
-                                                        <Avatar
-                                                            src={img.previewUrl} // Use the preview URL here
-                                                            variant='square'
-                                                            sx={{
-                                                                width: '100%',
-                                                                height: '100%',
-                                                            }}
-                                                        />
-                                                        <IconButton
-                                                            size='small'
+                                                        <DeleteIcon fontSize='small' />
+                                                    </IconButton>
+                                                    {img.mainImage && (
+                                                        <Typography
                                                             sx={{
                                                                 position:
                                                                     'absolute',
-                                                                top: -10,
-                                                                right: -10,
+                                                                bottom: 2,
+                                                                left: '50%',
+                                                                transform:
+                                                                    'translateX(-50%)',
                                                                 bgcolor:
-                                                                    'white',
-                                                            }}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDeleteImage(
-                                                                    item.productItemId,
-                                                                    img.imageId
-                                                                );
+                                                                    'rgba(0, 0, 0, 0.6)',
+                                                                color: 'white',
+                                                                fontSize:
+                                                                    '0.75rem',
+                                                                borderRadius: 1,
+                                                                px: 0.5,
                                                             }}
                                                         >
-                                                            <DeleteIcon fontSize='small' />
-                                                        </IconButton>
-                                                        {img.mainImage && (
-                                                            <Typography
-                                                                sx={{
-                                                                    position:
-                                                                        'absolute',
-                                                                    bottom: 2,
-                                                                    left: '50%',
-                                                                    transform:
-                                                                        'translateX(-50%)',
-                                                                    bgcolor:
-                                                                        'rgba(0, 0, 0, 0.6)',
-                                                                    color: 'white',
-                                                                    fontSize:
-                                                                        '0.75rem',
-                                                                    borderRadius: 1,
-                                                                    px: 0.5,
-                                                                }}
-                                                            >
-                                                                Main
-                                                            </Typography>
-                                                        )}
-                                                    </Box>
-                                                )
-                                            )}
+                                                            Main
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            ))}
                                         </Box>
                                     </Box>
                                 </TableCell>
@@ -683,15 +677,13 @@ export default function AddProductPage() {
                         product.productItems.some(
                             (item) =>
                                 !item.sku || // Check if SKU is empty
-                                !item.originalPrice || // Check if original price is empty
-                                !item.salePrice || // Check if sale price is empty
-                                !item.stockQuantity || // Check if stock quantity is empty
                                 !item.color || // Check if color is selected
                                 item.productImages.length === 0 // Ensure at least one image exists
-                        )
+                        ) ||
+                        isAdding // Check if the form is currently submitting
                     }
                 >
-                    Save Product
+                    {isAdding ? 'Saving...' : 'Save Product'}
                 </Button>
             </Box>
         </Box>
