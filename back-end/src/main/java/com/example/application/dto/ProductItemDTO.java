@@ -17,7 +17,6 @@ public class ProductItemDTO {
     Long productItemId;
     Long productId;
     String productName;
-    Long colorId;
     ColorDTO color;
     String sku;
     double originalPrice;

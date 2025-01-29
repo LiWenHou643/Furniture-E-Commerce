@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
         setEditingProductItemId(productItemId);
     };
 
-    const handleAddVariant = () => {
+    const handleOpenAddVariantModal = () => {
         setNewProductItem({
             color: { colorName: '', hexCode: '' },
             sku: '',
@@ -140,6 +140,38 @@ export default function ProductDetailPage() {
             stockQuantity: 0,
             productImages: [],
         });
+    };
+
+    const handleAddProductItem = () => {
+        if (
+            newProductItem?.color?.colorId ||
+            newProductItem.sku ||
+            newProductItem.productImages.length === 0 ||
+            newProductItem.productImages.filter((img) => img.mainImage)
+                .length !== 1
+        ) {
+            console.log();
+            addProductVariant(
+                {
+                    productId: product.productId,
+                    sku: newProductItem.sku,
+                    originalPrice: newProductItem.originalPrice,
+                    salePrice: newProductItem.salePrice,
+                    stockQuantity: newProductItem.stockQuantity,
+                    color: newProductItem.color,
+                    productImages: newProductItem.productImages.map((img) => ({
+                        file: img.file,
+                        mainImage: img.mainImage,
+                    })),
+                },
+                {
+                    onSettled: () => {
+                        setIsEditing(false);
+                        setNewProductItem(null);
+                    },
+                }
+            );
+        }
     };
 
     const toggleEditingMode = () => {
@@ -161,7 +193,14 @@ export default function ProductDetailPage() {
                 },
             }
         );
-        if (newProductItem !== null) {
+        if (
+            newProductItem !== null ||
+            newProductItem?.color?.colorId ||
+            newProductItem.sku ||
+            newProductItem.productImages.length === 0 ||
+            newProductItem.productImages.filter((img) => img.mainImage)
+                .length !== 1
+        ) {
             addProductVariant(
                 {
                     productId: product.productId,
@@ -343,7 +382,7 @@ export default function ProductDetailPage() {
                     value={category.categoryId || ''}
                     onChange={(e) => {
                         setCategory(
-                            categories.find(
+                            categories?.find(
                                 (category) =>
                                     category.categoryId === e.target.value
                             )
@@ -382,7 +421,7 @@ export default function ProductDetailPage() {
                     value={brand.brandId || ''}
                     onChange={(e) => {
                         setBrand(
-                            brands.find(
+                            brands?.find(
                                 (brand) => brand.brandId === e.target.value
                             )
                         );
@@ -417,7 +456,7 @@ export default function ProductDetailPage() {
                     value={material.materialId || ''}
                     onChange={(e) => {
                         setMaterial(
-                            materials.find(
+                            materials?.find(
                                 (material) =>
                                     material.materialId === e.target.value
                             )
@@ -451,7 +490,7 @@ export default function ProductDetailPage() {
             <Button
                 variant='contained'
                 startIcon={<AddIcon />}
-                onClick={handleAddVariant}
+                onClick={handleOpenAddVariantModal}
                 sx={{ mb: 2 }}
             >
                 Add Variant
@@ -832,8 +871,7 @@ export default function ProductDetailPage() {
                             variant='contained'
                             color='primary'
                             onClick={() => {
-                                handleUpdateProduct(editProduct);
-                                // setNewProductItem(null);
+                                handleAddProductItem(editProduct);
                             }}
                             disabled={
                                 isUpdating ||

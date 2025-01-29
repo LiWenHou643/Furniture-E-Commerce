@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 import axiosPrivate from '../api/axiosPrivate';
 
 const addProductVariant = async (productVariant) => {
@@ -14,9 +13,7 @@ const addProductVariant = async (productVariant) => {
     formData.append('stockQuantity', productVariant.stockQuantity);
 
     // Append color details
-    formData.append('colorId', productVariant.colorId);
-    formData.append('colorName', productVariant.colorName);
-    formData.append('hexCode', productVariant.hexCode);
+    formData.append('color', productVariant.color);
 
     // Append images
     productVariant.productImages.forEach((image, imageIndex) => {
@@ -34,19 +31,23 @@ const addProductVariant = async (productVariant) => {
 
     const response = await axiosPrivate.post(
         '/products/product-items',
-        formData
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
     );
     return response.data;
 };
 
 const useAddProductVariant = () => {
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
 
     return useMutation(addProductVariant, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('productVariants');
-            navigate('/admin/products');
+        onSuccess: (data) => {
+            queryClient.invalidateQueries('products');
+            queryClient.invalidateQueries('product', data?.data?.productId);
             toast.success('Product variant added successfully');
         },
         onError: () => {

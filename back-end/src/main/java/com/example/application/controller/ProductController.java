@@ -74,13 +74,11 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductDTO>> addProduct(@ModelAttribute ProductDTO productDTO) throws IOException {
-        ProductDTO savedProduct = productService.addProduct(productDTO);
-
         return ResponseEntity.ok(
                 ApiResponse.<ProductDTO>builder()
                            .status("success")
                            .message("Product added successfully")
-                           .data(savedProduct)
+                           .data(productService.addProduct(productDTO))
                            .build()
         );
     }

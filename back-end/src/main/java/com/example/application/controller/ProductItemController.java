@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class ProductItemController {
 
 
     @PostMapping("/product-items")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductItemDTO>> addProductItem(@ModelAttribute ProductItemDTO productItemDTO) throws IOException {
         return ResponseEntity.ok(
                 ApiResponse.<ProductItemDTO>builder()
@@ -55,6 +57,7 @@ public class ProductItemController {
     }
 
     @PutMapping("/product-items")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductItemDTO>> updateProductItem(@RequestBody ProductItemDTO productItemDTO) {
         return ResponseEntity.ok(
                 ApiResponse.<ProductItemDTO>builder()

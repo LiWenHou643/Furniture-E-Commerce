@@ -4,16 +4,17 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.application.dto.ProductImageDTO;
 import com.example.application.dto.ProductItemDTO;
-import com.example.application.entity.Color;
 import com.example.application.entity.Product;
 import com.example.application.entity.ProductImage;
 import com.example.application.entity.ProductItem;
 import com.example.application.exception.ResourceNotFoundException;
+import com.example.application.mapper.ColorMapper;
 import com.example.application.mapper.ProductImageMapper;
 import com.example.application.mapper.ProductItemMapper;
 import com.example.application.repository.ColorRepository;
 import com.example.application.repository.ProductItemRepository;
 import com.example.application.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.cache.annotation.CacheEvict;
@@ -59,12 +60,10 @@ public class ProductItemService {
             @CacheEvict(value = PRODUCT_LIST_CACHE_KEY, allEntries = true),
             @CacheEvict(value = PRODUCT_CACHE_KEY, key = "#productItemDTO.productId")
     })
+    @Transactional
     public ProductItemDTO addProductItem(ProductItemDTO productItemDTO) throws IOException {
         Product product = productRepository.findById(productItemDTO.getProductId()).orElseThrow(
                 () -> new ResourceNotFoundException("Product", "id", productItemDTO.getProductId()));
-
-        Color color = colorRepository.findById(productItemDTO.getColorId()).orElseThrow(
-                () -> new ResourceNotFoundException("Color", "id", productItemDTO.getColorId()));
 
         // Upload images to Cloudinary and update productDTO with secure URLs
         for (ProductImageDTO productImage : productItemDTO.getProductImages()) {
@@ -87,7 +86,7 @@ public class ProductItemService {
 
         ProductItem productItem = ProductItem.builder()
                                              .product(product)
-                                             .color(color)
+                                             .color(ColorMapper.INSTANCE.toEntity(productItemDTO.getColor()))
                                              .sku(productItemDTO.getSku())
                                              .originalPrice(productItemDTO.getOriginalPrice())
                                              .salePrice(productItemDTO.getSalePrice())
@@ -104,15 +103,7 @@ public class ProductItemService {
         ProductItem productItem = productItemRepository.findById(productItemDTO.getProductItemId()).orElseThrow(
                 () -> new ResourceNotFoundException("ProductItem", "id", productItemDTO.getProductItemId()));
 
-        Product product = productRepository.findById(productItemDTO.getProductId()).orElseThrow(
-                () -> new ResourceNotFoundException("Product", "id", productItemDTO.getProductId()));
-
-
-        Color color = colorRepository.findById(productItemDTO.getColorId()).orElseThrow(
-                () -> new ResourceNotFoundException("Color", "id", productItemDTO.getColorId()));
-
-        productItem.setProduct(product);
-        productItem.setColor(color);
+        productItem.setColor(ColorMapper.INSTANCE.toEntity(productItemDTO.getColor()));
         productItem.setSku(productItemDTO.getSku());
         productItem.setOriginalPrice(productItemDTO.getOriginalPrice());
         productItem.setSalePrice(productItemDTO.getSalePrice());
