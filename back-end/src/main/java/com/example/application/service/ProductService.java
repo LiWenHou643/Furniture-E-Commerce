@@ -1,6 +1,10 @@
 package com.example.application.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.application.dto.ProductDTO;
+import com.example.application.dto.ProductImageDTO;
+import com.example.application.dto.ProductItemDTO;
 import com.example.application.entity.Brand;
 import com.example.application.entity.Category;
 import com.example.application.entity.Material;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +37,7 @@ public class ProductService {
     private static final String PRODUCT_LIST_CACHE_KEY = "productList";
     private static final String PRODUCT_CACHE_KEY = "product";
 
+    Cloudinary cloudinary;
     ProductRepository productRepository;
     CategoryRepository categoryRepository;
     BrandRepository brandRepository;
@@ -103,7 +109,7 @@ public class ProductService {
             }
     )
     @Transactional // Ensures the operation is atomic
-    public ProductDTO addProduct(ProductDTO productDTO) {
+    public ProductDTO addProduct(ProductDTO productDTO) throws IOException {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
                                               .orElseThrow(() -> new ResourceNotFoundException(
                                                       "Category", "id", productDTO.getCategoryId()));
@@ -116,6 +122,24 @@ public class ProductService {
                                               .orElseThrow(() -> new ResourceNotFoundException(
                                                       "Material", "id", productDTO.getMaterialId()));
 
+        // Upload images to Cloudinary and update productDTO with secure URLs
+        for (ProductItemDTO productItem : productDTO.getProductItems()) {
+            for (ProductImageDTO productImage : productItem.getProductImages()) {
+                if (productImage.getFile() != null) {
+                    var uploadResult = cloudinary.uploader().upload(
+                            productImage.getFile().getBytes(),
+                            ObjectUtils.asMap("folder", "Products/")
+                    );
+
+                    String secureUrl = (String) uploadResult.get("secure_url");
+                    productImage.setImageId(null); // Remove image ID
+                    productImage.setImageUrl(secureUrl); // Replace file with URL
+                    productImage.setFile(null); // Remove file data to avoid sending it further
+                }
+            }
+        }
+
+        // Map the DTO to an entity
         Product product = ProductMapper.INSTANCE.toEntity(productDTO);  // Map DTO to entity
         product.setCategory(category);
         product.setBrand(brand);
@@ -145,7 +169,31 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getProductId())
                                            .orElseThrow(() -> new IllegalArgumentException(
                                                    "Product with id " + productDTO.getProductId() + " not found"));
-        ProductMapper.INSTANCE.updateProductFromDTO(productDTO, product);  // Update fields from DTO
+
+        if (productDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productDTO.getCategoryId())
+                                                  .orElseThrow(() -> new ResourceNotFoundException(
+                                                          "Category", "id", productDTO.getCategoryId()));
+            product.setCategory(category);
+        }
+
+        if (productDTO.getBrandId() != null) {
+            Brand brand = brandRepository.findById(productDTO.getBrandId())
+                                         .orElseThrow(() -> new ResourceNotFoundException(
+                                                 "Brand", "id", productDTO.getBrandId()));
+            product.setBrand(brand);
+        }
+
+        if (productDTO.getMaterialId() != null) {
+            Material material = materialRepository.findById(productDTO.getMaterialId())
+                                                  .orElseThrow(() -> new ResourceNotFoundException(
+                                                          "Material", "id", productDTO.getMaterialId()));
+            product.setMaterial(material);
+        }
+
+        product.setProductName(productDTO.getProductName());
+        product.setProductDescription(productDTO.getProductDescription());
+
         productRepository.save(product);  // Save the updated product
         return ProductMapper.INSTANCE.toDTO(product);  // Return the updated DTO
     }
@@ -159,7 +207,6 @@ public class ProductService {
         product.setProductStatus(false);  // Set the product status to false
         productRepository.save(product);  // Save the updated product
     }
-
 
     @Caching(put = {
             @CachePut(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features", key = "#result")
