@@ -238,6 +238,15 @@ CREATE TABLE feedback_images
     FOREIGN KEY (feedback_id) REFERENCES feedbacks (feedback_id)
 );
 
+CREATE TABLE chat_messages (
+    chat_message_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id VARCHAR(50) NOT NULL,
+    receiver_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE invalidated_tokens
 (
     token_id   INT AUTO_INCREMENT PRIMARY KEY,
