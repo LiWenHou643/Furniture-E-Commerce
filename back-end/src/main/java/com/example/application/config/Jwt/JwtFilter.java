@@ -20,6 +20,9 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,13 +85,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        String[] ignoreUrls = {"/auth/**", "/products/**", "/categories/**", "/brands/**", "/materials/**", "/colors/**", "/error/**", "/favicon.ico", "/orders/*/paypal/**", "/feedbacks/**"};
+        String[] ignoreUrls = {"/products/**", "/categories/**", "/brands/**", "/materials/**", "/colors/**", "/error/**", "/favicon.ico", "/orders/*/paypal/**", "/feedbacks/**"};
         AntPathMatcher pathMatcher = new AntPathMatcher();
         String requestUrl = request.getRequestURI();
         String requestMethod = request.getMethod();
 
-        // Always ignore URLs under /auth/**
-        if (pathMatcher.match("/auth/**", requestUrl)) {
+        Map<String, Predicate<String>> pathConditions = new HashMap<>();
+        pathConditions.put("/auth/**", url -> pathMatcher.match("/auth/**", url));
+        pathConditions.put("/test/**", url -> pathMatcher.match("/test/**", url));
+        pathConditions.put("/chat/**", url -> pathMatcher.match("/chat/**", url));
+
+
+        // Check if the requestUrl matches any condition
+        boolean matches = pathConditions.values().stream()
+                                        .anyMatch(predicate -> predicate.test(requestUrl));
+
+        if (matches) {
+            System.out.println("URL matches a pattern");
             return true;
         }
 

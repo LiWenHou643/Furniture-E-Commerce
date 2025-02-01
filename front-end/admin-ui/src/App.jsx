@@ -14,6 +14,7 @@ import ScrollToTop from './components/ScrollToTop';
 import AddProductPage from './pages/AddProductPage';
 import Brands from './pages/Brands';
 import Categories from './pages/Categories';
+import ChatPage from './pages/ChatPage';
 import DashBoard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import Materials from './pages/Materials';
@@ -91,6 +92,8 @@ function App() {
                                 path='/products-management/materials'
                                 element={<Materials />}
                             />
+
+                            <Route path='/chat' element={<ChatPage />} />
                         </Route>
 
                         {/* 404 Not Found */}

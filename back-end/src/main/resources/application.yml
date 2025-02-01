@@ -67,6 +67,8 @@ logging:
     org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:DEBUG} # Security logs
     org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}      # Cache logs
     org.springframework.cache.interceptor.CacheInterceptor: ${CACHE_INTERCEPTOR_LOG_LEVEL:TRACE} # Detailed cache logging
+    org.springframework.web.socket: ${SPRING_WEBSOCKET_LOG_LEVEL:DEBUG} # Websocket logs
+    org.springframework.messaging.simp: ${SPRING_MESSAGING_LOG_LEVEL:DEBUG} # Messaging logs
     com.example.application.service: INFO                                         # Application services
     com.example.application.repository: DEBUG                                     # Application repository
     com.example.application.controller: DEBUG                                     # Application controller
