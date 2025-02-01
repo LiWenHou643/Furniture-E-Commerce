@@ -240,6 +240,7 @@ CREATE TABLE feedback_images
 
 CREATE TABLE chat_messages (
     chat_message_id INT AUTO_INCREMENT PRIMARY KEY,
+    chat_id VARCHAR(50) NOT NULL,
     sender_id VARCHAR(50) NOT NULL,
     recipient_id VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,

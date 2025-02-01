@@ -94,6 +94,9 @@ public class JwtFilter extends OncePerRequestFilter {
         pathConditions.put("/auth/**", url -> pathMatcher.match("/auth/**", url));
         pathConditions.put("/test/**", url -> pathMatcher.match("/test/**", url));
         pathConditions.put("/chat/**", url -> pathMatcher.match("/chat/**", url));
+        pathConditions.put("/messages/**", url -> pathMatcher.match("/messages/**", url));
+        pathConditions.put("/app/**", url -> pathMatcher.match("/app/**", url));
+
 
 
         // Check if the requestUrl matches any condition

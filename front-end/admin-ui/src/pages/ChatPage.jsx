@@ -1,50 +1,69 @@
-import { Stomp } from '@stomp/stompjs'; // Correct import of Stomp
-import React, { useEffect, useState } from 'react';
-import SockJS from 'sockjs-client'; // Import SockJS
+import { Box, Button, Typography } from '@mui/material';
+import { Client } from '@stomp/stompjs';
+
+let stompClient = null;
 
 const ChatPage = () => {
-    const [message, setMessage] = useState('');
-    const [client, setClient] = useState(null);
-
-    useEffect(() => {
-        // Create SockJS connection
-        const socket = new SockJS('http://localhost:8080/chat'); // Ensure this URL is correct for your backend
-
-        // Pass the SockJS connection to Stomp
-        const stompClient = Stomp.over(socket); // This is the key change!
-
-        // Connect using Stomp
-        stompClient.connect(
-            {},
-            (frame) => {
-                console.log('Connected: ' + frame);
-
-                // Subscribe to the /topic/messages destination
-                stompClient.subscribe('/topic/messages', (messageOutput) => {
-                    setMessage(messageOutput.body); // Set the message from the server
-                });
+    const connect = () => {
+        // Create a STOMP client over native WebSocket
+        stompClient = new Client({
+            brokerURL: 'ws://localhost:8080/chat', // WebSocket URL
+            debug: (str) => {
+                console.log('STOMP Debug:', str);
             },
-            (error) => {
-                console.error('Connection error: ', error); // Log any connection errors
-            }
-        );
+            reconnectDelay: 5000, // Reconnect after 5 seconds if disconnected
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
 
-        // Store the stompClient so you can disconnect later
-        setClient(stompClient);
-
-        // Cleanup function to disconnect when the component unmounts
-        return () => {
-            if (stompClient) {
-                stompClient.disconnect();
-            }
+        // Connect to the WebSocket server
+        stompClient.onConnect = (frame) => {
+            console.log('Connected to WebSocket!');
+            stompClient.subscribe('/topic/messages', onMessageReceived);
+            userJoin();
         };
-    }, []);
+
+        stompClient.onStompError = (frame) => {
+            console.error('STOMP Error:', frame.headers.message);
+        };
+
+        stompClient.onWebSocketError = (error) => {
+            console.error('WebSocket Error:', error);
+        };
+
+        stompClient.activate();
+    };
+
+    const userJoin = () => {
+        const chatMessage = {
+            chatId: Date.now(),
+            senderId: 1,
+            recipientId: 2,
+            content: 'hello my friend!',
+        };
+        stompClient.publish({
+            destination: '/app/sendMessage',
+            body: JSON.stringify(chatMessage),
+        });
+    };
+
+    const onMessageReceived = (payload) => {
+        console.log('Message received:', payload.body);
+    };
 
     return (
-        <div>
-            <h2>Real-Time Messages</h2>
-            <p>{message}</p>
-        </div>
+        <Box sx={{ p: 4 }}>
+            <Typography variant='h4' gutterBottom>
+                Chat
+            </Typography>
+            <Button
+                variant='contained'
+                onClick={() => connect()}
+                sx={{ mb: 2 }}
+            >
+                Connect
+            </Button>
+        </Box>
     );
 };
 

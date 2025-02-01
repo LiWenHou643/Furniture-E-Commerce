@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ChatMessageService {
-    ChatMessageRepository repository;
+    ChatMessageRepository chatMessageRepository;
     ChatRoomService chatRoomService;
 
     public ChatMessage save(ChatMessage chatMessage) {
@@ -22,12 +22,12 @@ public class ChatMessageService {
                 .getChatRoomId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
         chatMessage.setChatId(chatId);
-        repository.save(chatMessage);
+        chatMessageRepository.save(chatMessage);
         return chatMessage;
     }
 
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false);
-        return chatId.map(repository::findByChatId).orElse(new ArrayList<>());
+        return chatId.map(chatMessageRepository::findByChatId).orElse(new ArrayList<>());
     }
 }

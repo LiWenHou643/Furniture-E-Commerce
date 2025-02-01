@@ -29,8 +29,8 @@ public class ChatController {
 
     @MessageMapping("/sendMessage")
     @SendTo("/topic/messages")
-    public String sendMessage(String message) {
-        log.info("message : {}", message);
+    public ChatMessage sendMessage(@Payload ChatMessage message) {
+        log.info("message : {}", message.getContent());
         return message;
     }
 
