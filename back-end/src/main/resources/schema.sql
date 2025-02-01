@@ -241,10 +241,16 @@ CREATE TABLE feedback_images
 CREATE TABLE chat_messages (
     chat_message_id INT AUTO_INCREMENT PRIMARY KEY,
     sender_id VARCHAR(50) NOT NULL,
-    receiver_id INT NOT NULL,
+    recipient_id VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,
-    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE chat_rooms (
+    chat_room_id INT AUTO_INCREMENT PRIMARY KEY,
+    chat_id VARCHAR(50) NOT NULL,
+    sender_id VARCHAR(50) NOT NULL,
+    recipient_id VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE invalidated_tokens

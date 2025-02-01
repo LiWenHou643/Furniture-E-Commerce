@@ -1,6 +1,6 @@
 package com.example.application.events;
 
-import com.example.application.entity.ChatMessage;
+import com.example.application.entity.ChatRoom;
 import com.example.application.entity.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +25,10 @@ public class WebSocketEventListener {
         String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         if (username != null) {
             log.info("user disconnected: {}", username);
-            var chatMessage = ChatMessage.builder()
-                                         .type(MessageType.LEAVE)
-                                         .senderId(username)
-                                         .build();
+            var chatMessage = ChatRoom.builder()
+                                      .type(MessageType.LEAVE)
+                                      .senderId(username)
+                                      .build();
             messagingTemplate.convertAndSend("/topic/messages", chatMessage);
         }
     }

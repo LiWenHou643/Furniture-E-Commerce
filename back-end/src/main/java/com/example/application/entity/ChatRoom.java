@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,14 +11,12 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Builder
-@Table(name = "chat-messages")
-public class ChatMessage extends BaseEntity {
+@Table(name = "chat-rooms")
+public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long chatMessageId;
+    Long chatRoomId;
     String chatId;
     String senderId;
     String recipientId;
-    String content;
-    LocalDateTime timestamp;
 }
