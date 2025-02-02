@@ -12,25 +12,27 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@CrossOrigin(origins = "http://localhost:3001")
 public class ChatController {
 
     SimpMessagingTemplate messagingTemplate;
     ChatMessageService chatMessageService;
 
-    @MessageMapping("/sendMessage")
+    @MessageMapping("/send")
     @SendTo("/topic/messages")
-    public ChatMessage sendMessage(@Payload ChatMessage message) {
-        log.info("message : {}", message.getContent());
+    public ChatMessage sendMessage(ChatMessage message) {
+        log.info("Message sent: {}", message.getContent());
         return message;
     }
 
