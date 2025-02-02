@@ -60,6 +60,9 @@ spring:
       enabled: true
       max-file-size: 5MB
       max-request-size: 10MB
+  kafka:
+    bootstrap-servers: localhost:9092
+
 
 logging:
   level:
