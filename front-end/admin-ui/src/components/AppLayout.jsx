@@ -7,7 +7,7 @@ const AppLayout = () => {
             <Sidebar />
             <Box
                 sx={{
-                    ml: 20,
+                    ml: 22,
                 }}
             >
                 <Outlet />
