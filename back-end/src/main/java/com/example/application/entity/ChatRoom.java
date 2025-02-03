@@ -17,6 +17,6 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long chatRoomId;
     String chatId;
-    String senderId;
-    String recipientId;
+    Long senderId;
+    Long recipientId;
 }

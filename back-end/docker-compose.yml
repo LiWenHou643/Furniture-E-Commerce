@@ -1,19 +1,15 @@
 services:
   # MySQL Service
   mysql:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - my-network
 
   # Redis Service
   redis:
@@ -23,40 +19,44 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    networks:
-      - my-network
 
   # Kafka Service
   kafka:
-    image: wurstmeister/kafka:latest
-    environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
-      - KAFKA_LISTENER_NAME=PLAINTEXT
-      - KAFKA_LISTENER_PORT=9092
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
-      - KAFKA_LOG_DIRS=/kafka/logs
-      - KAFKA_PORT=9092
-      - KAFKA_KRAFT_MODE=true
-      - KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE=false
-      - KAFKA_LOG_RETENTION_HOURS=168
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
-      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
-    volumes:
-      - /tmp/broker-metadata:/kafka/broker-metadata
-      - /tmp/kafka-logs:/kafka/logs
+    image: confluentinc/cp-kafka:7.8.0
+    container_name: kafka
+    hostname: kafka1
     ports:
       - "9092:9092"
-    networks:
-      - my-network
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_LISTENERS: "INTERNAL://kafka1:29092,CONTROLLER://kafka1:29093,EXTERNAL://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka1:29092,EXTERNAL://localhost:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:29093"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      CLUSTER_ID: "ZGI5YjMwZmNiODI1MTFlZm"
+      KAFKA_LOG_DIRS: "/tmp/kraft-logs"
+
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:v0.7.2
+    ports:
+      - 9000:9000
+    depends_on:
+      - kafka
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFKA_CLUSTERS_0_NAME: "my-kafka-cluster"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka1:29092"
+      SERVER_PORT: 9000
 
 # Volumes for persistent data
 volumes:
   mysql_data:
   redis_data:
-
-# Network for all services
-networks:
-  my-network:
-    driver: bridge

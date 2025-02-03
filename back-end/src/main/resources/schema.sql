@@ -241,8 +241,8 @@ CREATE TABLE feedback_images
 CREATE TABLE chat_messages (
     chat_message_id INT AUTO_INCREMENT PRIMARY KEY,
     chat_id VARCHAR(50) NOT NULL,
-    sender_id VARCHAR(50) NOT NULL,
-    recipient_id VARCHAR(50) NOT NULL,
+    sender_id INT NOT NULL,
+    recipient_id INT NOT NULL,
     content TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -250,8 +250,8 @@ CREATE TABLE chat_messages (
 CREATE TABLE chat_rooms (
     chat_room_id INT AUTO_INCREMENT PRIMARY KEY,
     chat_id VARCHAR(50) NOT NULL,
-    sender_id VARCHAR(50) NOT NULL,
-    recipient_id VARCHAR(50) NOT NULL
+    sender_id INT NOT NULL,
+    recipient_id INT NOT NULL
 );
 
 CREATE TABLE invalidated_tokens

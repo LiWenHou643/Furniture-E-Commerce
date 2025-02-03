@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class ChatNotification {
     Long id;
-    String senderId;
-    String recipientId;
+    Long senderId;
+    Long recipientId;
     String content;
 }
