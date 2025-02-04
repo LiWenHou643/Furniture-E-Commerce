@@ -24,11 +24,17 @@ class WebSocketService {
                 });
 
                 console.log(`/user/${this.userId}/queue/messages`);
+                // Subscribe to user-specific queue
                 this.client.subscribe(
                     `/user/${this.userId}/queue/messages`,
                     (message) => {
-                        const notification = JSON.parse(message.body);
-                        console.log('Notification:', notification);
+                        const content = JSON.parse(message.body);
+                        console.log('Message content:', content);
+
+                        // Notify the React component that a new message has been received
+                        if (this.onMessageReceived) {
+                            this.onMessageReceived(content);
+                        }
                     }
                 );
             },
@@ -67,6 +73,8 @@ class WebSocketService {
                 destination: destination,
                 body: JSON.stringify(message),
             });
+
+            this.onMessageReceived(message);
         } else {
             console.log('Error: Not connected to WebSocket');
         }

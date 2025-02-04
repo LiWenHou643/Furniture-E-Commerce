@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,11 +21,11 @@ public class ChatMessageService {
 
     public ChatMessageDTO save(ChatMessageDTO chatMessageDTO) {
         var chatEntity = ChatMessageMapper.INSTANCE.toEntity(chatMessageDTO);
+        chatEntity.setChatMessageId(null);
         var chatId = chatRoomService
                 .getChatRoomId(chatMessageDTO.getSenderId(), chatMessageDTO.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
         chatEntity.setChatId(chatId);
-        chatEntity.setTimestamp(LocalDateTime.now());
         var saved = chatMessageRepository.save(chatEntity);
         return ChatMessageMapper.INSTANCE.toDTO(saved);
     }

@@ -1,14 +1,15 @@
-import { Person as PersonIcon } from '@mui/icons-material';
 import {
     Avatar,
     Box,
-    Divider,
+    Button,
     List,
     ListItem,
     ListItemText,
     Paper,
+    TextField,
     Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { useEffect, useState } from 'react';
 import WebSocketService from '../services/WebSocketService';
@@ -52,6 +53,7 @@ const chatMessages = [
 ];
 
 const ChatPage = () => {
+    const theme = useTheme();
     const [userId, setUserId] = useState(1);
     const [messages, setMessages] = useState(chatMessages);
     const [input, setInput] = useState('');
@@ -79,14 +81,23 @@ const ChatPage = () => {
         };
     }, [userId]);
 
+    useEffect(() => {
+        console.log('Incomming messages:', messages);
+    }, [messages]);
+
     const handleSendMessage = () => {
+        if (!input.trim()) return;
         const raw = {
+            chatMessageId: Date.now(),
             senderId: userId,
             recipientId: recipient.userId,
             content: input,
+            timestamp: new Date().toISOString(),
         };
         console.log('Sending:', raw);
-        WebSocketService.sendMessage('/app/send', raw);
+        // WebSocketService.sendMessage('/app/send', raw);
+        setMessages((prevMessages) => [...prevMessages, raw]);
+        setInput('');
     };
 
     const handleRecipientChange = (recipient) => {
@@ -96,60 +107,201 @@ const ChatPage = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            {/* Sidebar: List of users */}
-            <SidebarBox>
-                {/* Header */}
-                <HeaderTypography variant='h6'>Users</HeaderTypography>
-
+            <SidebarBox
+                sx={{
+                    width: '300px',
+                    height: '100vh',
+                    backgroundColor: theme.palette.background.paper, // Sidebar background
+                    borderRight: `2px solid ${theme.palette.accent.main}`, // Accent border
+                    padding: 2,
+                    boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.1)', // Sidebar shadow
+                }}
+            >
                 {/* User List */}
                 <List>
-                    {users.map((user) => (
-                        <UserListItem
-                            button
-                            key={user.userId}
-                            onClick={() => handleRecipientChange(user)}
-                        >
-                            {/* User Avatar */}
-                            <Avatar sx={{ marginRight: 2, bgcolor: '#3498db' }}>
-                                <PersonIcon />
-                            </Avatar>
-                            {/* User Name */}
-                            <ListItemText
-                                primary={`${user.firstName} ${user.lastName}`}
-                                sx={{ color: '#ecf0f1' }}
-                            />
-                        </UserListItem>
-                    ))}
+                    {users.map((user) => {
+                        // Find the last message between current user and this user
+                        const lastMessage = messages
+                            .filter(
+                                (msg) =>
+                                    (msg.senderId === userId &&
+                                        msg.recipientId === user.userId) ||
+                                    (msg.senderId === user.userId &&
+                                        msg.recipientId === userId)
+                            )
+                            .sort(
+                                (a, b) =>
+                                    new Date(b.timestamp) -
+                                    new Date(a.timestamp)
+                            )[0];
+
+                        // Format last message text
+                        let lastMessageText = lastMessage
+                            ? lastMessage.senderId === userId
+                                ? `You: ${lastMessage.content}`
+                                : lastMessage.content
+                            : 'No messages yet';
+
+                        // Truncate long messages
+                        const maxMessageLength = 20;
+                        if (lastMessageText.length > maxMessageLength) {
+                            lastMessageText =
+                                lastMessageText.substring(0, maxMessageLength) +
+                                '...';
+                        }
+
+                        // Format timestamp
+                        const lastMessageTime = lastMessage
+                            ? new Date(
+                                  lastMessage.timestamp
+                              ).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true,
+                              })
+                            : '';
+
+                        return (
+                            <UserListItem
+                                key={user.userId}
+                                onClick={() => handleRecipientChange(user)}
+                                sx={{
+                                    backgroundColor:
+                                        user.userId === recipient.userId
+                                            ? theme.palette.chat.received // Selected User Color
+                                            : 'transparent',
+                                    borderRadius: 3,
+                                    cursor: 'pointer',
+                                    padding: '12px 16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between', // Align timestamp
+                                    transition: '0.3s',
+                                    '&:hover': {
+                                        backgroundColor:
+                                            theme.palette.chat.received,
+                                    }, // Hover Effect
+                                    borderBottom: `1px solid ${theme.palette.accent.main}`,
+                                }}
+                            >
+                                {/* Left: User Avatar & Name */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    {/* User Avatar */}
+                                    <Avatar
+                                        sx={{
+                                            marginRight: 2,
+                                            bgcolor: theme.palette.primary.main, // Avatar color
+                                            width: 40,
+                                            height: 40,
+                                            fontSize: '1rem',
+                                        }}
+                                    >
+                                        {user.firstName[0]} {user.lastName[0]}{' '}
+                                        {/* User initials */}
+                                    </Avatar>
+
+                                    {/* User Name & Last Message */}
+                                    <ListItemText
+                                        primary={`${user.firstName} ${user.lastName}`}
+                                        secondary={lastMessageText} // Show truncated last message
+                                        sx={{
+                                            color: theme.palette.secondary.main,
+                                            '& .MuiTypography-body1': {
+                                                fontSize: '1rem',
+                                                fontWeight: 'bold',
+                                            },
+                                            '& .MuiTypography-body2': {
+                                                fontSize: '0.85rem',
+                                                color: theme.palette.secondary
+                                                    .light,
+                                                opacity: 0.8,
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis', // Ensures text truncates with '...'
+                                                maxWidth: '130px', // Limit width so timestamp fits
+                                            },
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* Right: Timestamp */}
+                                {lastMessage && (
+                                    <Typography
+                                        variant='caption'
+                                        sx={{
+                                            color: theme.palette.secondary
+                                                .light,
+                                            opacity: 0.7,
+                                            fontSize: '0.75rem',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {lastMessageTime}
+                                    </Typography>
+                                )}
+                            </UserListItem>
+                        );
+                    })}
                 </List>
-
-                <Divider sx={{ backgroundColor: '#7f8c8d' }} />
             </SidebarBox>
-
-            {/* Chat Area: Display messages and opponent's username */}
-            <Box sx={{ flex: 1, backgroundColor: '#fff' }}>
-                {Object.keys(recipient).length === 0 ? (
-                    <Typography variant='h6'>
-                        Select a user to start chatting
-                    </Typography>
-                ) : (
-                    <Box sx={{ marginBottom: 2 }}>
+            {/* Chat Window */}
+            <Box
+                sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: theme.palette.background.default, // Chat background
+                    height: '100vh',
+                }}
+            >
+                {/* Chat Header */}
+                <Box
+                    sx={{
+                        padding: 2,
+                        backgroundColor: theme.palette.primary.main, // Header in Brown-Orange
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                    }}
+                >
+                    {Object.keys(recipient).length === 0 ? (
                         <Typography variant='h6'>
-                            {recipient.firstName + ' ' + recipient.lastName}
+                            Select a user to start chatting
                         </Typography>
-                    </Box>
-                )}
+                    ) : (
+                        <Typography variant='h6'>
+                            {recipient.firstName} {recipient.lastName}
+                        </Typography>
+                    )}
+                </Box>
 
                 {/* Chat Messages */}
-                <Box>
+                <Box
+                    sx={{
+                        flex: 1,
+                        padding: 2,
+                        overflowY: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {Object.keys(recipient).length !== 0 &&
                         messages.map((message) => (
                             <Box
                                 key={message.chatMessageId}
                                 sx={{
                                     display: 'flex',
-                                    flexDirection: isSender(message.senderId)
-                                        ? 'row-reverse'
-                                        : 'row',
+                                    justifyContent: isSender(message.senderId)
+                                        ? 'flex-end'
+                                        : 'flex-start',
+                                    marginBottom: 1.5,
                                 }}
                             >
                                 <Paper
@@ -158,14 +310,16 @@ const ChatPage = () => {
                                         backgroundColor: isSender(
                                             message.senderId
                                         )
-                                            ? '#0078D4'
-                                            : '#e0e0e0',
+                                            ? theme.palette.chat.sent // Sent Message in Brown-Orange
+                                            : theme.palette.chat.received, // Received Message in Soft Beige
                                         color: isSender(message.senderId)
                                             ? '#fff'
                                             : '#000',
-                                        borderRadius: '16px',
-                                        maxWidth: '70%',
+                                        borderRadius: '18px',
+                                        maxWidth: '65%',
                                         wordBreak: 'break-word',
+                                        boxShadow:
+                                            '0px 2px 8px rgba(0, 0, 0, 0.1)',
                                     }}
                                 >
                                     <Typography variant='body1'>
@@ -175,22 +329,68 @@ const ChatPage = () => {
                                         <Typography
                                             variant='caption'
                                             sx={{
-                                                textAlign: isSender(
-                                                    message.senderId
-                                                )
-                                                    ? 'right'
-                                                    : 'left',
+                                                display: 'block',
+                                                marginTop: 0.5,
+                                                textAlign: 'right',
+                                                fontSize: '0.75rem',
+                                                opacity: 0.7,
                                             }}
                                         >
                                             {new Date(
                                                 message.timestamp
-                                            ).toLocaleTimeString()}
+                                            ).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
                                         </Typography>
                                     )}
                                 </Paper>
                             </Box>
                         ))}
                 </Box>
+
+                {/* Message Input Box */}
+                {Object.keys(recipient).length !== 0 && (
+                    <Box
+                        sx={{
+                            padding: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            borderTop: '1px solid #ccc',
+                            backgroundColor: theme.palette.background.paper,
+                        }}
+                    >
+                        <TextField
+                            fullWidth
+                            variant='outlined'
+                            placeholder='Type a message...'
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleSendMessage();
+                                }
+                            }}
+                            sx={{
+                                marginRight: 1,
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '18px', // Rounded Input
+                                },
+                            }}
+                        />
+                        <Button
+                            variant='contained'
+                            sx={{
+                                backgroundColor: theme.palette.accent.main, // Accent Color
+                                '&:hover': { backgroundColor: '#BF5F2F' }, // Darker shade on hover
+                            }}
+                            onClick={handleSendMessage}
+                        >
+                            Send
+                        </Button>
+                    </Box>
+                )}
             </Box>
         </Box>
     );
@@ -199,20 +399,13 @@ const ChatPage = () => {
 // Styled Box for the sidebar
 const SidebarBox = styled(Box)(({ theme }) => ({
     width: '280px',
-    backgroundColor: '#2c3e50', // Darker background for the sidebar
+    backgroundColor: '#fafafa', // Darker background for the sidebar
     padding: '16px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     display: 'flex',
     flexDirection: 'column',
     overflowY: 'auto',
     height: '100vh',
-}));
-
-const HeaderTypography = styled(Typography)(({ theme }) => ({
-    color: '#ecf0f1',
-    marginBottom: '20px',
-    fontWeight: 500,
-    fontSize: '20px',
 }));
 
 const UserListItem = styled(ListItem)(({ theme }) => ({

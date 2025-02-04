@@ -28,10 +28,21 @@ const queryClient = new QueryClient();
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#944300FF',
+            main: '#944300', // Brown-Orange (Main Color)
         },
         secondary: {
-            main: '#333333',
+            main: '#333333', // Dark Gray (For Text, Borders)
+        },
+        background: {
+            default: '#FAEBDD', // Light Beige for Chat Background
+            paper: '#F5F5F5', // Light Gray for Boxes
+        },
+        chat: {
+            sent: '#944300', // Sent Message Bubble
+            received: '#E1B07E', // Received Message Bubble
+        },
+        accent: {
+            main: '#D97043', // Accent Color for Buttons, Highlights
         },
     },
 });
