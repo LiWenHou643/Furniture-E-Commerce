@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -39,13 +40,19 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}")
-    public ResponseEntity<List<ChatMessageDTO>> findChatMessages(@PathVariable Long senderId, @PathVariable Long recipientId) {
+    public ResponseEntity<List<ChatMessageDTO>> findChatMessages(
+            @PathVariable Long senderId,
+            @PathVariable Long recipientId,
+            @RequestParam(defaultValue = "0") int page, // Page number, default to 0
+            @RequestParam(defaultValue = "10") int size // Number of messages per page, default to 20
+    ) {
         var userId = getUserId();
         if (!userId.equals(senderId)) {
             return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId));
+        return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId, page, size));
     }
+
 
 
     // This will handle private messages.

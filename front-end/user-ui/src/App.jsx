@@ -21,10 +21,21 @@ import RegisterPage from './pages/RegisterPage';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#693E05FF', // Customize primary color
+            main: '#944300', // Brown-Orange (Main Color)
         },
         secondary: {
-            main: '#FFD900FF', // Customize secondary color
+            main: '#333333', // Dark Gray (For Text, Borders)
+        },
+        background: {
+            default: '#FAEBDD', // Light Beige for Chat Background
+            paper: '#F5F5F5', // Light Gray for Boxes
+        },
+        chat: {
+            sent: '#944300', // Sent Message Bubble
+            received: '#E1B07E', // Received Message Bubble
+        },
+        accent: {
+            main: '#D97043', // Accent Color for Buttons, Highlights
         },
     },
 });

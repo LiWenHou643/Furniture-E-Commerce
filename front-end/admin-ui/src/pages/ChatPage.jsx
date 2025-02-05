@@ -81,10 +81,6 @@ const ChatPage = () => {
         };
     }, [userId]);
 
-    useEffect(() => {
-        console.log('Incomming messages:', messages);
-    }, [messages]);
-
     const handleSendMessage = () => {
         if (!input.trim()) return;
         const raw = {
