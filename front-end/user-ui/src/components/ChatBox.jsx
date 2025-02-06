@@ -9,58 +9,46 @@ import { useEffect, useRef, useState } from 'react';
 import useFetchChat from '../hooks/useFetchChat';
 import WebSocketService from '../services/WebSocketService';
 import { userId } from '../utils/auth';
-
-const chatMessages = [
-    {
-        chatMessageId: 2,
-        chatId: '1_2',
-        senderId: 1,
-        recipientId: 2,
-        content: 'heehhe',
-        timestamp: '2025-02-03T20:06:15',
-    },
-    {
-        chatMessageId: 3,
-        chatId: '1_2',
-        senderId: 1,
-        recipientId: 2,
-        content:
-            'g oglleaaaaaaaadwadddddd oglleaaaaaaaadwadddddd oglleaaaaaaaadwadddddd',
-        timestamp: '2025-02-03T20:07:15',
-    },
-    {
-        chatMessageId: 4,
-        chatId: '1_2',
-        senderId: 2,
-        recipientId: 1,
-        content: 'f uckkaaaaaaaadwadddddd',
-        timestamp: '2025-02-03T20:06:30',
-    },
-    {
-        chatMessageId: 5,
-        chatId: '1_2',
-        senderId: 2,
-        recipientId: 1,
-        content: 'nannnaaa aaaaadwadddddd',
-        timestamp: '2025-02-03T20:07:30',
-    },
-];
+import Loading from './Loading';
 
 const ChatBox = () => {
     const theme = useTheme();
+    const currentUserId = userId();
+    console.log('currentUserId: ', currentUserId);
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-        useFetchChat(userId(), 1);
-    const [messages, setMessages] = useState(chatMessages);
+        useFetchChat(currentUserId, 1);
+    const [messages, setMessages] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const [input, setInput] = useState('');
-    const [isMinimized, setIsMinimized] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(true);
 
-    // Ref for the message container
-    const messagesEndRef = useRef(null);
-    const observerRef = useRef(null);
+    // Ref to chat container for scrolling
+    const chatContainerRef = useRef(null);
 
-    const isSender = (senderId) => senderId === userId();
+    // Handle scroll event to load more messages
+    const handleScroll = async (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
 
+        // If scrolled to the top and there are more messages to load
+        if (scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+            // Save the current scroll height before fetching new messages
+            const previousScrollHeight = scrollHeight;
+
+            // Fetch older messages
+            await fetchNextPage();
+
+            // After fetching, adjust the scroll position to maintain the user's place
+            if (chatContainerRef.current) {
+                const newScrollHeight = chatContainerRef.current.scrollHeight;
+                chatContainerRef.current.scrollTop =
+                    newScrollHeight - previousScrollHeight;
+            }
+        }
+    };
+
+    const isSender = (senderId) => senderId === currentUserId;
+
+    // WebSocket setup
     useEffect(() => {
         // Subscribe to incoming messages
         WebSocketService.subscribeToMessages((chatMessage) => {
@@ -73,54 +61,48 @@ const ChatBox = () => {
         });
 
         // Connect to WebSocket
-        WebSocketService.connect(userId);
+        WebSocketService.connect(currentUserId);
 
         // Cleanup on unmount
         return () => {
             WebSocketService.disconnect();
         };
-    }, []);
+    }, [currentUserId]);
 
+    // Load initial messages
     useEffect(() => {
-        // Scroll to the bottom whenever messages are updated
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        // Load initial messages
+        if (data) {
+            const messages = data.pages.flat();
+            setMessages(messages);
         }
-    }, [messages]); // Runs whenever the messages state changes
+    }, [data]);
 
+    // Scroll to the bottom when new messages arrive (only if user is already at bottom)
     useEffect(() => {
-        // Scroll to the bottom when the chatbox is first opened (when it's maximized)
-        if (!isMinimized && messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [isMinimized]); // Runs when the chatbox is opened
+        if (chatContainerRef.current) {
+            const { scrollHeight, clientHeight, scrollTop } =
+                chatContainerRef.current;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
 
-    // IntersectionObserver to detect when the top of the chat container is visible
-    useEffect(() => {
-        const currentRef = messagesEndRef.current;
-
-        observerRef.current = new IntersectionObserver(loadMoreMessages, {
-            root: null, // observe relative to the viewport
-            rootMargin: '100px', // trigger when we are 100px away from the top
-            threshold: 1.0, // trigger when the top of the box reaches 100% of the container
-        });
-
-        // Start observing the top of the chat container
-        if (currentRef) {
-            observerRef.current.observe(currentRef);
-        }
-
-        // Cleanup observer on component unmount
-        return () => {
-            if (observerRef.current && currentRef) {
-                observerRef.current.unobserve(currentRef);
+            if (isAtBottom) {
+                chatContainerRef.current.scrollTo({
+                    top: scrollHeight,
+                    behavior: 'smooth',
+                });
             }
-        };
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage, loadMoreMessages]);
+        }
+    }, [messages]);
 
-    if (isLoading) return <div>Loading...</div>;
-
-    console.log('fetching chat data: -----------------', data);
+    // Scroll to the bottom when chat is opened
+    useEffect(() => {
+        if (!isMinimized && chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
+    }, [isMinimized]);
 
     const handleSendMessage = () => {
         if (input.trim() === '') return;
@@ -145,13 +127,8 @@ const ChatBox = () => {
         setIsMinimized((isMinimized) => !isMinimized);
     };
 
-    // This will be used for the infinite scroll (loading older messages when scrolling to the top)
-    const loadMoreMessages = (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-        }
-    };
+    if (isLoading) return <div></div>;
+
     return (
         <>
             {/* Floating chat icon */}
@@ -215,6 +192,7 @@ const ChatBox = () => {
 
                     {/* Chat messages */}
                     <Box
+                        ref={chatContainerRef}
                         style={{
                             flexGrow: 1,
                             padding: '10px',
@@ -222,13 +200,16 @@ const ChatBox = () => {
                             maxHeight: '300px',
                             backgroundColor: theme.palette.background.default,
                         }}
+                        onScroll={handleScroll}
                     >
-                        {messages.map((message) => (
+                        {isFetchingNextPage && <Loading />}
+
+                        {messages?.map((message) => (
                             <Box
-                                key={message.chatMessageId}
+                                key={message?.chatMessageId}
                                 sx={{
                                     display: 'flex',
-                                    justifyContent: isSender(message.senderId)
+                                    justifyContent: isSender(message?.senderId)
                                         ? 'flex-end'
                                         : 'flex-start',
                                     marginBottom: 1.5,
@@ -238,11 +219,11 @@ const ChatBox = () => {
                                     sx={{
                                         padding: 2,
                                         backgroundColor: isSender(
-                                            message.senderId
+                                            message?.senderId
                                         )
                                             ? theme.palette.chat.sent // Sent Message in Brown-Orange
                                             : theme.palette.chat.received, // Received Message in Soft Beige
-                                        color: isSender(message.senderId)
+                                        color: isSender(message?.senderId)
                                             ? '#fff'
                                             : '#000',
                                         borderRadius: '18px',
@@ -251,13 +232,12 @@ const ChatBox = () => {
                                             '0px 2px 8px rgba(0, 0, 0, 0.1)',
                                         wordBreak: 'break-all', // Force long words to break and wrap
                                         wordWrap: 'break-word', // Wrap the word if necessary
-                                        whiteSpace: 'normal', // Allow normal wrapping behavior
                                     }}
                                 >
                                     <Typography variant='body1'>
-                                        {message.content}
+                                        {message?.content}
                                     </Typography>
-                                    {message.timestamp && (
+                                    {message?.timestamp && (
                                         <Typography
                                             variant='caption'
                                             sx={{
@@ -269,7 +249,7 @@ const ChatBox = () => {
                                             }}
                                         >
                                             {new Date(
-                                                message.timestamp
+                                                message?.timestamp
                                             ).toLocaleTimeString([], {
                                                 hour: '2-digit',
                                                 minute: '2-digit',
@@ -277,23 +257,8 @@ const ChatBox = () => {
                                         </Typography>
                                     )}
                                 </Paper>
-                                {/* The ref here ensures we scroll to the last message */}
-                                <div ref={messagesEndRef} />
                             </Box>
                         ))}
-
-                        {/* This div is the target for intersection observer to trigger loading more messages */}
-                        {hasNextPage && !isFetchingNextPage && (
-                            <div
-                                ref={messagesEndRef}
-                                style={{ height: 10, width: '100%' }}
-                            />
-                        )}
-
-                        {/* Display Loading Spinner for Next Page */}
-                        {isFetchingNextPage && (
-                            <div>Loading more messages...</div>
-                        )}
                     </Box>
 
                     {/* Input area */}

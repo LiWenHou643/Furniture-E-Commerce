@@ -1,5 +1,6 @@
 package com.example.application.controller;
 
+import com.example.application.dto.ApiResponse;
 import com.example.application.dto.ChatMessageDTO;
 import com.example.application.entity.ChatMessage;
 import com.example.application.entity.ChatNotification;
@@ -14,13 +15,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -40,20 +40,18 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}")
-    public ResponseEntity<List<ChatMessageDTO>> findChatMessages(
+    public ResponseEntity<?> findChatMessages(
             @PathVariable Long senderId,
             @PathVariable Long recipientId,
-            @RequestParam(defaultValue = "0") int page, // Page number, default to 0
-            @RequestParam(defaultValue = "10") int size // Number of messages per page, default to 20
+            @RequestParam(required = false) LocalDateTime lastTimestamp, // Cursor-based pagination
+            @RequestParam(defaultValue = "10") int size
     ) {
-        var userId = getUserId();
-        if (!userId.equals(senderId)) {
-            return ResponseEntity.status(403).build();
-        }
-        return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId, page, size));
+        var data = chatMessageService.findChatMessages(senderId, recipientId, lastTimestamp, size);
+        return ResponseEntity.ok(ApiResponse.<List<ChatMessageDTO>>builder()
+                                            .status("success")
+                                            .message("Chat messages fetched successfully")
+                                            .data(data).build());
     }
-
-
 
     // This will handle private messages.
     @MessageMapping("/send")
@@ -65,10 +63,5 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(String.valueOf(recipientId), "/queue/messages",
                 new ChatNotification(savedMsg.getChatMessageId(), savedMsg.getSenderId(),
                         savedMsg.getRecipientId(), savedMsg.getContent()));
-    }
-
-    private Long getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (Long) (authentication).getDetails();
     }
 }

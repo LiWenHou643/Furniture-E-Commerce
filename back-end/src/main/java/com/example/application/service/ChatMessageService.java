@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,17 +36,27 @@ public class ChatMessageService {
         return ChatMessageMapper.INSTANCE.toDTO(saved);
     }
 
-    public List<ChatMessageDTO> findChatMessages(Long senderId, Long recipientId, int page, int size) {
+    public List<ChatMessageDTO> findChatMessages(Long senderId, Long recipientId, LocalDateTime lastTimestamp, int size) {
         var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false).orElse(null);
 
-        // Create Pageable object to specify the page and size
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("timestamp"))); // Sort by timestamp descending
+        Pageable pageable = PageRequest.of(0, size, Sort.by("timestamp").descending());
 
-        // Fetch paginated messages
-        Page<ChatMessage> chatMessagesPage = chatMessageRepository.findByChatId(chatId, pageable);
+        Page<ChatMessage> chatMessagesPage;
 
-        // Map the list of ChatMessages to DTOs
-        return chatMessagesPage.stream().map(ChatMessageMapper.INSTANCE::toDTO).collect(Collectors.toList());
+        if (lastTimestamp == null) {
+            // Fetch the latest messages
+            chatMessagesPage = chatMessageRepository.findByChatId(chatId, pageable);
+        } else {
+            // Fetch older messages before `lastTimestamp`
+            chatMessagesPage = chatMessageRepository.findByChatIdAndTimestampBefore(chatId, lastTimestamp, pageable);
+        }
+
+        return chatMessagesPage.stream()
+                               .map(ChatMessageMapper.INSTANCE::toDTO)
+                               .sorted(Comparator.comparing(
+                                       ChatMessageDTO::getTimestamp)) // Ascending order for UI display
+                               .collect(Collectors.toList());
     }
+
 
 }

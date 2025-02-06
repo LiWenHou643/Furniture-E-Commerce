@@ -1449,3 +1449,41 @@ VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v173728
         '2025-01-12 12:13:38', '2025-01-12 12:13:38'),
        (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
         '2025-01-12 12:13:38', '2025-01-12 12:13:38');
+
+INSERT INTO chat_rooms (chat_id, sender_id, recipient_id) VALUES ('1_2', 1, 2), ('1_2', 2, 1), ('1_3', 1, 3), ('1_3', 3, 1);        
+        
+INSERT INTO chat_messages (chat_id, sender_id, recipient_id, content, timestamp) VALUES
+
+('1_2', 1, 2, 'Hey, how are you?', '2025-02-04 14:05:10'),
+('1_2', 2, 1, 'I’m good! What’s up?', '2025-02-04 14:06:15'),
+('1_2', 1, 2, 'Just wanted to check in.', '2025-02-04 14:08:23'),
+('1_2', 2, 1, 'That’s nice! Thanks.', '2025-02-04 14:10:45'),
+('1_2', 1, 2, 'Want to grab a coffee later?', '2025-02-04 14:12:37'),
+('1_2', 2, 1, 'Sure! What time?', '2025-02-04 14:14:10'),
+
+-- ('1_3', 1, 3, 'Hey, are you free for a quick chat?', '2025-02-04 15:00:10'),
+-- ('1_3', 3, 1, 'Not right now, but in 20 mins.', '2025-02-04 15:02:45'),
+-- ('1_3', 1, 3, 'Okay, I’ll text you later.', '2025-02-04 15:04:30'),
+-- ('1_3', 3, 1, 'Cool, talk soon!', '2025-02-04 15:06:10'),
+-- ('1_3', 1, 3, 'By the way, did you check the new update?', '2025-02-04 15:08:20'),
+-- ('1_3', 3, 1, 'Not yet, I’ll check it now.', '2025-02-04 15:10:05'),
+
+('1_2', 1, 2, 'Did you finish the task?', '2025-02-05 10:10:05'),
+('1_2', 2, 1, 'Almost done, just a few tweaks left.', '2025-02-05 10:12:50'),
+('1_2', 1, 2, 'Nice! Let me know if you need help.', '2025-02-05 10:14:30'),
+('1_2', 2, 1, 'Will do, thanks!', '2025-02-05 10:16:45'),
+('1_2', 1, 2, 'What’s the deadline for submission?', '2025-02-05 10:18:30'),
+('1_2', 2, 1, 'We need to submit it by 5 PM today.', '2025-02-05 10:20:15'),
+('1_2', 1, 2, 'Alright, I’ll review everything before then.', '2025-02-05 10:22:05'),
+('1_2', 2, 1, 'Great! Let me know if anything needs to be fixed.', '2025-02-05 10:23:50'),
+('1_2', 1, 2, 'Sure. Also, did you check the latest email from the manager?', '2025-02-05 10:25:30'),
+('1_2', 2, 1, 'Not yet, is there anything important?', '2025-02-05 10:27:15'),
+('1_2', 1, 2, 'Yes, he wants us to update the report format.', '2025-02-05 10:29:00'),
+('1_2', 2, 1, 'Oh, I’ll check it now and make the necessary changes.', '2025-02-05 10:30:45'),
+('1_2', 1, 2, 'Awesome. Let’s finalize everything before lunch.', '2025-02-05 10:32:30'),
+('1_2', 2, 1, 'Got it! I’ll send you the updated version in 30 minutes.', '2025-02-05 10:34:15');
+
+-- ('1_3', 1, 3, 'Hey, do you want to meet at 3 PM?', '2025-02-05 11:05:20'),
+-- ('1_3', 3, 1, 'Sure! Where?', '2025-02-05 11:07:30'),
+-- ('1_3', 1, 3, 'At the coffee shop near the office.', '2025-02-05 11:09:15'),
+-- ('1_3', 3, 1, 'Sounds great! See you there.', '2025-02-05 11:10:45');

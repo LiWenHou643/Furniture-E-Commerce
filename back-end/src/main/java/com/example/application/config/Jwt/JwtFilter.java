@@ -85,7 +85,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        String[] ignoreUrls = {"/products/**", "/categories/**", "/brands/**", "/materials/**", "/colors/**", "/error/**", "/favicon.ico", "/orders/*/paypal/**", "/feedbacks/**"};
+        String[] ignoreUrls = {"/products/**", "/categories/**", "/brands/**", "/materials/**", "/colors/**", "/messages/**",
+                "/error/**", "/favicon.ico", "/orders/*/paypal/**", "/feedbacks/**"};
         AntPathMatcher pathMatcher = new AntPathMatcher();
         String requestUrl = request.getRequestURI();
         String requestMethod = request.getMethod();
@@ -95,7 +96,6 @@ public class JwtFilter extends OncePerRequestFilter {
         pathConditions.put("/test/**", url -> pathMatcher.match("/test/**", url));
         pathConditions.put("/chat/**", url -> pathMatcher.match("/chat/**", url));
         pathConditions.put("/app/**", url -> pathMatcher.match("/app/**", url));
-
 
 
         // Check if the requestUrl matches any condition

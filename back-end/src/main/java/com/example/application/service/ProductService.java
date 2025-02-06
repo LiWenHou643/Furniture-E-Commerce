@@ -208,9 +208,7 @@ public class ProductService {
         productRepository.save(product);  // Save the updated product
     }
 
-    @Caching(put = {
-            @CachePut(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features", key = "#result")
-    })
+    @Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features")
     public List<ProductDTO> getTopFeatureProducts() {
         List<Product> products = productRepository.findTopFeatureProducts()
                                                   .orElse(Collections.emptyList());

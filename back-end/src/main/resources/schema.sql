@@ -244,8 +244,15 @@ CREATE TABLE chat_messages (
     sender_id INT NOT NULL,
     recipient_id INT NOT NULL,
     content TEXT NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Index on timestamp for efficient sorting & pagination
+    INDEX idx_timestamp (timestamp),
+
+    -- Composite index for fast retrieval by chat_id + timestamp
+    INDEX idx_chatid_timestamp (chat_id, timestamp DESC)
 );
+
 
 CREATE TABLE chat_rooms (
     chat_room_id INT AUTO_INCREMENT PRIMARY KEY,

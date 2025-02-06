@@ -4,7 +4,7 @@ import axiosPrivate from '../api/axiosPrivate';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 const fetchChat = async ({
-    pageParam = 0,
+    lastTimestamp = null,
     senderId,
     recipientId,
     size = 10,
@@ -13,26 +13,43 @@ const fetchChat = async ({
         `/messages/${senderId}/${recipientId}`,
         {
             params: {
-                page: pageParam,
+                lastTimestamp,
                 size,
             },
         }
     );
-    return data;
+
+    // Add a small artificial delay
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(data.data), 500); // 500ms delay
+    });
 };
 
 const useFetchChat = (senderId, recipientId) => {
     return useInfiniteQuery(
         ['chat', senderId, recipientId], // Unique query key
-        ({ pageParam = 0 }) => fetchChat({ senderId, recipientId, pageParam }), // Fetch function with pageParam
+        ({ pageParam = null }) =>
+            fetchChat({ senderId, recipientId, lastTimestamp: pageParam }), // Fetch function
         {
-            getNextPageParam: (lastPage, pages) => {
-                // If there are fewer messages than the page size, we’ve reached the end
-                if (lastPage.length < 10) return undefined; // No more pages to fetch
-                return pages.length; // Otherwise, increase the page number for next request
+            getNextPageParam: (lastPage) => {
+                if (lastPage.length < 10) return undefined; // Stop if no more messages
+                return lastPage[0].timestamp; // Use last message timestamp as cursor
             },
+            select: (data) => ({
+                ...data,
+                pages: [...data.pages].reverse(), // Reverse the order of pages
+            }),
+            keepPreviousData: true, // Avoid loading state when changing pages
+            retry: 1, // Retry up to 1 times before failing
+            refetchOnWindowFocus: false, // Avoid refetching data on window focus
+            refetchOnReconnect: false, // Avoid refetching data on network reconnect
+            refetchInterval: false, // Avoid refetching data on interval
+            staleTime: 30000, // Set the stale time to 30 seconds
+            retryDelay: (attempt) => 5000, // Wait 5 seconds before retrying
             onError: (error) => {
-                toast.error(error.response.data.message);
+                toast.error(
+                    error.response?.data?.message || 'An error occurred'
+                );
             },
         }
     );

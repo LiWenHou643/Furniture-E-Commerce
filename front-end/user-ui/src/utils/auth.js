@@ -7,18 +7,24 @@ export const isAuthenticated = () => {
 };
 
 export const userId = () => {
-    // Parse token to get user ID
+    // Check if there's a valid JWT token
     const token = localStorage.getItem('jwt');
     if (!token) {
-        // If there's no token, return a random user ID for guest users
-        return Math.floor(Math.random() * 1000000); // Random userId between 0 and 1,000,000
+        // Check if a guest userId already exists in sessionStorage
+        let guestId = sessionStorage.getItem('guestId');
+
+        if (!guestId) {
+            // Generate a fixed guest userId for this session
+            guestId = Math.floor(Math.random() * 1000000).toString();
+            sessionStorage.setItem('guestId', guestId);
+        }
+
+        return guestId;
     }
+
     try {
         const decodedToken = jwtDecode(token); // Decode the JWT token
-
-        // Assuming the user ID is stored in the payload as 'userId'
-        // You may need to adjust the key based on your backend implementation
-        return decodedToken.userId || null;
+        return decodedToken.userId || null; // Return userId from token
     } catch (error) {
         console.error('Error decoding token', error);
         return null;
