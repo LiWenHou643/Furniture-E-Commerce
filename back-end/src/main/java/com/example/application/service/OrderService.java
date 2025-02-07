@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -46,8 +48,7 @@ public class OrderService {
     public Page<OrderDTO> getOrdersByUserId(Long userId, String status, Pageable pageable) {
         OrderStatus orderStatus = OrderStatus.valueOf(status);
         // Fetch orders based on the userId
-        Page<Order> orders = (userId == null) ?
-                orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable) :
+        Page<Order> orders =
                 orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
 
         // Use the `map()` method to transform the Page<Order> into Page<OrderDTO>
@@ -56,7 +57,8 @@ public class OrderService {
             List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
                                                            .sorted(Comparator.comparing(OrderDetail::getOrderDetailId))
                                                            .map(orderDetail -> {
-                                                               OrderDetailDTO orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(orderDetail);
+                                                               OrderDetailDTO orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(
+                                                                       orderDetail);
 
                                                                // Set the main product image URL
                                                                orderDetailDTO.setProductImage(

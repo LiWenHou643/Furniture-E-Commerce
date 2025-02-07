@@ -1,29 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import axiosPrivate from '../api/axiosPrivate';
-const fetchOrders = async () => {
-    const { data } = await axiosPrivate.get('/orders');
+
+const fetchOrders = async (status = 'pending') => {
+    const { data } = await axiosPrivate.get('/orders', {
+        params: { status },
+    });
     return data.data;
 };
 
-const useFetchOrders = () => {
-    return useQuery(['orders'], fetchOrders, {
-        // Keep previous data when fetching new data
+const useFetchOrders = ({ status }) => {
+    return useQuery(['orders', status], () => fetchOrders(status), {
         keepPreviousData: true, // Avoid loading state when changing pages
-
-        // Refetch data on window focus
         refetchOnWindowFocus: false, // Avoid refetching data on window focus
-
-        // Refetch data on network reconnect
         refetchOnReconnect: false, // Avoid refetching data on network reconnect
-
-        // Refetch data on interval
         refetchInterval: false, // Avoid refetching data on interval
-
-        // Stale time
         staleTime: 30000, // Set the stale time to 30 seconds
-
-        // Retry failed requests
-        retry: 1, // Set the number of retries to 2
+        retry: 1, // Set the number of retries to 1
     });
 };
 

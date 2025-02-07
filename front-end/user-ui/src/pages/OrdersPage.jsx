@@ -27,6 +27,7 @@ import {
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosPublic from '../api/axiosPublic';
+import Loading from '../components/Loading';
 import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrders from '../hooks/useFetchOrders';
 const statusIcons = {
@@ -38,19 +39,27 @@ const statusIcons = {
 };
 
 const OrdersPage = () => {
-    const [selectedTab, setSelectedTab] = useState('pending');
     const navigate = useNavigate();
+    const [selectedTab, setSelectedTab] = useState('pending');
 
-    const { data: orders, isLoading } = useFetchOrders();
+    const { data: orders, isLoading } = useFetchOrders({
+        status: selectedTab,
+    });
     const { mutate: cancelOrder, isLoading: isCanceling } = useCancelOrder();
+
+    if (isLoading) {
+        <Loading />;
+    }
+
+    console.log(orders);
+
+    const filteredOrders = orders?.content?.filter(
+        (order) => order.orderStatus === selectedTab
+    );
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
-
-    const filteredOrders = orders?.filter(
-        (order) => order.orderStatus === selectedTab
-    );
 
     const handleCancel = async (orderId) => {
         cancelOrder({ orderId });
@@ -158,8 +167,6 @@ const OrdersPage = () => {
                         No orders found
                     </Typography>
                 )}
-                {/* Display orders */}
-                {isLoading && <Typography>Loading...</Typography>}
                 <Grid container spacing={3}>
                     {filteredOrders?.map((order) => (
                         <Grid item xs={12} key={order.orderId}>
