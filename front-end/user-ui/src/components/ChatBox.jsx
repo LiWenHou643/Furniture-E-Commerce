@@ -14,7 +14,6 @@ import Loading from './Loading';
 const ChatBox = () => {
     const theme = useTheme();
     const currentUserId = userId();
-    console.log('currentUserId: ', currentUserId);
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
         useFetchChat(currentUserId, 1);
     const [messages, setMessages] = useState([]);

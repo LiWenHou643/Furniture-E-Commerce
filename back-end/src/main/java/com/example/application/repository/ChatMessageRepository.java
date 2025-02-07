@@ -20,4 +20,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             @Param("lastTimestamp") LocalDateTime lastTimestamp,
             Pageable pageable);
 
+    @Query("SELECT cm FROM ChatMessage cm WHERE cm.chatId = :chatId")
+    Page<ChatMessage> findMessagesByChatId(@Param("chatId") String chatId, Pageable pageable);
+
 }

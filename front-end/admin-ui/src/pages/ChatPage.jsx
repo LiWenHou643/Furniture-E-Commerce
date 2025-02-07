@@ -246,6 +246,7 @@ const ChatPage = () => {
                     })}
                 </List>
             </SidebarBox>
+
             {/* Chat Window */}
             <Box
                 sx={{

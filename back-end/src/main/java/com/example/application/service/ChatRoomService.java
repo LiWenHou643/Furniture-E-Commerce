@@ -25,12 +25,12 @@ public class ChatRoomService {
                 .findBySenderIdAndRecipientId(senderId, recipientId)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
-                    if(createNewRoomIfNotExists) {
+                    if (createNewRoomIfNotExists) {
                         var chatId = createChatId(senderId, recipientId);
                         return Optional.of(chatId);
                     }
 
-                    return  Optional.empty();
+                    return Optional.empty();
                 });
     }
 
