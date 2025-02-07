@@ -1,8 +1,6 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import SearchIcon from '@mui/icons-material/Search';
 import {
     AppBar,
-    Avatar,
     Badge,
     Box,
     Container,
@@ -31,19 +29,15 @@ export default function Dashboard() {
                 {/* Header */}
                 <AppBar position='static' color='transparent' elevation={0}>
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
-                        <Typography variant='h6' noWrap>
+                        <Typography variant='h4' noWrap>
                             Admin Dashboard
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton>
-                                <SearchIcon />
-                            </IconButton>
                             <IconButton>
                                 <Badge badgeContent={4} color='primary'>
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
-                            <Avatar sx={{ ml: 2 }}>A</Avatar>
                         </Box>
                     </Toolbar>
                 </AppBar>

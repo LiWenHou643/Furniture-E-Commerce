@@ -3,10 +3,18 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LivingIcon from '@mui/icons-material/Living';
+import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
+    Box,
+    Button,
     Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Drawer,
     List,
     ListItem,
@@ -16,10 +24,14 @@ import {
 import { useTheme } from '@mui/material/styles';
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import useLogout from '../hooks/useLogout';
 
 export function Sidebar() {
     const theme = useTheme();
     const [openProducts, setOpenProducts] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    const { handleLogout } = useLogout();
 
     const menuItems = [
         { id: 1, text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -51,6 +63,19 @@ export function Sidebar() {
         { id: 3, text: 'Brands', path: '/products-management/brands' },
         { id: 4, text: 'Materials', path: '/products-management/materials' },
     ];
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleConfirmLogout = async () => {
+        await handleLogout();
+        setOpen(false); // Close modal after logout
+    };
 
     return (
         <Drawer variant='permanent' anchor='left'>
@@ -125,6 +150,53 @@ export function Sidebar() {
                     </React.Fragment>
                 ))}
             </List>
+
+            {/* Fixed Logout Button at Bottom */}
+            <Box
+                sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    left: 20,
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
+                <Button
+                    variant='contained'
+                    color='error'
+                    startIcon={<LogoutIcon />}
+                    onClick={handleClickOpen}
+                    sx={{ gap: '8px' }} // Adds space between icon and text
+                >
+                    Logout
+                </Button>
+            </Box>
+
+            {/* Confirmation Dialog */}
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Confirm Logout</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to log out?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleClose}
+                        color='secondary'
+                        variant='contained'
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleConfirmLogout}
+                        color='error'
+                        variant='contained'
+                    >
+                        Logout
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Drawer>
     );
 }
