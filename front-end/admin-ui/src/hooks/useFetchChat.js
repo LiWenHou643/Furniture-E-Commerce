@@ -5,19 +5,16 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 const fetchChat = async ({
     lastTimestamp = null,
-    senderId,
-    recipientId,
+    userId = null,
     size = 10,
 }) => {
-    const { data } = await axiosPrivate.get(
-        `/messages/${senderId}/${recipientId}`,
-        {
-            params: {
-                lastTimestamp,
-                size,
-            },
-        }
-    );
+    const { data } = await axiosPrivate.get(`/admin/messages`, {
+        params: {
+            userId,
+            lastTimestamp,
+            size,
+        },
+    });
 
     // Add a small artificial delay
     return new Promise((resolve) => {
@@ -25,11 +22,11 @@ const fetchChat = async ({
     });
 };
 
-const useFetchChat = (senderId, recipientId) => {
+const useFetchChat = (userId) => {
     return useInfiniteQuery(
-        ['chat', senderId, recipientId], // Unique query key
+        ['chat', userId], // Unique query key
         ({ pageParam = null }) =>
-            fetchChat({ senderId, recipientId, lastTimestamp: pageParam }), // Fetch function
+            fetchChat({ userId, lastTimestamp: pageParam }), // Fetch function
         {
             getNextPageParam: (lastPage) => {
                 if (lastPage.length < 10) return undefined; // Stop if no more messages

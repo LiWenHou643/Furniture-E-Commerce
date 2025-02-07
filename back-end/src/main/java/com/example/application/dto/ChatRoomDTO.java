@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
@@ -18,5 +16,6 @@ public class ChatRoomDTO {
     String chatId;
     Long senderId;
     Long recipientId;
-    List<ChatMessageDTO> messages;
+    Long userId;
+    ChatMessageDTO lastMessage;
 }

@@ -80,16 +80,10 @@ const ChatBox = () => {
     // Scroll to the bottom when new messages arrive (only if user is already at bottom)
     useEffect(() => {
         if (chatContainerRef.current) {
-            const { scrollHeight, clientHeight, scrollTop } =
-                chatContainerRef.current;
-            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-
-            if (isAtBottom) {
-                chatContainerRef.current.scrollTo({
-                    top: scrollHeight,
-                    behavior: 'smooth',
-                });
-            }
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
         }
     }, [messages]);
 
@@ -106,19 +100,19 @@ const ChatBox = () => {
     const handleSendMessage = () => {
         if (input.trim() === '') return;
 
+        if (!currentUserId) return;
+
         const newMessage = {
             chatMessageId: Date.now(),
-            senderId: userId,
+            senderId: currentUserId,
             recipientId: 1, // Hardcoded recipient for demo
             content: input,
             timestamp: new Date().toISOString(),
         };
 
         // Send message to the server
-        // WebSocketService.sendMessage(newMessage);
+        WebSocketService.sendMessage('/app/send', newMessage);
 
-        // Update UI
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
         setInput('');
     };
 

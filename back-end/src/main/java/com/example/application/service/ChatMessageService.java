@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,24 +67,28 @@ public class ChatMessageService {
             var pageable = PageRequest.of(0, size, Sort.by("timestamp").descending());
             var chatMessages = chatMessageRepository.findByChatId(chatId, pageable)
                                                     .stream().map(ChatMessageMapper.INSTANCE::toDTO)
-                                                    .collect(Collectors.toList());
+                                                    .toList();
 
             // Handle case where there are no messages for the chat room
             if (chatMessages.isEmpty()) {
                 return ChatRoomDTO.builder()
                                   .chatId(chatId)
-                                  .senderId(null) // No sender available
-                                  .recipientId(null) // No recipient available
-                                  .messages(Collections.emptyList()) // Empty messages list
+                                  .userId(null) // No sender available
+                                  .lastMessage(ChatMessageDTO.builder().build()) // Empty messages list
                                   .build();
+            }
+
+            var userId = chatMessages.getFirst().getSenderId(); // Safe
+
+            if (chatMessages.getFirst().getSenderId() == 1) {
+                userId = chatMessages.getFirst().getRecipientId(); // Safe
             }
 
             // Use the first message safely
             return ChatRoomDTO.builder()
                               .chatId(chatId)
-                              .senderId(chatMessages.getFirst().getSenderId()) // Safe
-                              .recipientId(chatMessages.getFirst().getRecipientId()) // Safe
-                              .messages(chatMessages)
+                              .userId(userId) // Safe
+                              .lastMessage(chatMessages.getFirst())
                               .build();
         }).collect(Collectors.toList());
     }

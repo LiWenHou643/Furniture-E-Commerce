@@ -23,7 +23,6 @@ class WebSocketService {
                     this.onMessageReceived(chatMessage);
                 });
 
-                console.log(`/user/${this.userId}/queue/messages`);
                 // Subscribe to user-specific queue
                 this.client.subscribe(
                     `/user/${this.userId}/queue/messages`,

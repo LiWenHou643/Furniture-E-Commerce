@@ -11,56 +11,29 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Loading from '../components/Loading';
+import useFetchAllChats from '../hooks/useFetchAllChats';
+import useFetchChat from '../hooks/useFetchChat';
 import WebSocketService from '../services/WebSocketService';
-const users = [
-    { userId: 2, firstName: 'Bob', lastName: 'Smith' },
-    { userId: 3, firstName: 'Alice', lastName: 'Johnson' },
-];
-const chatMessages = [
-    {
-        chatMessageId: 2,
-        chatId: '1_2',
-        senderId: 1,
-        recipientId: 2,
-        content: 'heehhe',
-        timestamp: '2025-02-03T20:06:15',
-    },
-    {
-        chatMessageId: 3,
-        chatId: '1_2',
-        senderId: 1,
-        recipientId: 2,
-        content: 'goglle',
-        timestamp: '2025-02-03T20:07:15',
-    },
-    {
-        chatMessageId: 4,
-        chatId: '1_2',
-        senderId: 2,
-        recipientId: 1,
-        content: 'fuckk',
-        timestamp: '2025-02-03T20:06:30',
-    },
-    {
-        chatMessageId: 5,
-        chatId: '1_2',
-        senderId: 2,
-        recipientId: 1,
-        content: 'nannn',
-        timestamp: '2025-02-03T20:07:30',
-    },
-];
 
 const ChatPage = () => {
     const theme = useTheme();
     const [userId, setUserId] = useState(1);
-    const [messages, setMessages] = useState(chatMessages);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
-    const [recipient, setRecipient] = useState({});
+    const [recipient, setRecipient] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
+
+    const { data: chatRooms, isLoading } = useFetchAllChats();
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+        useFetchChat(recipient);
+
     const isSender = (senderId) => senderId === userId;
 
+    const chatContainerRef = useRef(null);
+
+    // Connect to WebSocket on component mount
     useEffect(() => {
         // Subscribe to incoming messages
         WebSocketService.subscribeToMessages((chatMessage) => {
@@ -81,25 +54,76 @@ const ChatPage = () => {
         };
     }, [userId]);
 
+    // Set the recipient to the first user in the chat list
+    useEffect(() => {
+        if (chatRooms && chatRooms.length > 0) {
+            setRecipient(chatRooms[0].userId);
+        }
+    }, [chatRooms]);
+
+    useEffect(() => {
+        if (chatContainerRef.current && messages.length > 0) {
+            setTimeout(() => {
+                chatContainerRef.current.scrollTo({
+                    top: chatContainerRef.current.scrollHeight,
+                    behavior: 'smooth',
+                });
+            }, 100); // Delay to ensure UI updates first
+        }
+    }, [messages]);
+
+    // Handle scroll event to load more messages
+    const handleScroll = async (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+        // If scrolled to the top and there are more messages to load
+        if (scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+            // Save the current scroll height before fetching new messages
+            const previousScrollHeight = scrollHeight;
+
+            // Fetch older messages
+            await fetchNextPage();
+
+            // After fetching, adjust the scroll position to maintain the user's place
+            if (chatContainerRef.current) {
+                const newScrollHeight = chatContainerRef.current.scrollHeight;
+                chatContainerRef.current.scrollTop =
+                    newScrollHeight - previousScrollHeight;
+            }
+        }
+    };
+
     const handleSendMessage = () => {
         if (!input.trim()) return;
-        const raw = {
+        const newMessage = {
             chatMessageId: Date.now(),
             senderId: userId,
-            recipientId: recipient.userId,
+            recipientId: recipient,
             content: input,
             timestamp: new Date().toISOString(),
         };
-        console.log('Sending:', raw);
-        // WebSocketService.sendMessage('/app/send', raw);
-        setMessages((prevMessages) => [...prevMessages, raw]);
+        WebSocketService.sendMessage('/app/send', newMessage);
         setInput('');
     };
 
-    const handleRecipientChange = (recipient) => {
-        console.log('Recipient user changed:', recipient);
-        setRecipient(recipient);
+    const handleRecipientChange = (userId) => {
+        console.log('Recipient user changed:', userId);
+
+        setRecipient(userId);
     };
+
+    // Load initial messages
+    useEffect(() => {
+        // Load initial messages
+        if (data) {
+            const messages = data.pages.flat();
+            setMessages(messages);
+        }
+    }, [data]);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -115,21 +139,9 @@ const ChatPage = () => {
             >
                 {/* User List */}
                 <List>
-                    {users.map((user) => {
-                        // Find the last message between current user and this user
-                        const lastMessage = messages
-                            .filter(
-                                (msg) =>
-                                    (msg.senderId === userId &&
-                                        msg.recipientId === user.userId) ||
-                                    (msg.senderId === user.userId &&
-                                        msg.recipientId === userId)
-                            )
-                            .sort(
-                                (a, b) =>
-                                    new Date(b.timestamp) -
-                                    new Date(a.timestamp)
-                            )[0];
+                    {chatRooms.map((chatRoom) => {
+                        // Find the last message in the chat room
+                        const lastMessage = chatRoom.lastMessage;
 
                         // Format last message text
                         let lastMessageText = lastMessage
@@ -159,11 +171,13 @@ const ChatPage = () => {
 
                         return (
                             <UserListItem
-                                key={user.userId}
-                                onClick={() => handleRecipientChange(user)}
+                                key={chatRoom.chatId}
+                                onClick={() =>
+                                    handleRecipientChange(chatRoom.userId)
+                                }
                                 sx={{
                                     backgroundColor:
-                                        user.userId === recipient.userId
+                                        chatRoom.userId === recipient
                                             ? theme.palette.chat.received // Selected User Color
                                             : 'transparent',
                                     borderRadius: 3,
@@ -198,13 +212,13 @@ const ChatPage = () => {
                                             fontSize: '1rem',
                                         }}
                                     >
-                                        {user.firstName[0]} {user.lastName[0]}{' '}
+                                        {chatRoom.userId}
                                         {/* User initials */}
                                     </Avatar>
 
                                     {/* User Name & Last Message */}
                                     <ListItemText
-                                        primary={`${user.firstName} ${user.lastName}`}
+                                        primary={`User ${chatRoom.userId}`}
                                         secondary={lastMessageText} // Show truncated last message
                                         sx={{
                                             color: theme.palette.secondary.main,
@@ -268,19 +282,18 @@ const ChatPage = () => {
                         boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
                     }}
                 >
-                    {Object.keys(recipient).length === 0 ? (
+                    {recipient === null ? (
                         <Typography variant='h6'>
                             Select a user to start chatting
                         </Typography>
                     ) : (
-                        <Typography variant='h6'>
-                            {recipient.firstName} {recipient.lastName}
-                        </Typography>
+                        <Typography variant='h6'></Typography>
                     )}
                 </Box>
 
                 {/* Chat Messages */}
                 <Box
+                    ref={chatContainerRef}
                     sx={{
                         flex: 1,
                         padding: 2,
@@ -288,8 +301,9 @@ const ChatPage = () => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}
+                    onScroll={handleScroll}
                 >
-                    {Object.keys(recipient).length !== 0 &&
+                    {recipient !== null &&
                         messages.map((message) => (
                             <Box
                                 key={message.chatMessageId}
@@ -347,7 +361,7 @@ const ChatPage = () => {
                 </Box>
 
                 {/* Message Input Box */}
-                {Object.keys(recipient).length !== 0 && (
+                {recipient !== null && (
                     <Box
                         sx={{
                             padding: 2,
