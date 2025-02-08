@@ -50,7 +50,7 @@ public class ChatController {
         // Send the message to the specific user (private message)
         messagingTemplate.convertAndSendToUser(String.valueOf(recipientId), "/queue/messages",
                 new ChatNotification(savedMsg.getChatMessageId(), savedMsg.getSenderId(),
-                        savedMsg.getRecipientId(), savedMsg.getContent()));
+                        savedMsg.getRecipientId(), savedMsg.getContent(), savedMsg.getTimestamp()));
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}")

@@ -29,7 +29,8 @@ const ChatPage = () => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
         useFetchChat(recipient);
 
-    const isSender = (senderId) => senderId === userId;
+    const isSender = (senderId) =>
+        parseInt(senderId, 10) === parseInt(userId, 10);
 
     const chatContainerRef = useRef(null);
 

@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +31,17 @@ public class ChatMessageService {
     ChatRoomRepository chatRoomRepository;
 
     public ChatMessageDTO save(ChatMessageDTO chatMessageDTO) {
+        LocalDateTime utcTime = chatMessageDTO.getTimestamp(); // Received UTC time
+        ZonedDateTime vietnamTime = utcTime.atZone(ZoneId.of("UTC"))
+                                           .withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        // Convert back to LocalDateTime for saving
+        LocalDateTime localVietnamTime = vietnamTime.toLocalDateTime();
+
+        // Map DTO to Entity
         var chatEntity = ChatMessageMapper.INSTANCE.toEntity(chatMessageDTO);
         chatEntity.setChatMessageId(null);
+        chatEntity.setTimestamp(localVietnamTime);
         var chatId = chatRoomService.getChatRoomId(chatMessageDTO.getSenderId(), chatMessageDTO.getRecipientId(), true)
                                     .orElseThrow(); // You can create your own dedicated exception
         chatEntity.setChatId(chatId);

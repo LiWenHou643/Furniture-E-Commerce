@@ -45,7 +45,8 @@ const ChatBox = () => {
         }
     };
 
-    const isSender = (senderId) => senderId === currentUserId;
+    const isSender = (senderId) =>
+        parseInt(senderId, 10) === parseInt(currentUserId, 10);
 
     // WebSocket setup
     useEffect(() => {
