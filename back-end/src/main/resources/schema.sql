@@ -2,8 +2,27 @@ CREATE
     DATABASE IF NOT EXISTS db;
 USE
     db;
-SET
-    time_zone = 'Asia/Ho_Chi_Minh';
+SET GLOBAL time_zone = 'UTC';
+    
+CREATE TABLE invalidated_tokens
+(
+    token_id   INT AUTO_INCREMENT PRIMARY KEY,
+    token      VARCHAR(512) NOT NULL,
+    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE refresh_tokens
+(
+    refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
+    refresh_token    VARCHAR(512) NOT NULL,
+    revoked          BOOLEAN      NOT NULL DEFAULT FALSE,
+    user_id          INT          NOT NULL,
+    created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
 
 CREATE TABLE roles
 (
@@ -261,22 +280,15 @@ CREATE TABLE chat_rooms (
     recipient_id INT NOT NULL
 );
 
-CREATE TABLE invalidated_tokens
-(
-    token_id   INT AUTO_INCREMENT PRIMARY KEY,
-    token      VARCHAR(512) NOT NULL,
-    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE news (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    image_url VARCHAR(255) DEFAULT NULL,
+    start_date DATETIME DEFAULT NULL,  -- When the event or sale starts
+    end_date DATETIME DEFAULT NULL,    -- When it ends (NULL if not applicable)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE refresh_tokens
-(
-    refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
-    refresh_token    VARCHAR(512) NOT NULL,
-    revoked          BOOLEAN      NOT NULL DEFAULT FALSE,
-    user_id          INT          NOT NULL,
-    created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
-);

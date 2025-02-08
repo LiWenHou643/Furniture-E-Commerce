@@ -13,22 +13,12 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useLogout from '../hooks/useLogout';
+import { isAuthenticated } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
 import Notification from './Notification';
 
-const pages = [
-    'Products',
-    'News',
-    'Contact-us',
-    'Cart',
-    'Orders',
-    'Profile',
-    'Account',
-    'Checkout',
-    'Login',
-    'Register',
-];
-const settings = ['Profile', 'Account', 'Logout'];
+const pages = ['Products', 'News', 'Cart', 'Orders', 'Checkout'];
+const settings = ['Profile', 'Logout'];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -109,6 +99,33 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
 
+                    {/* Buttons (Login/Register or Logout) */}
+                    <Box>
+                        {!isAuthenticated() && (
+                            <>
+                                <Button
+                                    variant='outlined'
+                                    color='inherit'
+                                    component={Link}
+                                    to='/login'
+                                    sx={{
+                                        mr: 1,
+                                    }}
+                                >
+                                    Login
+                                </Button>
+                                <Button
+                                    variant='outlined'
+                                    color='inherit'
+                                    component={Link}
+                                    to='/register'
+                                >
+                                    Register
+                                </Button>
+                            </>
+                        )}
+                    </Box>
+
                     {/* Responsive Navigation */}
                     <Box
                         sx={{
@@ -178,48 +195,54 @@ function ResponsiveAppBar() {
                     </Typography>
 
                     {/* Notification and User Menu */}
-                    <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
-                        <Notification />
+                    {isAuthenticated() && (
+                        <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
+                            <Notification />
 
-                        <CustomTooltip title='Open settings'>
-                            <IconButton
-                                onClick={handleOpenUserMenu}
-                                sx={{ p: 0 }}
-                            >
-                                <Avatar
-                                    alt='Remy Sharp'
-                                    src='/static/images/avatar/1.jpg'
-                                />
-                            </IconButton>
-                        </CustomTooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id='menu-appbar'
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem
-                                    key={setting}
-                                    onClick={() => handleCloseUserMenu(setting)} // Pass the selected setting
+                            <CustomTooltip title='Open settings'>
+                                <IconButton
+                                    onClick={handleOpenUserMenu}
+                                    sx={{ p: 0 }}
                                 >
-                                    <Typography sx={{ textAlign: 'center' }}>
-                                        {setting}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
+                                    <Avatar
+                                        alt='Remy Sharp'
+                                        src='/static/images/avatar/1.jpg'
+                                    />
+                                </IconButton>
+                            </CustomTooltip>
+                            <Menu
+                                sx={{ mt: '45px' }}
+                                id='menu-appbar'
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                {settings.map((setting) => (
+                                    <MenuItem
+                                        key={setting}
+                                        onClick={() =>
+                                            handleCloseUserMenu(setting)
+                                        } // Pass the selected setting
+                                    >
+                                        <Typography
+                                            sx={{ textAlign: 'center' }}
+                                        >
+                                            {setting}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Box>
+                    )}
                 </Toolbar>
             </Container>
         </AppBar>

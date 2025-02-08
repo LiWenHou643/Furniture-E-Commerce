@@ -1487,3 +1487,43 @@ INSERT INTO chat_messages (chat_id, sender_id, recipient_id, content, timestamp)
 ('1_3', 3, 1, 'Sure! Where?', '2025-02-05 11:07:30'),
 ('1_3', 1, 3, 'At the coffee shop near the office.', '2025-02-05 11:09:15'),
 ('1_3', 3, 1, 'Sounds great! See you there.', '2025-02-05 11:10:45');
+
+INSERT INTO news (title, slug, content, image_url, start_date, end_date, created_at, updated_at) 
+VALUES
+-- Branch Openings in Vietnam (Adjusted to be after February 8, 2025)
+('New Branch Opening in Ho Chi Minh City', 'new-branch-ho-chi-minh', 
+'We are excited to announce the opening of our new branch in Ho Chi Minh City! Come visit us for exclusive deals.', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/opening2_ergou8.webp', 
+'2025-02-20 10:00:00', NULL, NOW(), NOW()),
+
+('Grand Opening in Hanoi', 'grand-opening-hanoi', 
+'We are thrilled to expand our presence with a new branch in Hanoi! Join us for the grand opening event.', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/opening_wd4r3p.jpg', 
+'2025-03-15 09:00:00', NULL, NOW(), NOW()),
+
+-- Sales and Events (Adjusted to fit seasonal timing)
+('Spring Sale - Up to 50% Off', 'spring-sale-50', 
+'Enjoy up to 50% off on selected items this spring season! Limited time offer.', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/spring-sale_uoh8lo.avif', 
+'2025-03-01 00:00:00', '2025-03-15 23:59:59', NOW(), NOW()),
+
+('Summer Clearance Sale', 'summer-clearance-sale', 
+'Get ready for summer with massive discounts on our best-selling products!', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989783/summer-sale_crnmif.webp', 
+'2025-05-25 00:00:00', '2025-06-10 23:59:59', NOW(), NOW()),
+
+('Black Friday Deals - Don’t Miss Out!', 'black-friday-deals', 
+'Biggest discounts of the year! Shop Black Friday deals and save more.', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/blackfriday_oepxcv.png', 
+'2025-11-28 00:00:00', '2025-11-28 23:59:59', NOW(), NOW()),
+
+('Christmas Mega Sale - Up to 70% Off', 'christmas-mega-sale', 
+'Celebrate Christmas with our biggest sale of the year! Don’t miss out on up to 70% discounts.', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989783/chrsitmas_gjqyqy.jpg', 
+'2025-12-15 00:00:00', '2025-12-26 23:59:59', NOW(), NOW()),
+
+('New Year Celebration - Special Discounts', 'new-year-sale', 
+'Ring in the new year with special discounts across all our products!', 
+'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/newyear_gshsuv.jpg', 
+'2025-12-31 00:00:00', '2026-01-07 23:59:59', NOW(), NOW());
+
