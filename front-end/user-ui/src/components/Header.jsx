@@ -17,6 +17,7 @@ import {
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import useFetchCart from '../hooks/useFetchCart';
 import useLogout from '../hooks/useLogout';
 import { isAuthenticated } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
@@ -30,6 +31,9 @@ function ResponsiveAppBar() {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const navigate = useNavigate();
     const logout = useLogout();
+    const { data: cart, isLoading } = useFetchCart();
+
+    const cartCount = isAuthenticated() && cart ? cart.cartItems.length : 0;
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -209,7 +213,10 @@ function ResponsiveAppBar() {
                                 color='inherit'
                                 onClick={() => navigate('/cart')}
                             >
-                                <Badge badgeContent={3} color='success'>
+                                <Badge
+                                    badgeContent={isLoading ? 0 : cartCount}
+                                    color='success'
+                                >
                                     <ShoppingCartIcon />
                                 </Badge>
                             </IconButton>

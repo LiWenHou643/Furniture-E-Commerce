@@ -15,7 +15,6 @@ const useAddToCart = () => {
         mutationFn: addToCart,
         onSuccess: (data) => {
             console.log('Added to cart', data);
-            // Invalidate the cart query to trigger a refresh
             queryClient.invalidateQueries(['cart']);
             // Show a success toast
             toast.success('Added to cart');
