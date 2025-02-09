@@ -57,10 +57,7 @@ const Notification = () => {
                     sx={{ color: 'white', paddingBottom: 0 }}
                     onClick={handleOpen}
                 >
-                    <Badge
-                        badgeContent={notifications.length}
-                        color='secondary'
-                    >
+                    <Badge badgeContent={notifications.length} color='success'>
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>

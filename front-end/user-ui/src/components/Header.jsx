@@ -1,15 +1,20 @@
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
-import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import {
+    AppBar,
+    Avatar,
+    Badge,
+    Box,
+    Button,
+    Container,
+    IconButton,
+    Menu,
+    MenuItem,
+    Toolbar,
+    Typography,
+} from '@mui/material';
+
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useLogout from '../hooks/useLogout';
@@ -17,7 +22,7 @@ import { isAuthenticated } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
 import Notification from './Notification';
 
-const pages = ['Products', 'News', 'Cart', 'Orders', 'Checkout'];
+const pages = ['Products', 'News', 'Orders'];
 const settings = ['Profile', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -39,13 +44,13 @@ function ResponsiveAppBar() {
         console.log('Selected page:', page);
 
         // Navigate to the selected page
-        navigate(`/${page.toLowerCase()}`);
+        navigate(`/${page?.toLowerCase()}`);
     };
 
     const handleCloseUserMenu = (setting) => {
         setAnchorElUser(null);
 
-        console.log('Selected setting:', setting);
+        if (!setting) return; // Ignore null values
 
         // Handle logout
         if (setting === 'Logout') {
@@ -199,6 +204,16 @@ function ResponsiveAppBar() {
                         <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
                             <Notification />
 
+                            {/* Cart Icon with Badge */}
+                            <IconButton
+                                color='inherit'
+                                onClick={() => navigate('/cart')}
+                            >
+                                <Badge badgeContent={3} color='success'>
+                                    <ShoppingCartIcon />
+                                </Badge>
+                            </IconButton>
+
                             <CustomTooltip title='Open settings'>
                                 <IconButton
                                     onClick={handleOpenUserMenu}
@@ -224,7 +239,7 @@ function ResponsiveAppBar() {
                                     horizontal: 'right',
                                 }}
                                 open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
+                                onClose={() => handleCloseUserMenu(null)}
                             >
                                 {settings.map((setting) => (
                                     <MenuItem
