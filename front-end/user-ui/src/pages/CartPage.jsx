@@ -348,7 +348,12 @@ const CartItem = ({ cartItem, isSelected, onSelect }) => {
                     <Typography>{selectedItem?.color.colorName}</Typography>
 
                     {/* Button to open the popover */}
-                    <Button onClick={handleOpen}>Change Color</Button>
+                    {
+                        // Only show the button if there are multiple colors
+                        cartItem?.product?.productItems.length > 1 && (
+                            <Button onClick={handleOpen}>Change Color</Button>
+                        )
+                    }
                 </Box>
 
                 {/* Popover for selecting a color */}
