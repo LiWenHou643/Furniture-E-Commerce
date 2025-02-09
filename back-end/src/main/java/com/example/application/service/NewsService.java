@@ -24,4 +24,9 @@ public class NewsService {
         return newsRepository.findAllByOrderByCreatedAtDesc().stream().map(NewsMapper.INSTANCE::toDTO)
                              .collect(Collectors.toList());
     }
+
+    @Cacheable(value = "news", key = "#id")
+    public NewsDTO getNewsById(Long id) {
+        return NewsMapper.INSTANCE.toDTO(newsRepository.findById(id).orElse(null));
+    }
 }
