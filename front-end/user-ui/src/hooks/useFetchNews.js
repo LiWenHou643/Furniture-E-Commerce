@@ -1,15 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import axiosPublic from '../api/axiosPublic';
 
-// Fetch data with pagination
-const fetchBrand = async () => {
-    const response = await axiosPublic.get('/brands');
-    return response.data?.data; // Axios automatically parses JSON
+const fetchNews = async () => {
+    const { data } = await axiosPublic.get('/news');
+    return data.data;
 };
 
-// Custom hook for fetching paginated data
-const useFetchBrand = () => {
-    return useQuery(['brands'], fetchBrand, {
+const useFetchNews = () => {
+    return useQuery(['news'], fetchNews, {
         keepPreviousData: true, // Avoid loading state when changing pages
         refetchOnWindowFocus: false, // Avoid refetching data on window focus
         refetchOnReconnect: false, // Avoid refetching data on network reconnect
@@ -19,4 +17,4 @@ const useFetchBrand = () => {
     });
 };
 
-export default useFetchBrand;
+export default useFetchNews;

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class NewsDTO {
-    Long id;
+    Long newsId;
 
     String slug;
 
@@ -26,4 +26,6 @@ public class NewsDTO {
     LocalDateTime startDate;
 
     LocalDateTime endDate;
+
+    LocalDateTime createdAt;
 }

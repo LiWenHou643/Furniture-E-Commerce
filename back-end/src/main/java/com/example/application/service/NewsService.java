@@ -6,6 +6,7 @@ import com.example.application.repository.NewsRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,9 @@ public class NewsService {
 
     NewsRepository newsRepository;
 
+    @Cacheable(value = "news")
     public List<NewsDTO> getAllNews() {
-        return newsRepository.findAll().stream().map(NewsMapper.INSTANCE::toDTO).collect(Collectors.toList());
+        return newsRepository.findAllByOrderByCreatedAtDesc().stream().map(NewsMapper.INSTANCE::toDTO)
+                             .collect(Collectors.toList());
     }
 }

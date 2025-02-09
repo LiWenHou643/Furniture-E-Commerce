@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class News extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long newsId;
 
     String slug;
 
