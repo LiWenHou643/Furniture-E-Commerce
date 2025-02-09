@@ -31,6 +31,15 @@ const useCreateOrder = () => {
         onSuccess: (data, variables) => {
             console.log('Order created', data, variables);
             queryClient.invalidateQueries(['orders']);
+            queryClient.invalidateQueries(['cart']);
+            queryClient.invalidateQueries(['products']);
+
+            const { orderDetails } = variables;
+
+            // Refresh the product stock
+            orderDetails.forEach((orderItem) => {
+                queryClient.invalidateQueries(['product', orderItem.productId]);
+            });
 
             // // Check the payment method and handle accordingly
             if (variables.paymentMethod === 'paypal' && data?.data?.paypalUrl) {

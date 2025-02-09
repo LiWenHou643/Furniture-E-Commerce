@@ -33,7 +33,7 @@ public class OrderController {
     OrderService orderService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<?>> getOrdersByUserId(
+    public ResponseEntity<?> getOrdersByUserId(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "pending") String status
@@ -51,7 +51,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long orderId) {
+    public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
         var userId = getUserId();
         var order = orderService.getOrderById(userId, orderId);
         return ResponseEntity.ok(
@@ -64,7 +64,7 @@ public class OrderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse<?>> processPayment(@RequestBody OrderDTO orderDTO) throws PayPalRESTException {
+    public ResponseEntity<?> processPayment(@RequestBody OrderDTO orderDTO) throws PayPalRESTException {
         var userId = getUserId();
         var paymentMethod = orderDTO.getPaymentMethod();
         // Step 1: Create the order in the database
@@ -98,7 +98,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/paypal/success")
-    public ResponseEntity<ApiResponse<?>> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException, ParseException {
+    public ResponseEntity<?> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException, ParseException {
         orderService.executePayPalPayment(orderId, paymentId, payerId);
         return ResponseEntity.status(HttpStatus.FOUND).location(
                 URI.create("http" + "://localhost:3000/orders/%d".formatted(orderId))
@@ -106,7 +106,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/paypal/cancel")
-    public ResponseEntity<ApiResponse<?>> cancelPayPalPayment(@PathVariable Long orderId) {
+    public ResponseEntity<?> cancelPayPalPayment(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.status(HttpStatus.FOUND).location(
                 URI.create("http" + "://localhost:3000/orders/%d/cancel".formatted(orderId))
@@ -114,20 +114,21 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/cancel")
-    public ResponseEntity<ApiResponse<?>> cancelOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
         var userId = getUserId();
-        orderService.cancelOrder(userId, orderId);
+        var order = orderService.cancelOrder(userId, orderId);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")
                            .message("Order cancelled successfully")
+                           .data(order)
                            .build()
         );
     }
 
     @GetMapping("/management")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<?>> getAllOrders(
+    public ResponseEntity<?> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "pending") String status
@@ -146,7 +147,7 @@ public class OrderController {
 
     @PutMapping("/management")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<?>> confirmOrder(@RequestBody Long orderId) {
+    public ResponseEntity<?> confirmOrder(@RequestBody Long orderId) {
         orderService.updateOrderStatus(orderId, OrderStatus.processing);
         return ResponseEntity.ok(
                 ApiResponse.builder()

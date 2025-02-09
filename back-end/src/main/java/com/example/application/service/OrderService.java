@@ -20,6 +20,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -108,6 +110,10 @@ public class OrderService {
         return orderDTO;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "product", allEntries = true),
+            @CacheEvict(value = "productList", allEntries = true)
+    })
     @Transactional
     public OrderDTO createOrder(Long userId, OrderDTO orderDTO) {
         // Fetch or create user
@@ -202,7 +208,11 @@ public class OrderService {
         return savedOrderDTO;
     }
 
-    public void cancelOrder(Long userId, Long orderId) {
+    @Caching(evict = {
+            @CacheEvict(value = "product", allEntries = true),
+            @CacheEvict(value = "productList", allEntries = true)
+    })
+    public OrderDTO cancelOrder(Long userId, Long orderId) {
         var order = orderRepository.findById(orderId)
                                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
@@ -221,6 +231,25 @@ public class OrderService {
         });
 
         orderRepository.save(order);
+
+        // Get product IDs from order details
+        Set<Long> productIds = order.getOrderDetails().stream()
+                                    .map(orderDetail -> orderDetail.getProductItem().getProduct().getProductId())
+                                    .collect(Collectors.toSet());
+
+
+        // Return OrderDTO
+
+        return OrderDTO.builder()
+                       .orderId(order.getOrderId())
+                       .orderStatus(order.getOrderStatus())
+                       .cancelDate(order.getCancelDate())
+                       .orderDetails(
+                                            productIds.stream().map(productId -> OrderDetailDTO.builder()
+                                                                                               .productId(
+                                                                                                       productId)
+                                                                                               .build())
+                                                      .collect(Collectors.toList())).build();
     }
 
     public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
@@ -261,7 +290,7 @@ public class OrderService {
         throw new RuntimeException("Failed to generate PayPal payment URL");
     }
 
-    public String executePayPalPayment(Long orderId, String paymentId, String payerId) throws PayPalRESTException, ParseException {
+    public void executePayPalPayment(Long orderId, String paymentId, String payerId) throws PayPalRESTException, ParseException {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
 
         // Execute PayPal payment
@@ -281,14 +310,12 @@ public class OrderService {
 
             // Save payment
             paymentRepository.save(payments);
-            return "Payment successful! Order ID: " + orderId;
         }
 
         throw new RuntimeException("Payment failed");
     }
 
-    public String deleteOrder(Long orderId) {
+    public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
-        return "Order deleted successfully";
     }
 }

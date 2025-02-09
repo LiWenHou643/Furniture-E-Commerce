@@ -12,16 +12,22 @@ const useCancelOrder = () => {
     return useMutation({
         mutationFn: cancelOrder,
         onSuccess: (data, variables) => {
-            console.log('Invalidating query key:', [
-                'order',
-                variables.orderId,
-            ]);
             const stringOrderId = String(variables.orderId);
             // Invalidate the specific order query
             queryClient.invalidateQueries(['order', stringOrderId]);
 
             // Invalidate the list of orders query
             queryClient.invalidateQueries(['orders']);
+
+            // Invalidate the products query
+            queryClient.invalidateQueries(['products']);
+
+            // Invalidate the specific product query
+            const { data: order } = data;
+
+            order.orderDetails.forEach((orderItem) => {
+                queryClient.invalidateQueries(['product', orderItem.productId]);
+            });
 
             toast.success('Order cancelled');
         },
