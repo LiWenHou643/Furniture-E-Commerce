@@ -128,7 +128,7 @@ const ProductPage = () => {
                             {/* Pagination Component */}
                             {
                                 // Display pagination component only if there are more than 1 page
-                                data?.totalPages > 1 && (
+                                data?.page?.totalPages > 1 && (
                                     <Stack
                                         spacing={2}
                                         direction='row'
@@ -136,7 +136,9 @@ const ProductPage = () => {
                                         sx={{ marginTop: 3 }}
                                     >
                                         <Pagination
-                                            count={Math.ceil(data?.totalPages)} // Total pages
+                                            count={Math.ceil(
+                                                data?.page?.totalPages
+                                            )} // Total pages
                                             page={currentPage}
                                             onChange={handlePageChange}
                                             color='primary'

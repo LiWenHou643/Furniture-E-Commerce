@@ -26,7 +26,6 @@ import static lombok.AccessLevel.PRIVATE;
 public class ProductController {
 
     ProductService productService;
-    Cloudinary cloudinary;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProducts(

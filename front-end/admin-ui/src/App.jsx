@@ -15,6 +15,7 @@ import AddProductPage from './pages/AddProductPage';
 import Brands from './pages/Brands';
 import Categories from './pages/Categories';
 import ChatPage from './pages/ChatPage';
+import CustomerPage from './pages/CustomerPage';
 import DashBoard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import Materials from './pages/Materials';
@@ -102,6 +103,11 @@ function App() {
                             <Route
                                 path='/products-management/materials'
                                 element={<Materials />}
+                            />
+
+                            <Route
+                                path='/customers-management'
+                                element={<CustomerPage />}
                             />
 
                             <Route path='/chat' element={<ChatPage />} />

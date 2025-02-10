@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -31,14 +30,20 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
-        return ResponseEntity.ok(
-                new ApiResponse<>("success", "List of users found successfully", userService.getAllUsers()));
+    public ResponseEntity<?> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(ApiResponse.builder()
+                                            .message("Users retrieved successfully")
+                                            .status("success")
+                                            .data(userService.getAllUsers(page, size))
+                                            .build());
     }
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserById() {
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getUserById() {
         var userId = getUserId();
         return ResponseEntity.ok(
                 new ApiResponse<>("success", "User found successfully", userService.getUserById(userId)));
@@ -46,14 +51,14 @@ public class UserController {
 
     @PostMapping("/address")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<ApiResponse<UserDTO>> updateAddress(@RequestBody AddressDTO request) {
+    public ResponseEntity<?> updateAddress(@RequestBody AddressDTO request) {
         var userId = getUserId();
         return ResponseEntity.ok(new ApiResponse<>("success", "Address updated successfully",
                 userService.updateAddress(userId, request)));
     }
 
     @DeleteMapping("/address/{addressId}")
-    public ResponseEntity<ApiResponse<UserDTO>> deleteAddress(@PathVariable Long addressId) {
+    public ResponseEntity<?> deleteAddress(@PathVariable Long addressId) {
         var userId = getUserId();
         return ResponseEntity.ok(new ApiResponse<>("success", "Address deleted successfully",
                 userService.deleteAddress(userId, addressId)));
@@ -61,7 +66,7 @@ public class UserController {
 
     @PutMapping("/profile")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<ApiResponse<UserDTO>> updateProfile(@RequestBody UserDTO request) {
+    public ResponseEntity<?> updateProfile(@RequestBody UserDTO request) {
         var userId = getUserId();
         return ResponseEntity.ok(
                 new ApiResponse<>("success", "User updated successfully", userService.updateUser(userId, request)));
@@ -69,10 +74,11 @@ public class UserController {
 
     @PutMapping("/password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<UserDTO>> updatePassword(@RequestBody UserDTO request) {
+    public ResponseEntity<?> updatePassword(@RequestBody UserDTO request) {
         var userId = getUserId();
         return ResponseEntity.ok(
-                new ApiResponse<>("success", "Password updated successfully", userService.updatePassword(userId, request)));
+                new ApiResponse<>("success", "Password updated successfully",
+                        userService.updatePassword(userId, request)));
     }
 
     private Long getUserId() {
@@ -104,5 +110,12 @@ public class UserController {
             return ResponseEntity.status(500)
                                  .body(ApiResponse.builder().message("Failed to upload image").status("error").build());
         }
+    }
+
+    @PutMapping("/ban/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> banUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(
+                new ApiResponse<>("success", "User banned successfully", userService.banUser(userId)));
     }
 }

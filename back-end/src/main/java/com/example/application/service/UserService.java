@@ -10,11 +10,11 @@ import com.example.application.repository.AddressRepository;
 import com.example.application.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
@@ -24,8 +24,10 @@ public class UserService {
     AddressRepository addressRepository;
     PasswordEncoder passwordEncoder;
 
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(UserMapper.INSTANCE::toDTO).collect(Collectors.toList());
+    public Page<UserDTO> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        var users = userRepository.findAllUsers(pageable);
+        return users.map(UserMapper.INSTANCE::toDTO);
     }
 
     public UserDTO getUserById(Long userId) {
@@ -113,5 +115,13 @@ public class UserService {
         user.setAvatar(avatarUrl);
         userRepository.save(user);
         return UserMapper.INSTANCE.toDTO(user);
+    }
+
+    public UserDTO banUser(Long userId) {
+        var user = userRepository.findById(userId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("User", "user Id", userId));
+        user.setUserStatus(false);
+
+        return UserMapper.INSTANCE.toDTO(userRepository.save(user));
     }
 }
