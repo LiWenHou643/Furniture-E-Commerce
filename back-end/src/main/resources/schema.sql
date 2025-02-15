@@ -293,3 +293,15 @@ CREATE TABLE news (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,          -- NULL if the notification is for all users
+    title VARCHAR(255) NOT NULL,       -- Short title for the notification
+    message TEXT NOT NULL,             -- The content of the notification
+    read_status BOOLEAN DEFAULT FALSE,     -- Whether the notification has been read
+    action_url VARCHAR(255) DEFAULT NULL, -- URL for the user to take action (e.g., view order)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE -- Assuming a `users` table exists
+);
+
+

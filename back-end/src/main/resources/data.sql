@@ -1527,3 +1527,5 @@ VALUES
 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1738989782/newyear_gshsuv.jpg', 
 '2024-12-31 00:00:00', '2025-01-07 23:59:59', '2024-12-15 00:00:00', NOW());
 
+INSERT INTO notifications (user_id, title, message, read_status, action_url)
+VALUES (2, 'Your Order #67890 Has Been Delivered', 'Great news! Your order has been successfully delivered. We hope you enjoy your purchase!', FALSE, '/orders/67890');

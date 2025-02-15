@@ -52,7 +52,6 @@ public class EmailService {
 
         // Paths to HTML and image files
         String htmlFilePath = "src/main/resources/templates/email-content.html";
-        String imageFilePath = "src/main/resources/static/logo.png";
 
         try {
             // Load HTML content from file

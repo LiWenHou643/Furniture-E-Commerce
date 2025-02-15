@@ -1,7 +1,10 @@
 package com.example.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -10,8 +13,18 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationDTO {
     String channel;
     String recipient;
     String subject;
+
+    Long notificationId;
+    Long userId;
+    String title;
+    String message;
+    Boolean readStatus;
+    String actionUrl;
+    LocalDateTime createdAt;
+
 }
