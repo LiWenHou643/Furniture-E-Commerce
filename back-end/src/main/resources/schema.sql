@@ -3,26 +3,6 @@ CREATE
 USE
     db;
 SET GLOBAL time_zone = 'UTC';
-    
-CREATE TABLE invalidated_tokens
-(
-    token_id   INT AUTO_INCREMENT PRIMARY KEY,
-    token      VARCHAR(512) NOT NULL,
-    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE refresh_tokens
-(
-    refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
-    refresh_token    VARCHAR(512) NOT NULL,
-    revoked          BOOLEAN      NOT NULL DEFAULT FALSE,
-    user_id          INT          NOT NULL,
-    created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
-);
 
 CREATE TABLE roles
 (
@@ -46,6 +26,27 @@ CREATE TABLE users
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles (role_id)
+);
+
+    
+CREATE TABLE invalidated_tokens
+(
+    token_id   INT AUTO_INCREMENT PRIMARY KEY,
+    token      VARCHAR(512) NOT NULL,
+    expiration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE refresh_tokens
+(
+    refresh_token_id INT AUTO_INCREMENT PRIMARY KEY,
+    refresh_token    VARCHAR(512) NOT NULL,
+    revoked          BOOLEAN      NOT NULL DEFAULT FALSE,
+    user_id          INT          NOT NULL,
+    created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE addresses
