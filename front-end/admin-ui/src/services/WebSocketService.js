@@ -3,7 +3,7 @@ import { Client } from '@stomp/stompjs';
 class WebSocketService {
     constructor() {
         this.client = new Client({
-            brokerURL: 'ws://localhost:8080/chat', // Replace with your backend URL
+            brokerURL: 'ws://localhost:8080/ws', // Replace with your backend URL
             connectHeaders: {},
             debug: function (str) {
                 console.log(str);
