@@ -1,3 +1,4 @@
+import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
     Box,
@@ -9,6 +10,9 @@ import {
     Paper,
     Select,
     Stack,
+    Step,
+    StepLabel,
+    Stepper,
     Table,
     TableBody,
     TableCell,
@@ -18,6 +22,8 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Loading from '../components/Loading';
@@ -174,51 +180,11 @@ export default function Orders() {
 
             {/* Order Details Modal */}
             {selectedOrder && (
-                <Modal open={openModal} onClose={handleCloseModal}>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: 400,
-                            bgcolor: 'background.paper',
-                            p: 4,
-                            borderRadius: 2,
-                            boxShadow: 24,
-                        }}
-                    >
-                        <Typography variant='h6' gutterBottom>
-                            Order Details
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Order ID:</strong> {selectedOrder.orderId}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Customer Name:</strong>{' '}
-                            {selectedOrder.customerName}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Status:</strong> {selectedOrder.status}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Date:</strong> {selectedOrder.date}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Total:</strong> $
-                            {selectedOrder.total.toFixed(2)}
-                        </Typography>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                mt: 2,
-                            }}
-                        >
-                            <Button onClick={handleCloseModal}>Close</Button>
-                        </Box>
-                    </Box>
-                </Modal>
+                <OrderDetailsModal
+                    openModal={openModal}
+                    handleCloseModal={handleCloseModal}
+                    selectedOrder={selectedOrder}
+                />
             )}
         </Box>
     );
@@ -238,5 +204,174 @@ const OrderStatus = ({ status }) => {
             label={statusMap[status]?.label || 'Unknown'}
             color={statusMap[status]?.color || 'default'} // Fallback to "default" if status is not found
         />
+    );
+};
+// Status Mapping for Progress Bar
+const statusSteps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+const OrderDetailsModal = ({ openModal, handleCloseModal, selectedOrder }) => {
+    const [deliveryService, setDeliveryService] = useState('');
+    const [orderStatus, setOrderStatus] = useState(
+        selectedOrder?.orderStatus || 'Pending'
+    );
+
+    const handleConfirmOrder = () => {
+        // Logic to confirm the order
+        // Update order status and trigger necessary processes
+    };
+
+    const handleAssignDelivery = () => {
+        // Logic to assign the order to a delivery service
+        // Send order details to the selected delivery service
+    };
+
+    return (
+        <Modal open={openModal} onClose={handleCloseModal}>
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 500,
+                    bgcolor: 'background.paper',
+                    p: 4,
+                    borderRadius: 2,
+                    boxShadow: 24,
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 2,
+                    }}
+                >
+                    <Typography variant='h6'>Order Details</Typography>
+                    <IconButton onClick={handleCloseModal}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                <Typography variant='body1'>
+                    <strong>Order ID:</strong> {selectedOrder?.orderId}
+                </Typography>
+                <Typography variant='body1'>
+                    <strong>Status:</strong> {selectedOrder?.orderStatus}
+                </Typography>
+                <Typography variant='body1'>
+                    <strong>Order Date:</strong>{' '}
+                    {formatDate(selectedOrder?.createdAt)}
+                </Typography>
+                {selectedOrder?.orderStatus === 'shipped' && (
+                    <Typography variant='body1'>
+                        <strong>Shipping Date:</strong>{' '}
+                        {formatDate(selectedOrder?.shippingDate)}
+                    </Typography>
+                )}
+                {selectedOrder?.orderStatus === 'delivered' && (
+                    <Typography variant='body1'>
+                        <strong>Delivered Date:</strong>{' '}
+                        {formatDate(selectedOrder?.deliveryDate)}
+                    </Typography>
+                )}
+                <Typography variant='body1'>
+                    <strong>Total:</strong> ${selectedOrder?.total?.toFixed(2)}
+                </Typography>
+
+                {/* Order Status Tracker */}
+                {selectedOrder?.orderStatus === 'Cancelled' ? (
+                    <Typography variant='body1' color='error'>
+                        This order has been cancelled.
+                    </Typography>
+                ) : (
+                    <OrderStatusTracker
+                        orderStatus={selectedOrder?.orderStatus}
+                    />
+                )}
+
+                {/* Action Buttons */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        mt: 3,
+                    }}
+                >
+                    {
+                        // Display only if order status is pending
+                        selectedOrder?.orderStatus === 'Pending' && (
+                            <Button
+                                variant='contained'
+                                color='error'
+                                onClick={() => setOrderStatus('Cancelled')}
+                            >
+                                Cancel
+                            </Button>
+                        )
+                    }
+                    {
+                        // Display only if order status is processing
+                        selectedOrder?.orderStatus === 'Processing' && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    width: '100%',
+                                }}
+                            >
+                                <Select
+                                    value={deliveryService}
+                                    onChange={(e) =>
+                                        setDeliveryService(e.target.value)
+                                    }
+                                    displayEmpty
+                                    sx={{ mr: 2, width: '50%' }}
+                                >
+                                    <MenuItem value='' disabled>
+                                        Delivery Service
+                                    </MenuItem>
+                                    <MenuItem value='DHL'>DHL</MenuItem>
+                                    <MenuItem value='FedEx'>FedEx</MenuItem>
+                                    <MenuItem value='UPS'>UPS</MenuItem>
+                                </Select>
+                                <Button
+                                    variant='contained'
+                                    color='secondary'
+                                    onClick={handleAssignDelivery}
+                                    disabled={!deliveryService}
+                                    sx={{ width: '50%' }} // Ensure button has same width
+                                >
+                                    Assign to Delivery
+                                </Button>
+                            </Box>
+                        )
+                    }
+                </Box>
+            </Box>
+        </Modal>
+    );
+};
+
+// Custom styling for completed steps
+const StyledStepper = styled(Stepper)({
+    marginTop: '20px',
+    padding: '20px',
+    backgroundColor: 'transparent',
+});
+
+const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const OrderStatusTracker = ({ orderStatus }) => {
+    const activeStep = statusSteps.indexOf(capitalizeFirstLetter(orderStatus));
+    return (
+        <StyledStepper alternativeLabel activeStep={activeStep}>
+            {statusSteps.map((label) => (
+                <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                </Step>
+            ))}
+        </StyledStepper>
     );
 };
