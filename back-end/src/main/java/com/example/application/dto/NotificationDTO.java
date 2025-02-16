@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.example.application.constants.NotificationChannel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationDTO {
-    String channel;
+    NotificationChannel channel;
     String recipient;
     String subject;
 
@@ -26,5 +27,4 @@ public class NotificationDTO {
     Boolean readStatus;
     String actionUrl;
     LocalDateTime createdAt;
-
 }

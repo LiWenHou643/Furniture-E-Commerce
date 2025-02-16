@@ -96,7 +96,7 @@ public class JwtFilter extends OncePerRequestFilter {
         Map<String, Predicate<String>> pathConditions = new HashMap<>();
         pathConditions.put("/auth/**", url -> pathMatcher.match("/auth/**", url));
         pathConditions.put("/test/**", url -> pathMatcher.match("/test/**", url));
-        pathConditions.put("/chat/**", url -> pathMatcher.match("/chat/**", url));
+        pathConditions.put("/ws/**", url -> pathMatcher.match("/ws/**", url));
         pathConditions.put("/app/**", url -> pathMatcher.match("/app/**", url));
 
 

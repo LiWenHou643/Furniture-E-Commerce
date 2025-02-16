@@ -1,8 +1,10 @@
 package com.example.application.service;
 
+import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.PaymentStatus;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
 import com.example.application.entity.*;
@@ -10,6 +12,7 @@ import com.example.application.exception.InsufficientStockException;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
 import com.example.application.mapper.OrderMapper;
+import com.example.application.producer.MessageProducer;
 import com.example.application.repository.OrderRepository;
 import com.example.application.repository.PaymentRepository;
 import com.example.application.repository.ProductItemRepository;
@@ -23,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -46,11 +51,17 @@ public class OrderService {
     PayPalService payPalService;
     PaymentRepository paymentRepository;
     ProductItemRepository productItemRepository;
+    MessageProducer messageProducer;
 
-    public Page<OrderDTO> getOrdersByUserId(Long userId, String status, Pageable pageable) {
+    public Page<OrderDTO> getOrdersByUserId(Long userId, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
         OrderStatus orderStatus = OrderStatus.valueOf(status);
-        // Fetch orders based on the userId
-        Page<Order> orders =
+
+        // If userId is null, fetch all orders by status, else fetch orders by userId and status
+        Page<Order> orders = userId == null
+                ? orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable)
+                :
                 orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
 
         // Use the `map()` method to transform the Page<Order> into Page<OrderDTO>
@@ -245,11 +256,11 @@ public class OrderService {
                        .orderStatus(order.getOrderStatus())
                        .cancelDate(order.getCancelDate())
                        .orderDetails(
-                                            productIds.stream().map(productId -> OrderDetailDTO.builder()
-                                                                                               .productId(
-                                                                                                       productId)
-                                                                                               .build())
-                                                      .collect(Collectors.toList())).build();
+                               productIds.stream().map(productId -> OrderDetailDTO.builder()
+                                                                                  .productId(
+                                                                                          productId)
+                                                                                  .build())
+                                         .collect(Collectors.toList())).build();
     }
 
     public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
@@ -264,6 +275,20 @@ public class OrderService {
         }
 
         orderRepository.save(order);
+
+        // Send notification
+        NotificationDTO notificationDTO = NotificationDTO.builder()
+                                                         .channel(NotificationChannel.IN_APP)
+                                                         .recipient(order.getUser().getEmail())
+                                                         .subject("Order Status Update")
+                                                         .userId(order.getUser().getUserId())
+                                                         .title("Order #%d".formatted(order.getOrderId()))
+                                                         .message("Your order #%d has been %s".formatted(
+                                                                 order.getOrderId(), orderStatus))
+                                                         .readStatus(false)
+                                                         .actionUrl("/orders/%d".formatted(order.getOrderId()))
+                                                         .build();
+        messageProducer.sendMessage("notification-delivery", notificationDTO);
     }
 
     public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {

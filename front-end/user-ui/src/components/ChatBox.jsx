@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import useFetchChat from '../hooks/useFetchChat';
 import WebSocketService from '../services/WebSocketService';
 import { userId } from '../utils/auth';
+import { formatMessageTime } from '../utils/helper';
 import Loading from './Loading';
 
 const ChatBox = () => {
@@ -111,8 +112,10 @@ const ChatBox = () => {
             timestamp: new Date().toISOString(),
         };
 
+        console.log('Sending message:', newMessage);
+
         // Send message to the server
-        WebSocketService.sendMessage('/app/send', newMessage);
+        // WebSocketService.sendMessage('/app/send', newMessage);
 
         setInput('');
     };
@@ -242,12 +245,9 @@ const ChatBox = () => {
                                                 opacity: 0.7,
                                             }}
                                         >
-                                            {new Date(
+                                            {formatMessageTime(
                                                 message?.timestamp
-                                            ).toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
+                                            )}
                                         </Typography>
                                     )}
                                 </Paper>

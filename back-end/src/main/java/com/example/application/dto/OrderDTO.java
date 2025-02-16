@@ -51,5 +51,7 @@ public class OrderDTO {
 
     LocalDateTime createdAt;
 
+    LocalDateTime updatedAt;
+
     List<OrderDetailDTO> orderDetails;
 }

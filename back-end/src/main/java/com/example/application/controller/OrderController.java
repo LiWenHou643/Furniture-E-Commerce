@@ -39,8 +39,7 @@ public class OrderController {
             @RequestParam(defaultValue = "pending") String status
     ) {
         var userId = getUserId();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        var orders = orderService.getOrdersByUserId(userId, status, pageable);
+        var orders = orderService.getOrdersByUserId(userId, status, page, size);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")
@@ -133,9 +132,8 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "pending") String status
     ) {
-        Pageable pageable = PageRequest.of(page, size);
         // If userId is null, get all orders of all users for admin
-        var orders = orderService.getOrdersByUserId(null, status, pageable);
+        var orders = orderService.getOrdersByUserId(null, status, page, size);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                            .status("success")
