@@ -1,8 +1,10 @@
 package com.example.application.service;
 
+import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.PaymentStatus;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
 import com.example.application.entity.*;
@@ -10,6 +12,7 @@ import com.example.application.exception.InsufficientStockException;
 import com.example.application.exception.ResourceNotFoundException;
 import com.example.application.mapper.OrderDetailMapper;
 import com.example.application.mapper.OrderMapper;
+import com.example.application.producer.MessageProducer;
 import com.example.application.repository.OrderRepository;
 import com.example.application.repository.PaymentRepository;
 import com.example.application.repository.ProductItemRepository;
@@ -46,6 +49,7 @@ public class OrderService {
     PayPalService payPalService;
     PaymentRepository paymentRepository;
     ProductItemRepository productItemRepository;
+    MessageProducer messageProducer;
 
     public Page<OrderDTO> getOrdersByUserId(Long userId, String status, Pageable pageable) {
         OrderStatus orderStatus = OrderStatus.valueOf(status);
@@ -245,11 +249,11 @@ public class OrderService {
                        .orderStatus(order.getOrderStatus())
                        .cancelDate(order.getCancelDate())
                        .orderDetails(
-                                            productIds.stream().map(productId -> OrderDetailDTO.builder()
-                                                                                               .productId(
-                                                                                                       productId)
-                                                                                               .build())
-                                                      .collect(Collectors.toList())).build();
+                               productIds.stream().map(productId -> OrderDetailDTO.builder()
+                                                                                  .productId(
+                                                                                          productId)
+                                                                                  .build())
+                                         .collect(Collectors.toList())).build();
     }
 
     public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
@@ -264,6 +268,20 @@ public class OrderService {
         }
 
         orderRepository.save(order);
+
+        // Send notification
+        NotificationDTO notificationDTO = NotificationDTO.builder()
+                                                         .channel(NotificationChannel.IN_APP)
+                                                         .recipient(order.getUser().getEmail())
+                                                         .subject("Order Status Update")
+                                                         .userId(order.getUser().getUserId())
+                                                         .title("Order #%d".formatted(order.getOrderId()))
+                                                         .message("Your order #%d has been %s".formatted(
+                                                                 order.getOrderId(), orderStatus))
+                                                         .readStatus(false)
+                                                         .actionUrl("/orders/%d".formatted(order.getOrderId()))
+                                                         .build();
+        messageProducer.sendMessage("notification-delivery", notificationDTO);
     }
 
     public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {
@@ -318,4 +336,5 @@ public class OrderService {
     public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
+
 }

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findByUserIdAndReadStatusFalse(Long userId, Pageable pageable);
+    Page<Notification> findByUserId(Long userId, Pageable pageable);
 
 }

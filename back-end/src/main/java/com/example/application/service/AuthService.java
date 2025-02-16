@@ -1,6 +1,7 @@
 package com.example.application.service;
 
 import com.example.application.config.Jwt.JwtUtils;
+import com.example.application.constants.NotificationChannel;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
 import com.example.application.dto.NotificationDTO;
@@ -144,9 +145,9 @@ public class AuthService {
         Cart cart = Cart.builder().user(isSaved).build();
         cartRepository.save(cart);
 
-        NotificationDTO notificationDTO = NotificationDTO.builder().channel(
-                                                                 "EMAIL"
-                                                         ).recipient(user.getEmail())
+        NotificationDTO notificationDTO = NotificationDTO.builder()
+                                                         .channel(NotificationChannel.EMAIL)
+                                                         .recipient(user.getEmail())
                                                          .subject("Welcome to LuxeHouse")
                                                          .build();
 

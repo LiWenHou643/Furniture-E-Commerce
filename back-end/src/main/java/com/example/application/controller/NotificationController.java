@@ -7,7 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,28 +21,26 @@ public class NotificationController {
 
     NotificationService notificationService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getAllNews(@PathVariable Long userId,
+    @GetMapping("")
+    public ResponseEntity<?> getAllNews(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+        Long userId = getUserId();
         Page<NotificationDTO> notiPage = notificationService.getNotifications(userId, page, size);
         return ResponseEntity.ok(
                 ApiResponse.builder().status("success").message("Fetched notification successfully").data(notiPage)
                            .build());
     }
 
-    @PutMapping("/{notificationId}")
-    public ResponseEntity<?> markAsRead(@PathVariable Long notificationId) {
-        notificationService.markAsRead(notificationId);
+    @PutMapping("")
+    public ResponseEntity<?> markAsRead(@RequestBody List<Long> notificationIds) {
+        notificationService.markAsRead(notificationIds);
         return ResponseEntity.ok(
                 ApiResponse.builder().status("success").message("Notification marked as read").build());
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> saveNotification(@RequestBody NotificationDTO notificationDTO) {
-        notificationService.saveNotification(notificationDTO);
-        return ResponseEntity.ok(
-                ApiResponse.builder().status("success").message("Notification saved successfully").build());
+    private Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Long) (authentication).getDetails();
     }
-
 }

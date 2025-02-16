@@ -3,6 +3,7 @@ package com.example.application.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -29,5 +30,7 @@ public class Notification {
 
     String actionUrl;
 
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
     LocalDateTime createdAt;
 }
