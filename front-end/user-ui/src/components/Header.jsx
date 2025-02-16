@@ -180,6 +180,7 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
+
                     {/* Logo */}
                     <HomeIcon
                         sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}

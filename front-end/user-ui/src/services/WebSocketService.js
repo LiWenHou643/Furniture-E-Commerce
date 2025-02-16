@@ -3,7 +3,7 @@ import { Client } from '@stomp/stompjs';
 class WebSocketService {
     constructor() {
         this.client = new Client({
-            brokerURL: 'ws://localhost:8080/chat', // Replace with your backend URL
+            brokerURL: 'ws://localhost:8080/ws', // Replace with your backend URL
             connectHeaders: {},
             debug: function (str) {
                 console.log(str);
@@ -23,7 +23,7 @@ class WebSocketService {
                     this.onMessageReceived(chatMessage);
                 });
 
-                // Subscribe to user-specific queue
+                // Subscribe to user-specific queue for messages
                 this.client.subscribe(
                     `/user/${this.userId}/queue/messages`,
                     (message) => {
@@ -33,6 +33,20 @@ class WebSocketService {
                         // Notify the React component that a new message has been received
                         if (this.onMessageReceived) {
                             this.onMessageReceived(content);
+                        }
+                    }
+                );
+
+                // Subscribe to the user-specific queue for notifications
+                this.client.subscribe(
+                    `/user/${this.userId}/queue/notifications`,
+                    (message) => {
+                        const content = JSON.parse(message.body);
+                        console.log('Notification content:', content);
+
+                        // Notify the React component that a new notification has been received
+                        if (this.onNotificationReceived) {
+                            this.onNotificationReceived(content);
                         }
                     }
                 );

@@ -1,6 +1,5 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
-    Avatar,
     Badge,
     Box,
     Button,
@@ -10,41 +9,77 @@ import {
     MenuItem,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import useFetchNotifications from '../hooks/useFetchNotifications';
+import useMarkNotiAsRead from '../hooks/useMarkNotiAsRead';
+import WebSocketService from '../services/WebSocketService';
+import { userId } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
 
 const Notification = () => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [notifications, setNotifications] = useState([]);
+    const [isConnected, setIsConnected] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadNotis, setUnreadNotis] = useState([]);
     const open = Boolean(anchorEl);
+    const currentUserId = userId();
 
-    const notifications = [
-        {
-            id: 1,
-            image: 'https://via.placeholder.com/50',
-            title: 'New Comment commented on your post commented on your post',
-            detail: 'John commented on your post. John commented on your post. John commented on your post.',
-        },
-        {
-            id: 2,
-            image: 'https://via.placeholder.com/50',
-            title: 'New Follower',
-            detail: 'Alice started following you. John commented on your post. John commented on your post.',
-        },
-        {
-            id: 3,
-            image: 'https://via.placeholder.com/50',
-            title: 'Update Available',
-            detail: 'A new update is available for your app. John commented on your post. John commented on your pos',
-        },
-    ];
+    const { data: notificationsData, isLoading } = useFetchNotifications();
+    const { mutate: markNotiAsRead } = useMarkNotiAsRead();
+
+    // Websocket setup
+    useEffect(() => {
+        // Subscribe to incoming notifications
+        WebSocketService.subscribeToMessages((notification) => {
+            setNotifications((prevNotifications) => [
+                ...prevNotifications,
+                notification,
+            ]);
+        });
+
+        // Register callback to update connection status
+        WebSocketService.setConnectionChangeCallback((status) => {
+            setIsConnected(status); // This will update the UI when connection status changes
+        });
+
+        // Connect to WebSocket
+        WebSocketService.connect(currentUserId);
+
+        // Cleanup on unmount
+        return () => {
+            WebSocketService.disconnect();
+        };
+    }, [currentUserId]);
+
+    // Update notifications when data changes
+    useEffect(() => {
+        if (notificationsData) {
+            setNotifications(notificationsData.content);
+            const unreadNotis = notificationsData.content.filter(
+                (notification) => !notification.readStatus
+            );
+            setUnreadCount(unreadNotis.length);
+            setUnreadNotis(unreadNotis);
+        }
+    }, [notificationsData]);
 
     const handleOpen = (event) => {
         setAnchorEl(event.currentTarget);
+        setUnreadCount(0);
+        const notificationIds = unreadNotis.map(
+            (notification) => notification.notificationId
+        );
+        markNotiAsRead(notificationIds);
     };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <Box
@@ -57,7 +92,7 @@ const Notification = () => {
                     sx={{ color: 'white', paddingBottom: 0 }}
                     onClick={handleOpen}
                 >
-                    <Badge badgeContent={notifications.length} color='success'>
+                    <Badge badgeContent={unreadCount} color='success'>
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
@@ -83,7 +118,7 @@ const Notification = () => {
             >
                 {notifications.map((notification) => (
                     <MenuItem
-                        key={notification.id}
+                        key={notification.notificationId}
                         onClick={handleClose}
                         sx={{
                             padding: 1,
@@ -92,16 +127,6 @@ const Notification = () => {
                             maxWidth: '400px',
                         }} // Ensure the max width matches Menu
                     >
-                        <Avatar
-                            src={notification.image}
-                            sx={{
-                                borderRadius: 0,
-                                width: 'auto',
-                                height: 'auto',
-                                mt: 0.7,
-                                flexShrink: 0,
-                            }} // Prevent resizing
-                        />
                         <Box
                             marginLeft={1}
                             marginTop={0}
