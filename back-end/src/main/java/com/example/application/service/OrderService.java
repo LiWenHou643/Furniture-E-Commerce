@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -51,10 +53,15 @@ public class OrderService {
     ProductItemRepository productItemRepository;
     MessageProducer messageProducer;
 
-    public Page<OrderDTO> getOrdersByUserId(Long userId, String status, Pageable pageable) {
+    public Page<OrderDTO> getOrdersByUserId(Long userId, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
         OrderStatus orderStatus = OrderStatus.valueOf(status);
-        // Fetch orders based on the userId
-        Page<Order> orders =
+
+        // If userId is null, fetch all orders by status, else fetch orders by userId and status
+        Page<Order> orders = userId == null
+                ? orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable)
+                :
                 orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
 
         // Use the `map()` method to transform the Page<Order> into Page<OrderDTO>

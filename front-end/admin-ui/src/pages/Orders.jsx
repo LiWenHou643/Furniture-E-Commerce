@@ -2,10 +2,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
     Box,
     Button,
+    Chip,
     MenuItem,
     Modal,
+    Pagination,
     Paper,
     Select,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -15,42 +18,40 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Loading from '../components/Loading';
+import useFetchOrders from '../hooks/useFetchOrders';
+import { formatDate } from '../utils/helper';
 
-const initialOrders = [
-    {
-        orderId: 1,
-        customerName: 'John Doe',
-        status: 'Pending',
-        date: '2025-01-01',
-        total: 100.0,
-    },
-    {
-        orderId: 2,
-        customerName: 'Jane Smith',
-        status: 'Shipped',
-        date: '2025-01-02',
-        total: 200.0,
-    },
-    {
-        orderId: 3,
-        customerName: 'Alice Johnson',
-        status: 'Delivered',
-        date: '2025-01-03',
-        total: 150.0,
-    },
+const filterStatusList = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'processing', label: 'Processing' },
+    { value: 'shipped', label: 'Shipped' },
+    { value: 'delivered', label: 'Delivered' },
+    { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export default function Orders() {
-    const [orders, setOrders] = useState(initialOrders);
+    const [orders, setOrders] = useState([]);
     const [search, setSearch] = useState('');
-    const [filterStatus, setFilterStatus] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentPage = searchParams.get('page') || 1;
+    const filterStatus = searchParams.get('filterStatus') || 'pending';
+    const { data: ordersData, isLoading } = useFetchOrders({
+        page: currentPage - 1,
+        size: 10,
+        status: searchParams.get('filterStatus') || 'pending',
+    });
 
     const handleSearch = (e) => setSearch(e.target.value);
 
-    const handleFilterChange = (e) => setFilterStatus(e.target.value);
+    const handleFilterChange = (e) => {
+        searchParams.set('filterStatus', e.target.value);
+        setSearchParams(searchParams); // Update URL
+    };
 
     const handleOpenModal = (order) => {
         setSelectedOrder(order);
@@ -62,25 +63,21 @@ export default function Orders() {
         setOpenModal(false);
     };
 
-    const handleStatusChange = (orderId, newStatus) => {
-        setOrders((prevOrders) =>
-            prevOrders.map((order) =>
-                order.orderId === orderId
-                    ? { ...order, status: newStatus }
-                    : order
-            )
-        );
+    const handlePageChange = (e, page) => {
+        searchParams.set('page', page);
+        setSearchParams(searchParams); // Update URL
     };
 
-    const filteredOrders = orders.filter((order) => {
-        const matchesSearch =
-            order.customerName.toLowerCase().includes(search.toLowerCase()) ||
-            String(order.orderId).includes(search);
-        const matchesStatus = filterStatus
-            ? order.status === filterStatus
-            : true;
-        return matchesSearch && matchesStatus;
-    });
+    useEffect(() => {
+        if (ordersData) {
+            console.log(ordersData.content);
+            setOrders(ordersData.content);
+        }
+    }, [ordersData]);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <Box sx={{ p: 4 }}>
@@ -104,10 +101,11 @@ export default function Orders() {
                     size='small'
                     sx={{ width: 200 }}
                 >
-                    <MenuItem value=''>All Statuses</MenuItem>
-                    <MenuItem value='Pending'>Pending</MenuItem>
-                    <MenuItem value='Shipped'>Shipped</MenuItem>
-                    <MenuItem value='Delivered'>Delivered</MenuItem>
+                    {filterStatusList.map((status) => (
+                        <MenuItem key={status.value} value={status.value}>
+                            {status.label}
+                        </MenuItem>
+                    ))}
                 </Select>
             </Box>
 
@@ -117,45 +115,31 @@ export default function Orders() {
                     <TableHead>
                         <TableRow>
                             <TableCell>Order ID</TableCell>
-                            <TableCell>Customer Name</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Date</TableCell>
                             <TableCell>Total</TableCell>
+                            <TableCell>Created at</TableCell>
+                            <TableCell>Updated at</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredOrders.map((order) => (
+                        {orders.map((order) => (
                             <TableRow key={order.orderId}>
                                 <TableCell>{order.orderId}</TableCell>
-                                <TableCell>{order.customerName}</TableCell>
                                 <TableCell>
-                                    <Select
-                                        value={order.status}
-                                        onChange={(e) =>
-                                            handleStatusChange(
-                                                order.orderId,
-                                                e.target.value
-                                            )
-                                        }
-                                        size='small'
-                                    >
-                                        <MenuItem value='Pending'>
-                                            Pending
-                                        </MenuItem>
-                                        <MenuItem value='Shipped'>
-                                            Shipped
-                                        </MenuItem>
-                                        <MenuItem value='Delivered'>
-                                            Delivered
-                                        </MenuItem>
-                                    </Select>
+                                    <OrderStatus status={order.orderStatus} />
                                 </TableCell>
-                                <TableCell>{order.date}</TableCell>
                                 <TableCell>${order.total.toFixed(2)}</TableCell>
+                                <TableCell>
+                                    {formatDate(order.createdAt)}
+                                </TableCell>
+                                <TableCell>
+                                    {formatDate(order.updatedAt)}
+                                </TableCell>
                                 <TableCell>
                                     <Button
                                         size='small'
+                                        variant='outlined'
                                         startIcon={<VisibilityIcon />}
                                         onClick={() => handleOpenModal(order)}
                                     >
@@ -167,6 +151,26 @@ export default function Orders() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Pagination Component */}
+            {
+                // Display pagination component only if there are more than 1 page
+                ordersData.page.totalPages > 1 && (
+                    <Stack
+                        sx={{ mt: 3 }}
+                        direction='row'
+                        justifyContent='center'
+                        alignItems='center'
+                        spacing={2}
+                    >
+                        <Pagination
+                            count={ordersData.totalPages}
+                            page={parseInt(currentPage)}
+                            onChange={handlePageChange}
+                        />
+                    </Stack>
+                )
+            }
 
             {/* Order Details Modal */}
             {selectedOrder && (
@@ -219,3 +223,20 @@ export default function Orders() {
         </Box>
     );
 }
+
+const OrderStatus = ({ status }) => {
+    const statusMap = {
+        pending: { label: 'Pending', color: 'warning' },
+        processing: { label: 'Processing', color: 'info' },
+        shipped: { label: 'Shipped', color: 'success' },
+        delivered: { label: 'Delivered', color: 'success' },
+        cancelled: { label: 'Cancelled', color: 'error' },
+    };
+
+    return (
+        <Chip
+            label={statusMap[status]?.label || 'Unknown'}
+            color={statusMap[status]?.color || 'default'} // Fallback to "default" if status is not found
+        />
+    );
+};
