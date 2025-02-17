@@ -110,7 +110,6 @@ function CheckoutPage() {
     const { fullName, phone, address } = billingInfo;
 
     // Function to map codes to names
-
     const handleNoteChange = (e) => {
         setNote(e.target.value);
     };
@@ -173,23 +172,39 @@ function CheckoutPage() {
                 <Typography variant='h6' gutterBottom>
                     Delivery Address
                 </Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={3}>
-                        <Typography variant='body1'>
-                            <strong>Full Name:</strong> {fullName}
-                        </Typography>
+                {formattedAddresses.length === 0 ? (
+                    <Typography variant='body1' color='error'>
+                        Please add an address in your profile.
+                        {/* Redirect to profile page */}
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => navigate('/profile')}
+                            size='small'
+                            sx={{ ml: 1 }}
+                        >
+                            Go to Profile
+                        </Button>
+                    </Typography>
+                ) : (
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={3}>
+                            <Typography variant='body1'>
+                                <strong>Full Name:</strong> {fullName}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <Typography variant='body1'>
+                                <strong>Phone:</strong> {phone}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant='body1'>
+                                <strong>Full Address:</strong> {address}
+                            </Typography>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                        <Typography variant='body1'>
-                            <strong>Phone:</strong> {phone}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <Typography variant='body1'>
-                            <strong>Full Address:</strong> {address}
-                        </Typography>
-                    </Grid>
-                </Grid>
+                )}
             </Paper>
 
             {/* Order Summary Table */}
@@ -488,7 +503,12 @@ function CheckoutPage() {
                         color='primary'
                         onClick={handleSubmitOrder}
                         size='large'
-                        disabled={isCreatingOrder}
+                        disabled={
+                            isCreatingOrder ||
+                            isLoading ||
+                            !profileData ||
+                            !formattedAddresses.length
+                        }
                     >
                         {isCreatingOrder ? 'Processing...' : 'Place Order'}
                     </Button>

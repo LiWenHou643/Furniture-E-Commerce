@@ -439,6 +439,16 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                 </Button>
             </Box>
 
+            {/* No addresses */}
+            {formattedAddresses.length === 0 && (
+                <Typography
+                    variant='body1'
+                    sx={{ marginBottom: 2, textAlign: 'center' }}
+                >
+                    No addresses found
+                </Typography>
+            )}
+
             {/* List of addresses */}
             {!isEditing ? (
                 <Box>
