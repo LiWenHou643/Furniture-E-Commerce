@@ -1,16 +1,14 @@
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
     AppBar,
-    Badge,
     Box,
     Container,
     Grid,
-    IconButton,
     Paper,
     Toolbar,
     Typography,
 } from '@mui/material';
 import { LineChart } from '../components/Charts';
+import Notification from '../components/Notification';
 
 export default function Dashboard() {
     return (
@@ -33,11 +31,7 @@ export default function Dashboard() {
                             Admin Dashboard
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton>
-                                <Badge badgeContent={4} color='primary'>
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
+                            <Notification />
                         </Box>
                     </Toolbar>
                 </AppBar>
