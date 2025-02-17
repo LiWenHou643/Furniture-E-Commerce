@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.dto.ApiResponse;
+import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.OrderDTO;
+import com.example.application.producer.MessageProducer;
 import com.example.application.service.OrderService;
 import com.paypal.base.rest.PayPalRESTException;
 
@@ -36,6 +39,7 @@ import lombok.experimental.FieldDefaults;
 public class OrderController {
 
 	OrderService orderService;
+	MessageProducer messageProducer;
 
 	@GetMapping("")
 	public ResponseEntity<?> getOrdersByUserId(@RequestParam(defaultValue = "0") int page,
@@ -65,11 +69,19 @@ public class OrderController {
 		var successUrl = "http://localhost:8080/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
 		var cancelUrl = "http://localhost:8080/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
 
+		// Step 3: Send the PayPal payment URL
 		if (paymentMethod.equals(PaymentMethod.paypal)) {
 			String paypalUrl = orderService.processPayment(savedOrder.getOrderId(), successUrl, cancelUrl);
 			return ResponseEntity.ok(ApiResponse.builder().status("success")
 					.message("PayPal payment URL generated successfully").data(Map.of("paypalUrl", paypalUrl)).build());
 		} else if (paymentMethod.equals(PaymentMethod.cod)) {
+			// Push notification of new order to Shop owner
+			messageProducer.sendMessage("notification-delivery",
+					NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received").userId(1L)
+							.readStatus(false)
+							.message("New order received with order ID: %d".formatted(savedOrder.getOrderId()))
+							.actionUrl("/orders/%d".formatted(savedOrder.getOrderId())).build());
+
 			// For COD, just confirm the order
 			return ResponseEntity.ok(ApiResponse.builder().status("success").message("Order placed successfully")
 					.data(savedOrder).build());
@@ -81,7 +93,15 @@ public class OrderController {
 	@GetMapping("/{orderId}/paypal/success")
 	public ResponseEntity<?> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId,
 			@RequestParam("PayerID") String payerId) throws PayPalRESTException, ParseException {
+		// Step 4: Execute the PayPal payment
 		orderService.executePayPalPayment(orderId, paymentId, payerId);
+
+		// Push notification of new order to Shop owner
+		messageProducer.sendMessage("notification-delivery",
+				NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received").userId(1L)
+						.readStatus(false).message("New order received with order ID: %d".formatted(orderId))
+						.actionUrl("/orders/%d".formatted(orderId)).build());
+
 		return ResponseEntity.status(HttpStatus.FOUND)
 				.location(URI.create("http" + "://localhost:3000/orders/%d".formatted(orderId))).build();
 	}

@@ -54,9 +54,9 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderService {
 
 	OrderRepository orderRepository;
-	PayPalService payPalService;
 	PaymentRepository paymentRepository;
 	ProductItemRepository productItemRepository;
+	PayPalService payPalService;
 	MessageProducer messageProducer;
 
 	public Page<OrderDTO> getOrdersByUserId(Long userId, String status, int page, int size) {
@@ -283,7 +283,7 @@ public class OrderService {
 		// Execute PayPal payment
 		Payment payment = payPalService.executePayment(paymentId, payerId);
 
-		if (payment.getState().equals("approved")) {
+		if (payment.getState().equalsIgnoreCase("approved")) { // Case-insensitive check
 			// Update order status
 			Payments payments = Payments.builder().order(order)
 					.paymentDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(payment.getCreateTime()))
@@ -292,9 +292,11 @@ public class OrderService {
 
 			// Save payment
 			paymentRepository.save(payments);
-		}
 
-		throw new RuntimeException("Payment failed");
+			//
+		} else {
+			throw new RuntimeException("Payment failed");
+		}
 	}
 
 	public void deleteOrder(Long orderId) {
