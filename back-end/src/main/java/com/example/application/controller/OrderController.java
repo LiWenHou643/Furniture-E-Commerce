@@ -77,10 +77,9 @@ public class OrderController {
 		} else if (paymentMethod.equals(PaymentMethod.cod)) {
 			// Push notification of new order to Shop owner
 			messageProducer.sendMessage("notification-delivery",
-					NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received").userId(1L)
-							.readStatus(false)
+					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(1L).title("New order received")
 							.message("New order received with order ID: %d".formatted(savedOrder.getOrderId()))
-							.actionUrl("/orders/%d".formatted(savedOrder.getOrderId())).build());
+							.readStatus(false).actionUrl("/orders/%d".formatted(savedOrder.getOrderId())).build());
 
 			// For COD, just confirm the order
 			return ResponseEntity.ok(ApiResponse.builder().status("success").message("Order placed successfully")
