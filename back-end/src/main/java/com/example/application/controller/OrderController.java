@@ -62,6 +62,7 @@ public class OrderController {
 	public ResponseEntity<?> processPayment(@RequestBody OrderDTO orderDTO) throws PayPalRESTException {
 		var userId = getUserId();
 		var paymentMethod = orderDTO.getPaymentMethod();
+
 		// Step 1: Create the order in the database
 		var savedOrder = orderService.createOrder(userId, orderDTO);
 
@@ -76,7 +77,7 @@ public class OrderController {
 					.message("PayPal payment URL generated successfully").data(Map.of("paypalUrl", paypalUrl)).build());
 		} else if (paymentMethod.equals(PaymentMethod.cod)) {
 			// Push notification of new order to Shop owner
-			messageProducer.sendMessage("notification-delivery",
+			messageProducer.sendMessage(
 					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(1L).title("New order received")
 							.message("New order received with order ID: %d".formatted(savedOrder.getOrderId()))
 							.readStatus(false).actionUrl("/orders/%d".formatted(savedOrder.getOrderId())).build());
@@ -96,9 +97,9 @@ public class OrderController {
 		orderService.executePayPalPayment(orderId, paymentId, payerId);
 
 		// Push notification of new order to Shop owner
-		messageProducer.sendMessage("notification-delivery",
-				NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received").userId(1L)
-						.readStatus(false).message("New order received with order ID: %d".formatted(orderId))
+		messageProducer
+				.sendMessage(NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received")
+						.userId(1L).readStatus(false).message("New order received with order ID: %d".formatted(orderId))
 						.actionUrl("/orders/%d".formatted(orderId)).build());
 
 		return ResponseEntity.status(HttpStatus.FOUND)

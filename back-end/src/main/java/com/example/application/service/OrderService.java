@@ -256,7 +256,7 @@ public class OrderService {
 				.userId(order.getUser().getUserId()).title("Order #%d".formatted(order.getOrderId()))
 				.message("Your order #%d has been %s".formatted(order.getOrderId(), orderStatus)).readStatus(false)
 				.actionUrl("/orders/%d".formatted(order.getOrderId())).build();
-		messageProducer.sendMessage("notification-delivery", notificationDTO);
+		messageProducer.sendMessage(notificationDTO);
 	}
 
 	public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {

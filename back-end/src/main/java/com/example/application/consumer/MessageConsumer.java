@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.example.application.config.Kafka.KafkaTopics;
 import com.example.application.constants.NotificationChannel;
 import com.example.application.dto.NotificationDTO;
 import com.example.application.service.EmailService;
@@ -23,7 +24,7 @@ public class MessageConsumer {
 	EmailService emailService;
 	NotificationService notificationService;
 
-	@KafkaListener(topics = "notification-delivery")
+	@KafkaListener(topics = KafkaTopics.NOTIFICATION_DELIVERY)
 	public void listen(NotificationDTO notificationDTO) {
 		log.info("Message received is: {}", notificationDTO);
 
@@ -36,7 +37,6 @@ public class MessageConsumer {
 		default -> throw new UnsupportedOperationException(
 				MessageFormat.format("Unsupported notification channel: {0}", channel));
 		}
-
 	}
 
 }
