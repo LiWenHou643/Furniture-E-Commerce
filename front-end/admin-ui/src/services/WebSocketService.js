@@ -23,13 +23,26 @@ class WebSocketService {
                     this.onMessageReceived(chatMessage);
                 });
 
-                console.log(`/user/${this.userId}/queue/messages`);
-                // Subscribe to user-specific queue
+                // Subscribe to user-specific queue for messages
                 this.client.subscribe(
                     `/user/${this.userId}/queue/messages`,
                     (message) => {
                         const content = JSON.parse(message.body);
                         console.log('Message content:', content);
+
+                        // Notify the React component that a new message has been received
+                        if (this.onMessageReceived) {
+                            this.onMessageReceived(content);
+                        }
+                    }
+                );
+
+                // Subscribe to user-specific queue for notifications
+                this.client.subscribe(
+                    `/user/${this.userId}/queue/notifications`,
+                    (message) => {
+                        const content = JSON.parse(message.body);
+                        console.log('Notifications content:', content);
 
                         // Notify the React component that a new message has been received
                         if (this.onMessageReceived) {
