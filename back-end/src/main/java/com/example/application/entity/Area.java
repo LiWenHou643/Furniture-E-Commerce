@@ -1,11 +1,24 @@
 package com.example.application.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "areas")
@@ -16,21 +29,18 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class Area extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long areaId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Long areaId;
 
-    @Column(nullable = false)
-    String areaName;
+	@Column(nullable = false)
+	String areaName;
 
-    String imageUrl;
+	String imageUrl;
 
-    @ManyToMany
-    @JoinTable(
-            name = "products_areas",
-            joinColumns = @JoinColumn(name = "area_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    Set<Product> products = new HashSet<>();
+	@ManyToMany
+	@JoinTable(name = "products_areas", joinColumns = @JoinColumn(name = "area_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+	@Builder.Default
+	Set<Product> products = new HashSet<>();
 
 }
