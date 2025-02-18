@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.application.config.Kafka.KafkaTopics;
 import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
@@ -256,7 +257,8 @@ public class OrderService {
 				.userId(order.getUser().getUserId()).title("Order #%d".formatted(order.getOrderId()))
 				.message("Your order #%d has been %s".formatted(order.getOrderId(), orderStatus)).readStatus(false)
 				.actionUrl("/orders/%d".formatted(order.getOrderId())).build();
-		messageProducer.sendMessage(notificationDTO);
+
+		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 	}
 
 	public String processPayment(Long orderId, String successUrl, String cancelUrl) throws PayPalRESTException {

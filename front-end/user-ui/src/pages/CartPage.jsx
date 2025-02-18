@@ -42,6 +42,8 @@ function CartPage() {
     if (isLoading) return <Loading marginTop={15} />;
     if (error) return <Error error={error} />;
 
+    console.log('Cart:', cart);
+
     const cartItems = cart.cartItems || [];
     const totalItems = cartItems.length;
 
@@ -196,6 +198,7 @@ function CartPage() {
                         variant='contained'
                         color='primary'
                         size='large'
+                        disabled={selectedItems.length === 0}
                         onClick={handleCheckout}
                     >
                         Checkout
