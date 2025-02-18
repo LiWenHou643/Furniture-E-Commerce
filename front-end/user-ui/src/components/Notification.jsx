@@ -3,6 +3,7 @@ import {
     Badge,
     Box,
     Button,
+    Chip,
     Divider,
     IconButton,
     Menu,
@@ -14,6 +15,7 @@ import useFetchNotifications from '../hooks/useFetchNotifications';
 import useMarkNotiAsRead from '../hooks/useMarkNotiAsRead';
 import WebSocketService from '../services/WebSocketService';
 import { userId } from '../utils/auth';
+import { formatDate } from '../utils/helper';
 import CustomTooltip from './CustomTooltip';
 
 const Notification = () => {
@@ -133,8 +135,12 @@ const Notification = () => {
                             sx={{
                                 maxWidth: 'calc(100% - 60px)', // Account for avatar width + margin
                                 overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 0.5, // Adds spacing between elements
                             }}
                         >
+                            {/* Title */}
                             <Typography
                                 variant='subtitle1'
                                 fontWeight='bold'
@@ -142,21 +148,45 @@ const Notification = () => {
                             >
                                 {notification.title}
                             </Typography>
+
+                            {/* Message */}
                             <Typography
                                 variant='body2'
                                 color='text.secondary'
                                 sx={{
                                     display: '-webkit-box',
                                     WebkitLineClamp: 2, // Limits the text to 2 lines
-                                    WebkitBoxOrient: 'vertical', // Ensures the text behaves like a block in a flex container
-                                    overflow: 'hidden', // Hides the overflow text
-                                    textOverflow: 'ellipsis', // Shows ellipsis when text is clipped
-                                    whiteSpace: 'normal', // Ensures wrapping behavior
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'normal',
                                 }}
                             >
-                                {notification.detail}
+                                {notification.message}
+                            </Typography>
+
+                            {/* Timestamp */}
+                            <Typography
+                                variant='caption'
+                                color='text.secondary'
+                            >
+                                {formatDate(notification.createdAt)}
                             </Typography>
                         </Box>
+                        {/* Read/Unread Chip */}
+                        {notification.readStatus ? null : (
+                            <Chip
+                                label={'New'}
+                                size='small'
+                                sx={{
+                                    alignSelf: 'flex-start',
+                                    marginLeft: 'auto',
+                                    backgroundColor: '#1976d2',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                }}
+                            />
+                        )}
                     </MenuItem>
                 ))}
                 <Divider />
