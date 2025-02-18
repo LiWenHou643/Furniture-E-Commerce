@@ -30,6 +30,7 @@ import axiosPublic from '../api/axiosPublic';
 import Loading from '../components/Loading';
 import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrders from '../hooks/useFetchOrders';
+import { formatDate } from '../utils/helper';
 const statusIcons = {
     pending: <AccessTime color='warning' />,
     processing: <AssignmentTurnedIn color='info' />,
@@ -221,9 +222,7 @@ const OrdersPage = () => {
                                             color='textSecondary'
                                         >
                                             Shipping Date:{' '}
-                                            {new Date(
-                                                order?.shippingDate
-                                            ).toLocaleString()}
+                                            {formatDate(order?.shippingDate)}
                                         </Typography>
                                     )}
 
@@ -233,9 +232,7 @@ const OrdersPage = () => {
                                             color='textSecondary'
                                         >
                                             Delivery Date:{' '}
-                                            {new Date(
-                                                order.deliveryDate
-                                            ).toLocaleString()}
+                                            {formatDate(order.deliveryDate)}
                                         </Typography>
                                     )}
 
@@ -245,9 +242,7 @@ const OrdersPage = () => {
                                             color='textSecondary'
                                         >
                                             Cancelled Date:{' '}
-                                            {new Date(
-                                                order.cancelDate
-                                            ).toLocaleString()}
+                                            {formatDate(order?.cancelDate)}
                                         </Typography>
                                     )}
 

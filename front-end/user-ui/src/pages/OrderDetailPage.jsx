@@ -14,6 +14,7 @@ import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useCancelOrder from '../hooks/useCancelOrder';
 import useFetchOrder from '../hooks/useFetchOrder';
+import { formatDate } from '../utils/helper';
 const OrderDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -193,8 +194,28 @@ const OrderDetailPage = () => {
                             </Typography>
                             <Typography variant='body1'>
                                 <strong>Created At:</strong>{' '}
-                                {new Date(createdAt).toLocaleString()}
+                                {formatDate(createdAt)}
                             </Typography>
+                            {shippingDate && (
+                                <Typography variant='body1'>
+                                    <strong>Shipping Date:</strong>{' '}
+                                    {formatDate(shippingDate)}
+                                </Typography>
+                            )}
+
+                            {deliveryDate && (
+                                <Typography variant='body1'>
+                                    <strong>Delivery Date:</strong>{' '}
+                                    {formatDate(deliveryDate)}
+                                </Typography>
+                            )}
+
+                            {orderStatus === 'cancelled' && (
+                                <Typography variant='body1'>
+                                    <strong>Cancelled At:</strong>{' '}
+                                    {formatDate(createdAt)}
+                                </Typography>
+                            )}
                             <Typography variant='body1'>
                                 <strong>Subtotal:</strong> $
                                 {subtotal.toFixed(2)}
@@ -224,20 +245,6 @@ const OrderDetailPage = () => {
                                 <strong>Shipping Cost:</strong> $
                                 {shippingCost.toFixed(2)}
                             </Typography>
-
-                            {shippingDate && (
-                                <Typography variant='body1'>
-                                    <strong>Shipping Date:</strong>{' '}
-                                    {new Date(shippingDate).toLocaleString()}
-                                </Typography>
-                            )}
-
-                            {deliveryDate && (
-                                <Typography variant='body1'>
-                                    <strong>Delivery Date:</strong>{' '}
-                                    {new Date(deliveryDate).toLocaleString()}
-                                </Typography>
-                            )}
 
                             {notes && (
                                 <Typography variant='body1' mt={2}>
