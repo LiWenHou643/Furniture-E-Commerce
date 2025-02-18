@@ -95,11 +95,19 @@ function CheckoutPage() {
     // Handle case where no data is available
     if (selectedCartItems.length === 0) {
         return (
-            <div>
-                <h1>Checkout</h1>
-                <p>No items selected. Please go back to your cart.</p>
-                <button onClick={() => navigate('/cart')}>Go to Cart</button>
-            </div>
+            <Container sx={{ mt: 15, textAlign: 'center' }}>
+                <Typography variant='h4' gutterBottom>
+                    Checkout infomation is empty
+                </Typography>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={() => navigate('/products')}
+                    size='large'
+                >
+                    Go Shopping
+                </Button>
+            </Container>
         );
     }
 
