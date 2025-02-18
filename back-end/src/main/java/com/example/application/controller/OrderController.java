@@ -136,7 +136,7 @@ public class OrderController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllOrders(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "pending") String status) {
-		// If userId is null, get all orders of all users for admin
+		// If userId is null, get all orders of all users for shop owner
 		var orders = orderService.getOrdersByUserId(null, status, page, size);
 		return ResponseEntity.ok(
 				ApiResponse.builder().status("success").message("Orders retrieved successfully").data(orders).build());
@@ -148,6 +148,37 @@ public class OrderController {
 		orderService.updateOrderStatus(orderId, OrderStatus.processing);
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
+	}
+
+	@GetMapping("/monthly")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getMonthlySales() {
+		return ResponseEntity.ok(ApiResponse.builder().status("success").message("Monthly sales retrieved successfully")
+				.data(orderService.getMonthlySales()).build());
+	}
+
+	@GetMapping("/summary")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getTotalSalesAndOrders() {
+		return ResponseEntity
+				.ok(ApiResponse.builder().status("success").message("Total sales and orders retrieved successfully")
+						.data(orderService.getTotalSalesAndOrders()).build());
+	}
+
+	@GetMapping("/this-month")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getThisMonthSalesAndOrders() {
+		return ResponseEntity.ok(
+				ApiResponse.builder().status("success").message("This month's sales and orders retrieved successfully")
+						.data(orderService.getThisMonthSalesAndOrders()).build());
+	}
+
+	@GetMapping("/today")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getTodaySalesAndOrders() {
+		return ResponseEntity
+				.ok(ApiResponse.builder().status("success").message("Today's sales and orders retrieved successfully")
+						.data(orderService.getTodaySalesAndOrders()).build());
 	}
 
 	private Long getUserId() {

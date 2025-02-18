@@ -22,9 +22,11 @@ import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.PaymentStatus;
+import com.example.application.dto.MonthlySalesDTO;
 import com.example.application.dto.NotificationDTO;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
+import com.example.application.dto.SalesSummaryDTO;
 import com.example.application.entity.Order;
 import com.example.application.entity.OrderDetail;
 import com.example.application.entity.Payments;
@@ -90,6 +92,22 @@ public class OrderService {
 			orderDTO.setOrderDetails(sortedOrderDetails);
 			return orderDTO;
 		});
+	}
+
+	public List<MonthlySalesDTO> getMonthlySales() {
+		return orderRepository.getMonthlySales();
+	}
+
+	public SalesSummaryDTO getTotalSalesAndOrders() {
+		return orderRepository.getTotalSalesAndOrders();
+	}
+
+	public SalesSummaryDTO getThisMonthSalesAndOrders() {
+		return orderRepository.getThisMonthSalesAndOrders();
+	}
+
+	public SalesSummaryDTO getTodaySalesAndOrders() {
+		return orderRepository.getTodaySalesAndOrders();
 	}
 
 	public OrderDTO getOrderById(Long userId, Long orderId) {
