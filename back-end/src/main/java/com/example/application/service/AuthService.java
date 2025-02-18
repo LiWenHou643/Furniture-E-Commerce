@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import com.example.application.config.Jwt.JwtUtils;
+import com.example.application.config.Kafka.KafkaTopics;
 import com.example.application.constants.NotificationChannel;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
@@ -141,7 +142,7 @@ public class AuthService {
 		NotificationDTO notificationDTO = NotificationDTO.builder().channel(NotificationChannel.EMAIL)
 				.recipient(user.getEmail()).subject("Welcome to LuxeHouse").build();
 
-		messageProducer.sendMessage(notificationDTO);
+		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 
 		return UserMapper.INSTANCE.toDTO(isSaved);
 	}

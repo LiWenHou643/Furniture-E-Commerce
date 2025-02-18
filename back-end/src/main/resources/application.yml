@@ -10,13 +10,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
+        format-sql: true
         jdbc:
-          time_zone: UTC
+          time-zone: UTC
   web:
     resources:
       add-mappings: false
