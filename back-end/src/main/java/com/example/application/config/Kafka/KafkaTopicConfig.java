@@ -13,10 +13,4 @@ public class KafkaTopicConfig {
 		// 1
 		return new NewTopic(KafkaTopics.NOTIFICATION_DELIVERY, 3, (short) 1);
 	}
-
-	@Bean
-	NewTopic cartTopic() {
-		// Define topic "cart" with 3 partitions and replication factor 1
-		return new NewTopic(KafkaTopics.CART, 3, (short) 1);
-	}
 }

@@ -16,7 +16,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 public class KafkaConsumerConfig {
 
 	@Bean
-	ConsumerFactory<String, Object> consumerFactory() {
+	ConsumerFactory<String, Object> defaultConsumerFactory() {
 		Map<String, Object> configProps = new HashMap<>();
 		configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		configProps.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaGroups.NOTIFICATION);
@@ -32,7 +32,7 @@ public class KafkaConsumerConfig {
 	@Bean
 	ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
 		ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-		factory.setConsumerFactory(consumerFactory());
+		factory.setConsumerFactory(defaultConsumerFactory());
 		return factory;
 	}
 

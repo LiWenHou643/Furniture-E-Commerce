@@ -22,12 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class MessageConsumer {
+
 	EmailService emailService;
 	NotificationService notificationService;
 
 	@KafkaListener(topics = KafkaTopics.NOTIFICATION_DELIVERY, groupId = KafkaGroups.NOTIFICATION)
-	public void listen(NotificationDTO notificationDTO) {
-		log.info("Message received is: {}", notificationDTO);
+	public void handleNotification(NotificationDTO notificationDTO) {
+		log.info("Message received: {}", notificationDTO);
 
 		NotificationChannel channel = Optional.ofNullable(notificationDTO.getChannel())
 				.orElseThrow(() -> new IllegalArgumentException("Notification channel cannot be null"));
@@ -39,5 +40,4 @@ public class MessageConsumer {
 				MessageFormat.format("Unsupported notification channel: {0}", channel));
 		}
 	}
-
 }
