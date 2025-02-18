@@ -1,7 +1,6 @@
 package com.example.application.service;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -181,7 +180,7 @@ public class ProductService {
 
 	@Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features")
 	public List<ProductDTO> getTopFeatureProducts() {
-		List<Product> products = productRepository.findTopFeatureProducts().orElse(Collections.emptyList());
+		List<Product> products = productRepository.findTop10ByOrderBySoldQuantityDesc();
 
 		return products.stream().map((ProductMapper.INSTANCE::toDTO)).collect(Collectors.toList());
 	}
