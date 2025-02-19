@@ -23,45 +23,45 @@ const fetchMonthly = async () => {
 
 const useFetchToday = () => {
     return useQuery(['today'], () => fetchToday(), {
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: 0,
-        cacheTime: 0,
-        retry: 1,
+        keepPreviousData: true, // Avoid loading state when changing pages
+        refetchOnWindowFocus: false, // Avoid refetching data on window focus
+        refetchOnReconnect: false, // Avoid refetching data on network reconnect
+        refetchInterval: false, // Avoid refetching data on interval
+        retry: 1, // Set the number of retries to 2
+        staleTime: 30000, // Set the stale time to 30 seconds
     });
 };
 
 const useFetchSummary = () => {
     return useQuery(['summary'], () => fetchSummary(), {
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: 0,
-        cacheTime: 0,
-        retry: 1,
+        keepPreviousData: true, // Avoid loading state when changing pages
+        refetchOnWindowFocus: false, // Avoid refetching data on window focus
+        refetchOnReconnect: false, // Avoid refetching data on network reconnect
+        refetchInterval: false, // Avoid refetching data on interval
+        retry: 1, // Set the number of retries to 2
+        staleTime: 30000, // Set the stale time to 30 seconds
     });
 };
 
 const useFetchThisMonth = () => {
     return useQuery(['this-month'], () => fetchThisMonth(), {
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: 0,
-        cacheTime: 0,
-        retry: 1,
+        keepPreviousData: true, // Avoid loading state when changing pages
+        refetchOnWindowFocus: false, // Avoid refetching data on window focus
+        refetchOnReconnect: false, // Avoid refetching data on network reconnect
+        refetchInterval: false, // Avoid refetching data on interval
+        retry: 1, // Set the number of retries to 2
+        staleTime: 30000, // Set the stale time to 30 seconds
     });
 };
 
 const useFetchMonthly = () => {
     return useQuery(['monthly'], () => fetchMonthly(), {
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: 0,
-        cacheTime: 0,
-        retry: 1,
+        keepPreviousData: true, // Avoid loading state when changing pages
+        refetchOnWindowFocus: false, // Avoid refetching data on window focus
+        refetchOnReconnect: false, // Avoid refetching data on network reconnect
+        refetchInterval: false, // Avoid refetching data on interval
+        retry: 1, // Set the number of retries to 2
+        staleTime: 30000, // Set the stale time to 30 seconds
     });
 };
 

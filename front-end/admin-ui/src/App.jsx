@@ -20,6 +20,7 @@ import DashBoard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import Materials from './pages/Materials';
 import NotFoundPage from './pages/NotFoundPage';
+import OrderDetails from './pages/OrderDetails';
 import Orders from './pages/Orders';
 import ProductDetailPage from './pages/ProductDetailPage';
 import Products from './pages/Products';
@@ -71,6 +72,11 @@ function App() {
                                 path='/orders-management'
                                 element={<Orders />}
                             />
+                            <Route
+                                path='/orders-management/:orderId'
+                                element={<OrderDetails />}
+                            />
+
                             <Route
                                 path='/products-management'
                                 element={
