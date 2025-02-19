@@ -151,28 +151,32 @@ public class OrderController {
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
 	}
-
-	@GetMapping("/monthly")
+	
+	@GetMapping("/date")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getMonthlySales() {
-		return ResponseEntity.ok(ApiResponse.builder().status("success").message("Monthly sales retrieved successfully")
-				.data(orderService.getMonthlySales()).build());
-	}
-
-	@GetMapping("/summary")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getTotalSalesAndOrders() {
-		return ResponseEntity
-				.ok(ApiResponse.builder().status("success").message("Total sales and orders retrieved successfully")
-						.data(orderService.getTotalSalesAndOrders()).build());
-	}
-
-	@GetMapping("/this-month")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getThisMonthSalesAndOrders() {
+	public ResponseEntity<?> findTotalOrdersByDate(
+			@RequestParam int year,
+			@RequestParam int month,
+			@RequestParam int day) {
 		return ResponseEntity.ok(
-				ApiResponse.builder().status("success").message("This month's sales and orders retrieved successfully")
-						.data(orderService.getThisMonthSalesAndOrders()).build());
+				ApiResponse.builder().status("success").message("Orders retrieved successfully for %d-%d-%d".formatted(year, month, day))
+						.data(orderService.findTotalOrdersByDate(year, month, day)).build());
+	}
+
+	@GetMapping("/year")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findTotalOrdersByYear(@RequestParam int year) {
+		return ResponseEntity.ok(
+				ApiResponse.builder().status("success").message("Orders retrieved successfully for year %d".formatted(year))
+						.data(orderService.findTotalOrdersByYear(year)).build());
+	}
+	
+	@GetMapping("/month")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findTotalOrdersByMonth(@RequestParam int year, @RequestParam int month) {
+		return ResponseEntity.ok(ApiResponse.builder().status("success")
+				.message("Orders retrieved successfully for %d-%d".formatted(year, month))
+				.data(orderService.findTotalOrdersByMonth(year, month)).build());
 	}
 
 	@GetMapping("/today")
@@ -180,7 +184,7 @@ public class OrderController {
 	public ResponseEntity<?> getTodaySalesAndOrders() {
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Today's sales and orders retrieved successfully")
-						.data(orderService.getTodaySalesAndOrders()).build());
+						.data(orderService.findTotalOrdersByDay(1)).build());
 	}
 
 	private Long getUserId() {

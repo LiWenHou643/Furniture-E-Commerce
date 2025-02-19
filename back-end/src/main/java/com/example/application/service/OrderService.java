@@ -91,22 +91,26 @@ public class OrderService {
 		});
 	}
 
-	public List<MonthlySalesDTO> getMonthlySales() {
-		int currentYear = LocalDateTime.now().getYear();
-		return orderRepository.getMonthlySales(currentYear);
+	public int findTotalOrdersByDate(int year, int month, int day) {
+		return orderRepository.findTotalOrdersByDate(year, month, day);
+	}
+	
+	public int findTotalOrdersByDay(int day) {
+		return orderRepository.findTotalOrdersByDay(day);
+	}
+	
+	public int findTotalOrdersByMonth(int year, int month) {
+		return orderRepository.findTotalOrdersByMonth(year, month);
+	}
+	
+	public int findTotalOrdersByYear(int year) {
+		return orderRepository.findTotalOrdersByYear(year);
+	}
+	
+	public List<MonthlySalesDTO> getMonthlySales(int year) {
+		return  orderRepository.findMonthlyOrderCount(year);
 	}
 
-	public SalesSummaryDTO getTotalSalesAndOrders() {
-		return orderRepository.getTotalSalesAndOrders();
-	}
-
-	public SalesSummaryDTO getThisMonthSalesAndOrders() {
-		return orderRepository.getThisMonthSalesAndOrders();
-	}
-
-	public SalesSummaryDTO getTodaySalesAndOrders() {
-		return orderRepository.getTodaySalesAndOrders();
-	}
 
 	public OrderDTO getOrderById(Long userId, Long orderId, boolean isAdmin) {
 		var order = orderRepository.findById(orderId)

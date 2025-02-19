@@ -16,5 +16,5 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MonthlySalesDTO {
 	int month;
-	double totalSales;
+	int count;
 }

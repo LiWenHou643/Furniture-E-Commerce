@@ -64,12 +64,12 @@ public class AuthService {
 
 		if (request.isAdmin()) {
 			// If user is not an admin, throw an exception
-			if (!user.getRole().getRoleName().equals("ADMIN")) {
+			if (!user.getRole().getRoleName().equals(AppRoles.ADMIN)) {
 				throw new BadCredentialsException("Invalid username or password");
 			}
 		} else {
 			// If user is an admin, throw an exception
-			if (user.getRole().getRoleName().equals("ADMIN")) {
+			if (user.getRole().getRoleName().equals(AppRoles.ADMIN)) {
 				throw new BadCredentialsException("Invalid username or password");
 			}
 		}
