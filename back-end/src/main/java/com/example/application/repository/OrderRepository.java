@@ -6,34 +6,37 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import com.example.application.constants.OrderStatus;
 import com.example.application.dto.MonthlySalesDTO;
 import com.example.application.dto.SalesSummaryDTO;
 import com.example.application.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 	// Find orders by user ID and status
-	Page<Order> findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(Long userId, OrderStatus status, Pageable pageable);
+	Page<Order> findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(Long userId, String status, Pageable pageable);
 
 	// Find all orders by status
-	Page<Order> findByOrderStatusOrderByCreatedAtDesc(OrderStatus status, Pageable pageable);
+	Page<Order> findByOrderStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 
-	// Find orders for each month
-	@Query("SELECT FUNCTION('MONTH', o.createdAt) AS month, SUM(o.total) AS totalSales "
-			+ "FROM Order o GROUP BY FUNCTION('MONTH', o.createdAt) ORDER BY month")
-	List<MonthlySalesDTO> getMonthlySales();
+	// Find total sales and orders for ? year
+	@Query("SELECT new com.example.application.dto.MonthlySalesDTO(" + "MONTH(o.createdAt), SUM(o.total)) "
+			+ "FROM Order o " + "WHERE YEAR(o.createdAt) = :year " + "GROUP BY YEAR(o.createdAt), MONTH(o.createdAt) "
+			+ "ORDER BY MONTH(o.createdAt)")
+	List<MonthlySalesDTO> getMonthlySales(@Param("year") int year);
 
 	// Find total summary sales and orders
-	@Query("SELECT SUM(o.total), COUNT(o) FROM Order o")
+	@Query("SELECT new com.example.application.dto.SalesSummaryDTO(SUM(o.total), COUNT(o)) FROM Order o WHERE o.orderStatus = 'delivered'")
 	SalesSummaryDTO getTotalSalesAndOrders();
 
 	// Find total sales and orders for this month
-	@Query("SELECT SUM(o.total), COUNT(o) FROM Order o WHERE FUNCTION('MONTH', o.createdAt) = FUNCTION('MONTH', CURRENT_DATE)")
+	@Query("SELECT new com.example.application.dto.SalesSummaryDTO(SUM(o.total), COUNT(o)) " + "FROM Order o "
+			+ "WHERE MONTH(o.createdAt) = MONTH(CURRENT_DATE)")
 	SalesSummaryDTO getThisMonthSalesAndOrders();
 
 	// Find total sales and orders for today
-	@Query("SELECT SUM(o.total), COUNT(o) FROM Order o WHERE FUNCTION('DATE', o.createdAt) = CURRENT_DATE")
+	@Query("SELECT new com.example.application.dto.SalesSummaryDTO(SUM(o.total), COUNT(o)) " + "FROM Order o "
+			+ "WHERE DATE(o.createdAt) = CURRENT_DATE")
 	SalesSummaryDTO getTodaySalesAndOrders();
 
 }

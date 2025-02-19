@@ -34,11 +34,13 @@ import com.paypal.base.rest.PayPalRESTException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/orders")
+@Slf4j
 public class OrderController {
 
 	OrderService orderService;
@@ -57,7 +59,7 @@ public class OrderController {
 	@GetMapping("/{orderId}")
 	public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
 		var userId = getUserId();
-		var order = orderService.getOrderById(userId, orderId);
+		var order = orderService.getOrderById(userId, orderId, isAdmin());
 		return ResponseEntity.ok(
 				ApiResponse.builder().status("success").message("Order retrieved successfully").data(order).build());
 	}
@@ -75,11 +77,11 @@ public class OrderController {
 		var cancelUrl = "http://localhost:8080/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
 
 		// Step 3: Send the PayPal payment URL
-		if (paymentMethod.equals(PaymentMethod.paypal)) {
+		if (paymentMethod.equals(PaymentMethod.PAYPAL)) {
 			String paypalUrl = orderService.processPayment(savedOrder.getOrderId(), successUrl, cancelUrl);
 			return ResponseEntity.ok(ApiResponse.builder().status("success")
 					.message("PayPal payment URL generated successfully").data(Map.of("paypalUrl", paypalUrl)).build());
-		} else if (paymentMethod.equals(PaymentMethod.cod)) {
+		} else if (paymentMethod.equals(PaymentMethod.CASH_ON_DELIVERY)) {
 			// Remove items from cart
 			cartService.removeItemsFromCart(userId, savedOrder.getOrderId());
 
@@ -145,7 +147,7 @@ public class OrderController {
 	@PutMapping("/management")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> confirmOrder(@RequestBody Long orderId) {
-		orderService.updateOrderStatus(orderId, OrderStatus.processing);
+		orderService.updateOrderStatus(orderId, OrderStatus.PROCESSING);
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
 	}
@@ -184,6 +186,13 @@ public class OrderController {
 	private Long getUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return (Long) (authentication).getDetails();
+	}
+
+	private boolean isAdmin() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		log.info("Role Name: {}", authentication.getAuthorities());
+		boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+		return isAdmin;
 	}
 
 }

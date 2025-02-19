@@ -1,7 +1,5 @@
 package com.example.application.service;
 
-import static com.example.application.constants.AppConstants.ROLE_USER;
-
 import java.util.Set;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.config.Kafka.KafkaTopics;
+import com.example.application.constants.AppRoles;
 import com.example.application.constants.NotificationChannel;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
@@ -118,6 +117,7 @@ public class AuthService {
 		if (existedPhoneNumber)
 			throw new DataExistedException("User", "phone number", request.getPhoneNumber());
 
+		String ROLE_USER = AppRoles.USER.name();
 		Role roleUser = rolesRepository.findByRoleName(ROLE_USER)
 				.orElseThrow(() -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
 

@@ -1,6 +1,9 @@
 package com.example.application.constants;
 
 public enum PaymentStatus {
-    paid,
-    unpaid
+	UNPAID, PAID;
+
+	public boolean isPaid() {
+		return this == PAID;
+	}
 }

@@ -65,13 +65,10 @@ public class OrderService {
 	public Page<OrderDTO> getOrdersByUserId(Long userId, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 
-		OrderStatus orderStatus = OrderStatus.valueOf(status);
-
 		// If userId is null, fetch all orders by status, else fetch orders by userId
 		// and status
-		Page<Order> orders = userId == null
-				? orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable)
-				: orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
+		Page<Order> orders = userId == null ? orderRepository.findByOrderStatusOrderByCreatedAtDesc(status, pageable)
+				: orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, status, pageable);
 
 		// Use the `map()` method to transform the Page<Order> into Page<OrderDTO>
 		return orders.map(order -> {
@@ -95,7 +92,8 @@ public class OrderService {
 	}
 
 	public List<MonthlySalesDTO> getMonthlySales() {
-		return orderRepository.getMonthlySales();
+		int currentYear = LocalDateTime.now().getYear();
+		return orderRepository.getMonthlySales(currentYear);
 	}
 
 	public SalesSummaryDTO getTotalSalesAndOrders() {
@@ -110,11 +108,12 @@ public class OrderService {
 		return orderRepository.getTodaySalesAndOrders();
 	}
 
-	public OrderDTO getOrderById(Long userId, Long orderId) {
+	public OrderDTO getOrderById(Long userId, Long orderId, boolean isAdmin) {
 		var order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
-		if (!order.getUser().getUserId().equals(userId)) {
+		// Check if the user has permission to access the order
+		if (!order.getUser().getUserId().equals(userId) && !isAdmin) {
 			throw new RuntimeException("You do not have permission to access this order.");
 		}
 
@@ -144,7 +143,7 @@ public class OrderService {
 		// Convert OrderDTO to Order entity
 		var order = OrderMapper.INSTANCE.toEntity(orderDTO);
 		order.setUser(user);
-		order.setOrderStatus(OrderStatus.pending);
+		order.setOrderStatus(OrderStatus.PENDING);
 
 		// Collect all productItemIds from orderDetailDTOs
 		Set<Long> productItemIds = orderDTO.getOrderDetails().stream().map(OrderDetailDTO::getProductItemId)
@@ -230,7 +229,7 @@ public class OrderService {
 		}
 
 		// Update order status to cancelled
-		order.setOrderStatus(OrderStatus.cancelled);
+		order.setOrderStatus(OrderStatus.CANCELLED);
 		order.setCancelDate(LocalDateTime.now());
 
 		// Update stock quantity for each product item
@@ -261,9 +260,9 @@ public class OrderService {
 				.orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
 		order.setOrderStatus(orderStatus);
-		if (orderStatus == OrderStatus.shipped) {
+		if (orderStatus == OrderStatus.SHIPPED) {
 			order.setShippingDate(LocalDateTime.now());
-		} else if (orderStatus == OrderStatus.delivered) {
+		} else if (orderStatus == OrderStatus.DELIVERED) {
 			order.setDeliveryDate(LocalDateTime.now());
 		}
 
@@ -307,8 +306,8 @@ public class OrderService {
 			// Update order status
 			Payments payments = Payments.builder().order(order)
 					.paymentDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(payment.getCreateTime()))
-					.paymentAmount(order.getTotal()).paymentMethod(PaymentMethod.paypal)
-					.paymentStatus(PaymentStatus.paid).transactionReference(payment.getId()).build();
+					.paymentAmount(order.getTotal()).paymentMethod(PaymentMethod.PAYPAL)
+					.paymentStatus(PaymentStatus.PAID).transactionReference(payment.getId()).build();
 
 			// Save payment
 			paymentRepository.save(payments);

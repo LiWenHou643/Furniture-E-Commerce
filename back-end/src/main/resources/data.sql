@@ -1413,11 +1413,11 @@ INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, deliv
                     shipping_address,
                     shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (2, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
-        '0931234567 - 123, ABC Street, XYZ Ward, HCM City', 'express', 40,
+        '0931234567 - 123, ABC Street, XYZ Ward, HCM City', 'EXPRESS', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-07 12:13:38',
         '2025-01-10 12:13:38'),
        (3, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
-        '0912345678 - 456, ABC Street, XYZ Ward, HCM City', 'express', 40,
+        '0912345678 - 456, ABC Street, XYZ Ward, HCM City', 'EXPRESS', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-08 12:13:38',
         '2025-01-11 12:13:38');
 
