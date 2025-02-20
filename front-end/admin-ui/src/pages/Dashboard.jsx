@@ -27,10 +27,11 @@ import {
 import Notification from '../components/Notification';
 import {
     useFetchMonthly,
-    useFetchSummary,
-    useFetchThisMonth,
-    useFetchToday,
-} from '../hooks/useFetchOrderAndRevenue';
+    useFetchOrderCountByDayAndStatus,
+    useFetchOrderCountByMonth,
+    useFetchOrderCountByMonthAndStatus,
+    useFetchOrderCountByYear,
+} from '../hooks/useFetchOrdersCount';
 
 // Sample Sales Data
 const salesData = [
@@ -72,23 +73,26 @@ const topProducts = [
 ];
 
 export default function Dashboard() {
-    const { data: summary, isLoading: isLoadingSummary } = useFetchSummary();
-    const { data: today, isLoading: isLoadingToday } = useFetchToday();
-    const { data: thisMonth, isLoading: isLoadingThisMonth } =
-        useFetchThisMonth();
+    const { data: date, isLoading: isLoadingDate } =
+        useFetchOrderCountByDayAndStatus();
+    const { data: month, isLoading: isLoadingMonth } =
+        useFetchOrderCountByMonth();
+    const { data: month_status, isLoading: isLoadingMonthStatus } =
+        useFetchOrderCountByMonthAndStatus();
+    const { data: year, isLoading: isLoadingYear } = useFetchOrderCountByYear();
     const { data: monthly, isLoading: isLoadingMonthly } = useFetchMonthly();
 
     if (
-        isLoadingSummary ||
-        isLoadingToday ||
-        isLoadingThisMonth ||
+        isLoadingDate ||
+        isLoadingMonth ||
+        isLoadingMonthStatus ||
+        isLoadingYear ||
         isLoadingMonthly
     ) {
         return <div>Loading...</div>;
     }
 
-    console.log({ summary, today, thisMonth, monthly });
-
+    console.log({ date, month, month_status, year, monthly });
     return (
         <Box sx={{ display: 'flex' }}>
             {/* Main Content */}

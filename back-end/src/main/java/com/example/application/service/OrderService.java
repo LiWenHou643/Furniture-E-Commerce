@@ -2,6 +2,8 @@ package com.example.application.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -22,11 +24,11 @@ import com.example.application.constants.NotificationChannel;
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.PaymentStatus;
-import com.example.application.dto.MonthlySalesDTO;
+import com.example.application.dto.MonthlyOrderCountDTO;
 import com.example.application.dto.NotificationDTO;
+import com.example.application.dto.OrderCountByStatusDTO;
 import com.example.application.dto.OrderDTO;
 import com.example.application.dto.OrderDetailDTO;
-import com.example.application.dto.SalesSummaryDTO;
 import com.example.application.entity.Order;
 import com.example.application.entity.OrderDetail;
 import com.example.application.entity.Payments;
@@ -91,26 +93,31 @@ public class OrderService {
 		});
 	}
 
-	public int findTotalOrdersByDate(int year, int month, int day) {
-		return orderRepository.findTotalOrdersByDate(year, month, day);
-	}
-	
-	public int findTotalOrdersByDay(int day) {
-		return orderRepository.findTotalOrdersByDay(day);
-	}
-	
-	public int findTotalOrdersByMonth(int year, int month) {
-		return orderRepository.findTotalOrdersByMonth(year, month);
-	}
-	
-	public int findTotalOrdersByYear(int year) {
-		return orderRepository.findTotalOrdersByYear(year);
-	}
-	
-	public List<MonthlySalesDTO> getMonthlySales(int year) {
-		return  orderRepository.findMonthlyOrderCount(year);
+	public List<OrderCountByStatusDTO> findOrdersCountBySatusAndDate(int year, int month, int day) {
+		try {
+			LocalDate.of(year, month, day);
+		} catch (DateTimeException e) {
+			throw new RuntimeException("Invalid date");
+		}
+
+		return orderRepository.findOrdersCountBySatusAndDate(year, month, day);
 	}
 
+	public List<OrderCountByStatusDTO> findOrdersCountByStatusAndMonth(int year, int month) {
+		return orderRepository.findOrdersCountByStatusAndMonth(year, month);
+	}
+
+	public int findTotalFinishedOrdersByMonth(int year, int month) {
+		return orderRepository.findTotalFinishedOrdersByMonth(year, month);
+	}
+
+	public int findTotalFinishedOrdersByYear(int year) {
+		return orderRepository.findTotalFinishedOrdersByYear(year);
+	}
+
+	public List<MonthlyOrderCountDTO> findMonthlyOrderCount(int year) {
+		return orderRepository.findMonthlyOrderCount(year);
+	}
 
 	public OrderDTO getOrderById(Long userId, Long orderId, boolean isAdmin) {
 		var order = orderRepository.findById(orderId)

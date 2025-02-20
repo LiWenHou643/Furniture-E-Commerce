@@ -31,6 +31,8 @@ import com.example.application.service.CartService;
 import com.example.application.service.OrderService;
 import com.paypal.base.rest.PayPalRESTException;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -151,40 +153,51 @@ public class OrderController {
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
 	}
-	
-	@GetMapping("/date")
+
+	@GetMapping("/order-count-by-date")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findTotalOrdersByDate(
-			@RequestParam int year,
-			@RequestParam int month,
-			@RequestParam int day) {
-		return ResponseEntity.ok(
-				ApiResponse.builder().status("success").message("Orders retrieved successfully for %d-%d-%d".formatted(year, month, day))
-						.data(orderService.findTotalOrdersByDate(year, month, day)).build());
+	public ResponseEntity<?> findOrdersCountBySatusAndDate(@RequestParam @Min(1) Integer year,
+			@RequestParam @Min(1) @Max(12) Integer month, @RequestParam @Min(1) Integer day) {
+		if (year == null || month == null || day == null) {
+			return ResponseEntity.badRequest().body("Year, Month, and Day parameters are required");
+		}
+		return ResponseEntity.ok(ApiResponse.builder().status("success")
+				.message("Orders retrieved successfully for %d-%d-%d".formatted(year, month, day))
+				.data(orderService.findOrdersCountBySatusAndDate(year, month, day)).build());
 	}
 
-	@GetMapping("/year")
+	@GetMapping("/order-count-by-month")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findTotalOrdersByYear(@RequestParam int year) {
-		return ResponseEntity.ok(
-				ApiResponse.builder().status("success").message("Orders retrieved successfully for year %d".formatted(year))
-						.data(orderService.findTotalOrdersByYear(year)).build());
-	}
-	
-	@GetMapping("/month")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findTotalOrdersByMonth(@RequestParam int year, @RequestParam int month) {
+	public ResponseEntity<?> findOrdersCountByStatusAndMonth(@RequestParam @Min(1) Integer year,
+			@RequestParam @Min(1) @Max(12) Integer month) {
 		return ResponseEntity.ok(ApiResponse.builder().status("success")
 				.message("Orders retrieved successfully for %d-%d".formatted(year, month))
-				.data(orderService.findTotalOrdersByMonth(year, month)).build());
+				.data(orderService.findOrdersCountByStatusAndMonth(year, month)).build());
 	}
 
-	@GetMapping("/today")
+	@GetMapping("/total-by-month")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getTodaySalesAndOrders() {
-		return ResponseEntity
-				.ok(ApiResponse.builder().status("success").message("Today's sales and orders retrieved successfully")
-						.data(orderService.findTotalOrdersByDay(1)).build());
+	public ResponseEntity<?> findTotalFinishedOrdersByMonth(@RequestParam @Min(1) Integer year,
+			@RequestParam @Min(1) @Max(12) Integer month) {
+		return ResponseEntity.ok(ApiResponse.builder().status("success")
+				.message("Orders retrieved successfully for %d-%d".formatted(year, month))
+				.data(orderService.findTotalFinishedOrdersByMonth(year, month)).build());
+	}
+
+	@GetMapping("/total-by-year")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findTotalFinishedOrdersByYear(@RequestParam @Min(1) Integer year) {
+		return ResponseEntity.ok(ApiResponse.builder().status("success")
+				.message("Orders retrieved successfully for year %d".formatted(year))
+				.data(orderService.findTotalFinishedOrdersByYear(year)).build());
+	}
+
+	@GetMapping("/monthly-count")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findMonthlyOrderCount(@RequestParam @Min(1) Integer year) {
+		return ResponseEntity.ok(ApiResponse.builder().status("success")
+				.message("Monthly orders retrieved successfully for year %d".formatted(year))
+				.data(orderService.findMonthlyOrderCount(year)).build());
 	}
 
 	private Long getUserId() {

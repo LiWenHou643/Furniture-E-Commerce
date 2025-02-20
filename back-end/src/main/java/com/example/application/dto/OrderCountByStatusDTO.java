@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MonthlySalesDTO {
-	int month;
-	int count;
+public class OrderCountByStatusDTO {
+	String orderStatus;
+	long count;
 }
