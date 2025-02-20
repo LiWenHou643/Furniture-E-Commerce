@@ -75,7 +75,8 @@ public class OrderController {
 		var savedOrder = orderService.createOrder(userId, orderDTO);
 
 		// Step 2: If payment method is PayPal, generate the PayPal payment URL
-		var successUrl = "http://localhost:8080/orders/%d/paypal/success".formatted(savedOrder.getOrderId());
+		var successUrl = "http://localhost:8080/orders/%d/paypal/success?userId=%d".formatted(savedOrder.getOrderId(),
+				userId);
 		var cancelUrl = "http://localhost:8080/orders/%d/paypal/cancel".formatted(savedOrder.getOrderId());
 
 		// Step 3: Send the PayPal payment URL
@@ -104,12 +105,13 @@ public class OrderController {
 
 	@GetMapping("/{orderId}/paypal/success")
 	public ResponseEntity<?> executePayPalPayment(@PathVariable Long orderId, @RequestParam String paymentId,
-			@RequestParam("PayerID") String payerId) throws PayPalRESTException, ParseException {
+			@RequestParam("PayerID") String payerId, @RequestParam Long userId)
+			throws PayPalRESTException, ParseException {
 		// Execute the PayPal payment
 		orderService.executePayPalPayment(orderId, paymentId, payerId);
 
 		// Remove items from cart
-		cartService.removeItemsFromCart(getUserId(), orderId);
+		cartService.removeItemsFromCart(userId, orderId);
 
 		// Push notification of new order to Shop owner
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
