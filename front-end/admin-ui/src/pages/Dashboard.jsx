@@ -2,6 +2,8 @@ import {
     AppBar,
     Avatar,
     Box,
+    Card,
+    CardContent,
     Container,
     Grid,
     Paper,
@@ -14,16 +16,21 @@ import {
     Toolbar,
     Typography,
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import {
+    Bar,
+    BarChart,
     CartesianGrid,
+    Cell,
     Line,
     LineChart,
+    Pie,
+    PieChart,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from 'recharts';
-
 import Notification from '../components/Notification';
 import {
     useFetchMonthly,
@@ -73,7 +80,7 @@ const topProducts = [
 ];
 
 export default function Dashboard() {
-    const { data: date, isLoading: isLoadingDate } =
+    const { data: date_status, isLoading: isLoadingDate } =
         useFetchOrderCountByDayAndStatus();
     const { data: month, isLoading: isLoadingMonth } =
         useFetchOrderCountByMonth();
@@ -92,7 +99,30 @@ export default function Dashboard() {
         return <div>Loading...</div>;
     }
 
-    console.log({ date, month, month_status, year, monthly });
+    console.log({ date_status, month, month_status, year, monthly });
+
+    // Convert numeric month to readable format
+    const monthLabels = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+    ];
+    // Color mapping for charts
+    const COLORS = ['#ff6961', '#77dd77', '#fd1d93', '#84b6f4', '#f16ae1'];
+
+    const formattedMonthlyData = Array.from({ length: 12 }, (_, index) => {
+        const found = monthly.find((m) => m.month === index + 1);
+        return { month: monthLabels[index], count: found ? found.count : 0 };
+    });
     return (
         <Box sx={{ display: 'flex' }}>
             {/* Main Content */}
@@ -261,6 +291,89 @@ export default function Dashboard() {
                         </Grid>
                     </Grid>
                 </Container>
+
+                {/* Order Status Overview (Pie Chart) */}
+                <Grid item xs={12} md={6}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant='h6'>
+                                Order Status Breakdown
+                            </Typography>
+                            <ResponsiveContainer width='100%' height={300}>
+                                <PieChart>
+                                    <Pie
+                                        data={date_status}
+                                        dataKey='count'
+                                        nameKey='status'
+                                        cx='50%'
+                                        cy='50%'
+                                        outerRadius={80}
+                                        label
+                                    >
+                                        {date_status.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={
+                                                    COLORS[
+                                                        index % COLORS.length
+                                                    ]
+                                                }
+                                            />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Monthly Order Trend (Bar Chart) */}
+                <Grid item xs={12} md={6}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant='h6'>Monthly Orders</Typography>
+                            <ResponsiveContainer width='100%' height={300}>
+                                <BarChart data={formattedMonthlyData}>
+                                    <XAxis dataKey='month' />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Bar dataKey='count' fill='#82ca9d' />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Order Status Data Table */}
+                <Grid item xs={12}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant='h6'>
+                                Order Status Details
+                            </Typography>
+                            <DataGrid
+                                rows={date_status.map((item, index) => ({
+                                    id: index,
+                                    ...item,
+                                }))}
+                                columns={[
+                                    {
+                                        field: 'status',
+                                        headerName: 'Status',
+                                        flex: 1,
+                                    },
+                                    {
+                                        field: 'count',
+                                        headerName: 'Order Count',
+                                        flex: 1,
+                                    },
+                                ]}
+                                autoHeight
+                            />
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Box>
         </Box>
     );
