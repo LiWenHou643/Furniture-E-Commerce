@@ -6,6 +6,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,11 +104,43 @@ public class OrderService {
 			throw new RuntimeException("Invalid date");
 		}
 
-		return orderRepository.findOrdersCountBySatusAndDate(year, month, day);
+		// Step 1: Initialize a map with all statuses and set count = 0
+		Map<String, Long> statusCountMap = new HashMap<>();
+		for (OrderStatus orderStatus : OrderStatus.values()) {
+			statusCountMap.put(orderStatus.name(), 0L);
+		}
+
+		// Step 2: Fetch results from the database
+		List<OrderCountByStatusDTO> orderStatusesList = orderRepository.findOrdersCountBySatusAndDate(year, month, day);
+
+		// Step 3: Update the map with actual values from the database
+		for (OrderCountByStatusDTO dto : orderStatusesList) {
+			statusCountMap.put(dto.getStatus(), dto.getCount());
+		}
+
+		// Step 4: Convert the map back to a list
+		return statusCountMap.entrySet().stream()
+				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
 	}
 
 	public List<OrderCountByStatusDTO> findOrdersCountByStatusAndMonth(int year, int month) {
-		return orderRepository.findOrdersCountByStatusAndMonth(year, month);
+		// Step 1: Initialize a map with all statuses and set count = 0
+		Map<String, Long> statusCountMap = new HashMap<>();
+		for (OrderStatus orderStatus : OrderStatus.values()) {
+			statusCountMap.put(orderStatus.name(), 0L);
+		}
+
+		// Step 2: Fetch results from the database
+		List<OrderCountByStatusDTO> orderStatusesList = orderRepository.findOrdersCountByStatusAndMonth(year, month);
+
+		// Step 3: Update the map with actual values from the database
+		for (OrderCountByStatusDTO dto : orderStatusesList) {
+			statusCountMap.put(dto.getStatus(), dto.getCount());
+		}
+
+		// Step 4: Convert the map back to a list
+		return statusCountMap.entrySet().stream()
+				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
 	}
 
 	public int findTotalFinishedOrdersByMonth(int year, int month) {

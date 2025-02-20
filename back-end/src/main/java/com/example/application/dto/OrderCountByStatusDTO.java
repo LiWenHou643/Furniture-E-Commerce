@@ -15,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderCountByStatusDTO {
-	String orderStatus;
+	String status;
 	long count;
 }
