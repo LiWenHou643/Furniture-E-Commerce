@@ -1409,22 +1409,22 @@ VALUES (2),
 INSERT INTO cart_items (cart_id, product_item_id, quantity)
 VALUES (1, 1, 10);
 
-INSERT INTO orders (user_id, subtotal, total, order_status, shipping_date, delivery_date, cancel_date,
+INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
-VALUES (2, 360, 400, 'DELIVERED', '2025-01-08 12:13:38', '2025-01-10 12:13:38', null,
+VALUES (2, 360, 400, 'DELIVERED', '2025-01-07 14:10:38', '2025-01-08 7:15:38', '2025-01-10 10:10:38', null,
         '0931234567 - 123, ABC Street, XYZ Ward, HCM City', 'EXPRESS', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-07 12:13:38',
-        '2025-01-10 12:13:38');
+        '2025-01-10 10:10:38');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
-VALUES (1, 1, 1, 180, 180, true, '2025-01-07 12:13:38', '2025-01-11 12:13:38'),
+VALUES (1, 1, 1, 180, 180, true, '2025-01-07 12:13:38', '2025-01-07 12:13:38'),
        (1, 3, 2, 90, 180, false, '2025-01-07 12:13:38', '2025-01-07 12:13:38');
 
 UPDATE products SET sold_quantity = 1 WHERE product_id = 1;
 UPDATE products SET sold_quantity = 2 WHERE product_id = 2;
 
 INSERT INTO payments (order_id, payment_date, payment_amount, payment_method, payment_status, transaction_reference, created_at, updated_at)
-VALUES (1, '2025-01-10 12:13:38', 400, 'CASH_ON_DELIVERY', 'PAID', null, '2025-01-10 12:13:38', '2025-01-10 12:13:38');
+VALUES (1, '2025-01-10 10:10:38', 400, 'CASH_ON_DELIVERY', 'PAID', null, '2025-01-10 10:10:38', '2025-01-10 10:10:38');
 
 INSERT INTO feedbacks (user_id, product_item_id, comment, rating, created_at, updated_at)
 VALUES (2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,

@@ -191,6 +191,7 @@ CREATE TABLE orders
     subtotal         DECIMAL(10, 2)                                                      NOT NULL,
     total            DECIMAL(10, 2)                                                      NOT NULL, -- subtotal + shipping_fee
     order_status     VARCHAR(50) NOT NULL,
+    confirm_date     TIMESTAMP,
     shipping_date    TIMESTAMP,
     delivery_date    TIMESTAMP,
     cancel_date      TIMESTAMP,
