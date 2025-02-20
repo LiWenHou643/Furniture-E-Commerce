@@ -1,16 +1,21 @@
 package com.example.application.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
 import com.example.application.constants.ShipmentMethod;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,38 +25,40 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class OrderDTO {
-    Long orderId;
+	Long orderId;
 
-    Long userId;
+	Long userId;
 
-    Double subtotal;
+	Double subtotal;
 
-    Double total;
+	Double total;
 
-    OrderStatus orderStatus;
+	OrderStatus orderStatus;
 
-    LocalDateTime shippingDate;
+	LocalDateTime confirmDate;
 
-    LocalDateTime deliveryDate;
+	LocalDateTime shippingDate;
 
-    LocalDateTime cancelDate;
+	LocalDateTime deliveryDate;
 
-    String shippingAddress;
+	LocalDateTime cancelDate;
 
-    ShipmentMethod shippingMethod;
+	String shippingAddress;
 
-    @Enumerated(EnumType.STRING)
-    PaymentMethod paymentMethod;
+	ShipmentMethod shippingMethod;
 
-    Double shippingCost;
+	@Enumerated(EnumType.STRING)
+	PaymentMethod paymentMethod;
 
-    String notes;
+	Double shippingCost;
 
-    Boolean leaveFeedback;
+	String notes;
 
-    LocalDateTime createdAt;
+	Boolean leaveFeedback;
 
-    LocalDateTime updatedAt;
+	LocalDateTime createdAt;
 
-    List<OrderDetailDTO> orderDetails;
+	LocalDateTime updatedAt;
+
+	List<OrderDetailDTO> orderDetails;
 }

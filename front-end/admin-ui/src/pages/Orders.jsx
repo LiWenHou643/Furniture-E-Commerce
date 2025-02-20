@@ -169,11 +169,11 @@ export default function Orders() {
 
 const OrderStatus = ({ status }) => {
     const statusMap = {
-        pending: { label: 'Pending', color: 'warning' },
-        processing: { label: 'Processing', color: 'info' },
-        shipped: { label: 'Shipped', color: 'success' },
-        delivered: { label: 'Delivered', color: 'success' },
-        cancelled: { label: 'Cancelled', color: 'error' },
+        PENDING: { label: 'PENDING', color: 'warning' },
+        PROCESSING: { label: 'PROCESSING', color: 'info' },
+        SHIPPED: { label: 'SHIPPED', color: 'success' },
+        DELIVERED: { label: 'DELIVERED', color: 'success' },
+        CANCELLED: { label: 'CANCELLED', color: 'error' },
     };
 
     return (

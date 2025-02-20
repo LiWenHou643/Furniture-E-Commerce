@@ -42,10 +42,10 @@ const useCreateOrder = () => {
             });
 
             // // Check the payment method and handle accordingly
-            if (variables.paymentMethod === 'paypal' && data?.data?.paypalUrl) {
+            if (variables.paymentMethod === 'PAYPAL' && data?.data?.paypalUrl) {
                 // Redirect to the PayPal payment link
                 window.location.href = data?.data?.paypalUrl;
-            } else if (variables.paymentMethod === 'cod') {
+            } else if (variables.paymentMethod === 'CASH_ON_DELIVERY') {
                 toast.success('Order created successfully!');
                 // Optional: Navigate to a confirmation page or display additional UI
                 navigate(`/orders/${data.data.orderId}`);

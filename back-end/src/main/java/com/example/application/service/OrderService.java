@@ -67,10 +67,13 @@ public class OrderService {
 	public Page<OrderDTO> getOrdersByUserId(Long userId, String status, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 
+		OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+
 		// If userId is null, fetch all orders by status, else fetch orders by userId
 		// and status
-		Page<Order> orders = userId == null ? orderRepository.findByOrderStatusOrderByCreatedAtDesc(status, pageable)
-				: orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, status, pageable);
+		Page<Order> orders = userId == null
+				? orderRepository.findByOrderStatusOrderByCreatedAtDesc(orderStatus, pageable)
+				: orderRepository.findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(userId, orderStatus, pageable);
 
 		// Use the `map()` method to transform the Page<Order> into Page<OrderDTO>
 		return orders.map(order -> {
@@ -271,7 +274,9 @@ public class OrderService {
 				.orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
 		order.setOrderStatus(orderStatus);
-		if (orderStatus == OrderStatus.SHIPPED) {
+		if (orderStatus == OrderStatus.PROCESSING) {
+			order.setConfirmDate(LocalDateTime.now());
+		} else if (orderStatus == OrderStatus.SHIPPED) {
 			order.setShippingDate(LocalDateTime.now());
 		} else if (orderStatus == OrderStatus.DELIVERED) {
 			order.setDeliveryDate(LocalDateTime.now());

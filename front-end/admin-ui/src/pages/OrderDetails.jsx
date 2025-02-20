@@ -1,6 +1,8 @@
+import CheckIcon from '@mui/icons-material/Check';
 import {
     Avatar,
     Box,
+    Button,
     Card,
     CardContent,
     Chip,
@@ -17,12 +19,11 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-// import { formatDate } from '../utils/helper';
 import { styled } from '@mui/system';
-
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useFetchOrder from '../hooks/useFetchOrder';
+import { formatDate } from '../utils/helper';
 
 const StyledCard = styled(Card)({
     padding: '20px',
@@ -30,15 +31,18 @@ const StyledCard = styled(Card)({
 });
 
 const OrderDetails = () => {
+    const navigate = useNavigate();
     const { orderId } = useParams();
     const [deliveryService, setDeliveryService] = useState('');
-    const [orderStatus, setOrderStatus] = useState('Pending');
+    const [orderStatus, setOrderStatus] = useState('PENDING');
     const { data: order, isLoading } = useFetchOrder(orderId);
     const [editing, setEditing] = useState(false);
 
     if (isLoading) {
         return <Typography>Loading...</Typography>;
     }
+
+    console.log('Order:', order);
 
     const handleConfirmOrder = () => {
         // Logic to confirm the order
@@ -58,7 +62,16 @@ const OrderDetails = () => {
         console.log('Updated Order:', order);
     };
     return (
-        <Box>
+        <Box sx={{ padding: 2 }}>
+            <Button
+                variant='contained'
+                color='secondary'
+                onClick={() => navigate('/orders-management')}
+                sx={{ marginBottom: 2 }}
+            >
+                Go Back
+            </Button>
+
             <StyledCard>
                 <CardContent>
                     <Typography variant='h6'>Order Details</Typography>
@@ -86,6 +99,14 @@ const OrderDetails = () => {
                                 </Typography>
                                 <OrderStatus status={order.orderStatus} />
                             </Box>
+
+                            {/* Show the status dropdown only if the order is not in "CANCELLED" status */}
+                            {order.orderStatus === 'CANCELLED' && (
+                                <Typography variant='body1'>
+                                    <strong>Cancelled Date:</strong>
+                                    {formatDate(order.cancelDate)}
+                                </Typography>
+                            )}
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant='body1'>
@@ -102,7 +123,18 @@ const OrderDetails = () => {
                     </Grid>
 
                     {/* Order Status Tracker */}
-                    <OrderStatusTracker orderStatus={order.orderStatus} />
+                    {
+                        // Show the status tracker only if the order is not in "CANCELLED" status
+                        order.orderStatus !== 'CANCELLED' && (
+                            <OrderStatusTracker
+                                orderStatus={order?.orderStatus}
+                                createdAt={order?.createdAt}
+                                confirmDate={order?.confirmDate}
+                                shippingDate={order?.shippingDate}
+                                deliveryDate={order?.deliveryDate}
+                            />
+                        )
+                    }
                 </CardContent>
             </StyledCard>
 
@@ -122,16 +154,24 @@ const OrderDetails = () => {
                         {order.orderDetails.map((item) => (
                             <TableRow key={item.orderDetailId}>
                                 <TableCell>
-                                    <Avatar
-                                        src={item.productImage}
-                                        alt={item.productName}
+                                    <Box
                                         sx={{
-                                            width: 50,
-                                            height: 50,
-                                            marginRight: 2,
+                                            display: 'flex',
+                                            gap: 2,
+                                            alignItems: 'center',
                                         }}
-                                    />
-                                    {item.productName}
+                                    >
+                                        <Avatar
+                                            src={item.productImage}
+                                            alt={item.productName}
+                                            sx={{
+                                                width: 50,
+                                                height: 50,
+                                                marginRight: 2,
+                                            }}
+                                        />
+                                        {item.productName}
+                                    </Box>
                                 </TableCell>
                                 <TableCell>{item.colorType}</TableCell>
                                 <TableCell>{item.quantity}</TableCell>
@@ -146,7 +186,7 @@ const OrderDetails = () => {
     );
 };
 // Status Mapping for Progress Bar
-const statusSteps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+const statusSteps = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
 
 // Custom styling for completed steps
 const StyledStepper = styled(Stepper)({
@@ -155,17 +195,94 @@ const StyledStepper = styled(Stepper)({
     backgroundColor: 'transparent',
 });
 
-const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-};
+const OrderStatusTracker = ({
+    orderStatus,
+    createdAt,
+    confirmDate,
+    shippingDate,
+    deliveryDate,
+}) => {
+    const activeStep = statusSteps.indexOf(orderStatus);
 
-const OrderStatusTracker = ({ orderStatus }) => {
-    const activeStep = statusSteps.indexOf(capitalizeFirstLetter(orderStatus));
     return (
         <StyledStepper alternativeLabel activeStep={activeStep}>
-            {statusSteps.map((label) => (
+            {statusSteps.map((label, index) => (
                 <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
+                    <StepLabel
+                        icon={
+                            index < activeStep ? (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'green',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <CheckIcon
+                                        style={{ color: 'white', fontSize: 16 }}
+                                    />
+                                </div>
+                            ) : index === activeStep ? (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'green',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <CheckIcon
+                                        style={{ color: 'white', fontSize: 16 }}
+                                    />
+                                </div>
+                            ) : (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'gray',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'Arial',
+                                        fontSize: 12,
+                                    }}
+                                >
+                                    {index + 1}
+                                </div>
+                            )
+                        }
+                    >
+                        <Typography variant='body1'>{label}</Typography>
+
+                        {label === 'PENDING' ? (
+                            <Typography variant='caption'>
+                                {formatDate(createdAt)}
+                            </Typography>
+                        ) : label === 'PROCESSING' ? (
+                            <Typography variant='caption'>
+                                {formatDate(confirmDate)}
+                            </Typography>
+                        ) : label === 'SHIPPED' ? (
+                            <Typography variant='caption'>
+                                {formatDate(shippingDate)}
+                            </Typography>
+                        ) : label === 'DELIVERED' ? (
+                            <Typography variant='caption'>
+                                {formatDate(deliveryDate)}
+                            </Typography>
+                        ) : null}
+                    </StepLabel>
                 </Step>
             ))}
         </StyledStepper>
@@ -174,11 +291,11 @@ const OrderStatusTracker = ({ orderStatus }) => {
 
 const OrderStatus = ({ status }) => {
     const statusMap = {
-        pending: { label: 'Pending', color: 'warning' },
-        processing: { label: 'Processing', color: 'info' },
-        shipped: { label: 'Shipped', color: 'success' },
-        delivered: { label: 'Delivered', color: 'success' },
-        cancelled: { label: 'Cancelled', color: 'error' },
+        PENDING: { label: 'PENDING', color: 'warning' },
+        PROCESSING: { label: 'PROCESSING', color: 'info' },
+        SHIPPED: { label: 'SHIPPED', color: 'success' },
+        DELIVERED: { label: 'DELIVERED', color: 'success' },
+        CANCELLED: { label: 'CANCELLED', color: 'error' },
     };
 
     return (

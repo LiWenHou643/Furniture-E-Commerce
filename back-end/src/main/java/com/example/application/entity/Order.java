@@ -49,6 +49,8 @@ public class Order extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	OrderStatus orderStatus;
 
+	LocalDateTime confirmDate;
+
 	LocalDateTime shippingDate;
 
 	LocalDateTime deliveryDate;

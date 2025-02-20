@@ -43,8 +43,8 @@ function CheckoutPage() {
     });
 
     const [note, setNote] = useState('');
-    const [deliveryMethod, setDeliveryMethod] = useState('standard'); // Default to "standard"
-    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [deliveryMethod, setDeliveryMethod] = useState('STANDARD'); // Default to "standard"
+    const [paymentMethod, setPaymentMethod] = useState('CASH_ON_DELIVERY'); // Default to "cod"
     const [shippingCost, setShippingCost] = useState(5.0); // Default to standard delivery fee
     const [addresses, setAddresses] = useState([]);
 
@@ -141,7 +141,7 @@ function CheckoutPage() {
     };
 
     const calculateShippingFee = (method) => {
-        const fee = method === 'express' ? 10.0 : 5.0;
+        const fee = method === 'EXPRESS' ? 10.0 : 5.0;
         return fee;
     };
 
@@ -351,12 +351,12 @@ function CheckoutPage() {
                                 <Button
                                     fullWidth
                                     variant={
-                                        deliveryMethod === 'standard'
+                                        deliveryMethod === 'STANDARD'
                                             ? 'contained'
                                             : 'outlined'
                                     }
                                     onClick={() =>
-                                        handleDeliveryMethodChange('standard')
+                                        handleDeliveryMethodChange('STANDARD')
                                     }
                                 >
                                     Standard Delivery
@@ -368,12 +368,12 @@ function CheckoutPage() {
                                 <Button
                                     fullWidth
                                     variant={
-                                        deliveryMethod === 'express'
+                                        deliveryMethod === 'EXPRESS'
                                             ? 'contained'
                                             : 'outlined'
                                     }
                                     onClick={() =>
-                                        handleDeliveryMethodChange('express')
+                                        handleDeliveryMethodChange('EXPRESS')
                                     }
                                 >
                                     Express Delivery
@@ -381,7 +381,7 @@ function CheckoutPage() {
                             </Grid>
 
                             {/* Display Standard Delivery Info */}
-                            {deliveryMethod === 'standard' && (
+                            {deliveryMethod === 'STANDARD' && (
                                 <Grid item xs={12}>
                                     <Typography
                                         variant='body2'
@@ -395,13 +395,13 @@ function CheckoutPage() {
                                         color='textSecondary'
                                     >
                                         <strong>Estimated Fee:</strong> $
-                                        {calculateShippingFee('standard')}
+                                        {calculateShippingFee('STANDARD')}
                                     </Typography>
                                 </Grid>
                             )}
 
                             {/* Display Express Delivery Info */}
-                            {deliveryMethod === 'express' && (
+                            {deliveryMethod === 'EXPRESS' && (
                                 <Grid item xs={12}>
                                     <Typography
                                         variant='body2'
@@ -415,7 +415,7 @@ function CheckoutPage() {
                                         color='textSecondary'
                                     >
                                         <strong>Estimated Fee:</strong> $
-                                        {calculateShippingFee('express')}
+                                        {calculateShippingFee('EXPRESS')}
                                     </Typography>
                                 </Grid>
                             )}
@@ -448,11 +448,13 @@ function CheckoutPage() {
                         <Button
                             fullWidth
                             variant={
-                                paymentMethod === 'cod'
+                                paymentMethod === 'CASH_ON_DELIVERY'
                                     ? 'contained'
                                     : 'outlined'
                             }
-                            onClick={() => handlePaymentMethodChange('cod')}
+                            onClick={() =>
+                                handlePaymentMethodChange('CASH_ON_DELIVERY')
+                            }
                         >
                             Cash on Delivery
                         </Button>
@@ -461,11 +463,11 @@ function CheckoutPage() {
                         <Button
                             fullWidth
                             variant={
-                                paymentMethod === 'paypal'
+                                paymentMethod === 'PAYPAL'
                                     ? 'contained'
                                     : 'outlined'
                             }
-                            onClick={() => handlePaymentMethodChange('paypal')}
+                            onClick={() => handlePaymentMethodChange('PAYPAL')}
                         >
                             PayPal
                         </Button>

@@ -41,7 +41,7 @@ const statusIcons = {
 
 const OrdersPage = () => {
     const navigate = useNavigate();
-    const [selectedTab, setSelectedTab] = useState('pending');
+    const [selectedTab, setSelectedTab] = useState('PENDING');
 
     const { data: orders, isLoading } = useFetchOrders({
         status: selectedTab,
@@ -137,27 +137,27 @@ const OrdersPage = () => {
                     }}
                 >
                     <Tab
-                        value='pending'
+                        value='PENDING'
                         label='Pending'
                         icon={statusIcons.pending}
                     />
                     <Tab
-                        value='processing'
+                        value='PROCESSING'
                         label='Processing'
                         icon={statusIcons.processing}
                     />
                     <Tab
-                        value='shipped'
+                        value='SHIPPED'
                         label='Shipped'
                         icon={statusIcons.shipped}
                     />
                     <Tab
-                        value='delivered'
+                        value='DELIVERED'
                         label='Delivered'
                         icon={statusIcons.delivered}
                     />
                     <Tab
-                        value='cancelled'
+                        value='CANCELLED'
                         label='Cancelled'
                         icon={statusIcons.cancelled}
                     />
@@ -361,7 +361,7 @@ const OrdersPage = () => {
                                         </Box>
 
                                         {/* Cancel Button (only for pending orders) */}
-                                        {order.orderStatus === 'pending' && (
+                                        {order.orderStatus === 'PENDING' && (
                                             <Button
                                                 variant='contained'
                                                 color='error'
@@ -377,9 +377,9 @@ const OrdersPage = () => {
                                         )}
 
                                         {/* Re-order Button (only for delivered and cancelled orders) */}
-                                        {(order.orderStatus === 'delivered' ||
+                                        {(order.orderStatus === 'DELIVERED' ||
                                             order.orderStatus ===
-                                                'cancelled') && (
+                                                'CANCELLED') && (
                                             <Button
                                                 variant='contained'
                                                 color='info'

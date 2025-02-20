@@ -45,15 +45,15 @@ const OrderDetailPage = () => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'pending':
+            case 'PENDING':
                 return 'warning';
-            case 'processing':
+            case 'PROCESSING':
                 return 'info';
-            case 'shipped':
+            case 'SHIPPED':
                 return 'primary';
-            case 'delivered':
+            case 'DELIVERED':
                 return 'success';
-            case 'cancelled':
+            case 'CANCELLED':
                 return 'error';
             default:
                 return 'default';
@@ -334,7 +334,7 @@ const OrderDetailPage = () => {
                             }}
                         >
                             {/* Cancel Button (only for pending orders) */}
-                            {orderStatus === 'pending' && (
+                            {orderStatus === 'PENDING' && (
                                 <Button
                                     variant='contained'
                                     color='error'
@@ -348,8 +348,8 @@ const OrderDetailPage = () => {
                             )}
 
                             {/* Re-order Button */}
-                            {(orderStatus === 'delivered' ||
-                                orderStatus === 'cancelled') && (
+                            {(orderStatus === 'DELIVERED' ||
+                                orderStatus === 'CANCELLED') && (
                                 <Button
                                     variant='contained'
                                     color='info'
