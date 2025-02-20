@@ -8,16 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.application.constants.OrderStatus;
 import com.example.application.dto.MonthlyOrderCountDTO;
 import com.example.application.dto.OrderCountByStatusDTO;
 import com.example.application.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 	// Find orders by user ID and status
-	Page<Order> findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(Long userId, String status, Pageable pageable);
+	Page<Order> findByUser_UserIdAndOrderStatusOrderByCreatedAtDesc(Long userId, OrderStatus status, Pageable pageable);
 
 	// Find all orders by status
-	Page<Order> findByOrderStatusOrderByCreatedAtDesc(String status, Pageable pageable);
+	Page<Order> findByOrderStatusOrderByCreatedAtDesc(OrderStatus status, Pageable pageable);
 
 	// Find orders count by status for specific day (year, month, day)
 	@Query("""
