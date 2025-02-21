@@ -12,7 +12,8 @@ import com.example.application.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 	List<Product> findByProductNameContaining(String query);
 
-	List<Product> findTop10ByOrderBySoldQuantityDesc();
+	@Query("SELECT p FROM Product p WHERE p.soldQuantity > 0 ORDER BY p.soldQuantity DESC")
+	List<Product> findTop3BySoldQuantityGreaterThanZero();
 
 	@Query("SELECT p FROM Product p JOIN p.category c WHERE  :categories IS NULL OR c.categoryName IN :categories")
 	List<Product> findProductByCategory(List<String> categories);

@@ -180,7 +180,7 @@ public class ProductService {
 
 	@Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features")
 	public List<ProductDTO> getTopFeatureProducts() {
-		List<Product> products = productRepository.findTop10ByOrderBySoldQuantityDesc();
+		List<Product> products = productRepository.findTop3BySoldQuantityGreaterThanZero();
 
 		return products.stream().map((ProductMapper.INSTANCE::toDTO)).collect(Collectors.toList());
 	}
