@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import axiosPrivate from '../api/axiosPrivate';
 
 const fetchOrderCountByDayAndStatus = async ({ year, month, day }) => {
-    console.log('fetchOrderCountByDay', { year, month, day });
     const { data } = await axiosPrivate.get('/orders/order-count-by-date', {
         params: {
             year,
@@ -14,7 +13,6 @@ const fetchOrderCountByDayAndStatus = async ({ year, month, day }) => {
 };
 
 const fetchOrderCountByMonthAndStatus = async ({ year, month }) => {
-    console.log('fetchOrderCountByMonth', { year, month });
     const { data } = await axiosPrivate.get('/orders/order-count-by-month', {
         params: {
             year,
@@ -25,7 +23,6 @@ const fetchOrderCountByMonthAndStatus = async ({ year, month }) => {
 };
 
 const fetchOrderCountByMonth = async ({ year, month }) => {
-    console.log('fetchOrderCountByMonth', { year, month });
     const { data } = await axiosPrivate.get('/orders/total-by-month', {
         params: {
             year,

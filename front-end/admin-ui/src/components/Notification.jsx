@@ -81,8 +81,6 @@ const Notification = () => {
         return null;
     }
 
-    console.log('notifications', notifications);
-
     return (
         <Box
             sx={{
