@@ -13,7 +13,7 @@ const addProductVariant = async (productVariant) => {
     formData.append('stockQuantity', productVariant.stockQuantity);
 
     // Append color details
-    formData.append('color', productVariant.color);
+    formData.append('color', JSON.stringify(productVariant.color));
 
     // Append images
     productVariant.productImages.forEach((image, imageIndex) => {

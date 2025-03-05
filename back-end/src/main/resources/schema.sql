@@ -146,6 +146,7 @@ CREATE TABLE product_item
     original_price  DECIMAL(10, 2)      NOT NULL,
     sale_price      DECIMAL(10, 2)      NOT NULL,
     stock_quantity  INT                 NOT NULL DEFAULT 0,
+    product_item_status 		BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at      TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products (product_id),

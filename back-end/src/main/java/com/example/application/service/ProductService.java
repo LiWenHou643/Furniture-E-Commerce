@@ -74,7 +74,8 @@ public class ProductService {
 	@Cacheable(cacheNames = PRODUCT_CACHE_KEY, key = "#id")
 	public ProductDTO getProductById(Long id) {
 		// Fetch the product with its product items and feedbacks in a single query
-		var product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
+		var product = productRepository.findByIdAndProductStatusTrue(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
 
 		// Map the product to DTO
 		var productDTO = ProductMapper.INSTANCE.toDTO(product);
@@ -179,9 +180,13 @@ public class ProductService {
 	}
 
 	@Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY + "-top-features")
-	public List<ProductDTO> getTopFeatureProducts() {
+	public List<ProductDTO> getTopSalesProducts() {
 		List<Product> products = productRepository.findTop3BySoldQuantityGreaterThanZero();
 
 		return products.stream().map((ProductMapper.INSTANCE::toDTO)).collect(Collectors.toList());
+	}
+
+	public int getTotalSold() {
+		return productRepository.findTotalSold();
 	}
 }

@@ -79,10 +79,16 @@ public class ProductController {
 				.data(productService.updateProduct(productDTO)).build());
 	}
 
-	@GetMapping("/top-feature")
-	public ResponseEntity<ApiResponse<List<ProductDTO>>> getTopFeatureProducts() {
+	@GetMapping("/top-sales")
+	public ResponseEntity<ApiResponse<List<ProductDTO>>> getTopSalesProducts() {
 		return ResponseEntity.ok(ApiResponse.<List<ProductDTO>>builder().status("success")
-				.message("Top feature products found").data(productService.getTopFeatureProducts()).build());
+				.message("Top feature products found").data(productService.getTopSalesProducts()).build());
+	}
+
+	@GetMapping("/total-sold")
+	public ResponseEntity<ApiResponse<Integer>> getTotalSold() {
+		return ResponseEntity.ok(ApiResponse.<Integer>builder().status("success").message("Total sales found")
+				.data(productService.getTotalSold()).build());
 	}
 
 	@DeleteMapping("/{id}")

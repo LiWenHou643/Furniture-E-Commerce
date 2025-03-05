@@ -14,6 +14,7 @@ import {
     Modal,
     Paper,
     Select,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -30,12 +31,14 @@ import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useAddColor from '../hooks/useAddColor';
 import useAddProductVariant from '../hooks/useAddProductVariant';
+import useDeleteProductVariant from '../hooks/useDeleteProductVariant';
 import useFetchBrand from '../hooks/useFetchBrand';
 import useFetchCategory from '../hooks/useFetchCategory';
 import useFetchColor from '../hooks/useFetchColor';
 import useFetchMaterial from '../hooks/useFetchMaterial';
 import useFetchProduct from '../hooks/useFetchProduct';
 import useUpdateProduct from '../hooks/useUpdateProduct';
+import useUpdateProductVariant from '../hooks/useUpdateProductVariant';
 
 export default function ProductDetailPage() {
     const { productId } = useParams();
@@ -43,7 +46,13 @@ export default function ProductDetailPage() {
 
     const { mutate: addColor } = useAddColor();
     const { mutate: updateProduct, isLoading: isUpdating } = useUpdateProduct();
-    const { mutate: addProductVariant } = useAddProductVariant();
+    const { mutate: addProductVariant, isLoading: isAddingVariant } =
+        useAddProductVariant();
+    const { mutate: updateProductVariant, isLoading: isUpdatingVariant } =
+        useUpdateProductVariant();
+    const { mutate: deleteProductVariant, isLoading: isDeletingVariant } =
+        useDeleteProductVariant();
+
     const {
         data: colors,
         isLoading: loadingColor,
@@ -70,36 +79,46 @@ export default function ProductDetailPage() {
         hexCode: '#000000',
     });
     const [editProduct, setEditProduct] = useState({});
+    const [editVariant, setEditVariant] = useState({});
     const [category, setCategory] = useState('');
     const [brand, setBrand] = useState('');
     const [material, setMaterial] = useState('');
     const [categoryId, setCategoryId] = useState(null);
     const [brandId, setBrandId] = useState(null);
     const [materialId, setMaterialId] = useState(null);
-    const [editingProductItemId, setEditingProductItemId] = useState(null);
     const [newProductItem, setNewProductItem] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [openAddColorModal, setOpenAddColorModal] = useState(false);
-
+    const [newImages, setNewImages] = useState([]);
     // Initialize editProduct state when product data is fetched
     useEffect(() => {
         if (product) {
             setEditProduct(product); // Populate state with fetched product data
-            setCategory(
-                categories.find(
-                    (category) =>
-                        category.categoryId === product.category.categoryId
-                )
-            );
-            setBrand(
-                brands.find((brand) => brand.brandId === product.brand.brandId)
-            );
-            setMaterial(
-                materials.find(
-                    (material) =>
-                        material.materialId === product.material.materialId
-                )
-            );
+
+            // Set the selected category, brand, and material
+            if (categories) {
+                setCategory(
+                    categories.find(
+                        (category) =>
+                            category.categoryId === product.category.categoryId
+                    )
+                );
+            }
+            if (brands) {
+                setBrand(
+                    brands.find(
+                        (brand) => brand.brandId === product.brand.brandId
+                    )
+                );
+            }
+            if (materials) {
+                setMaterial(
+                    materials.find(
+                        (material) =>
+                            material.materialId === product.material.materialId
+                    )
+                );
+            }
         }
     }, [product, categories, brands, materials]);
 
@@ -123,12 +142,8 @@ export default function ProductDetailPage() {
         setEditProduct((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleProductItemChange = (productItemId, field, value) => {};
-
-    const handleDeleteProductItem = (productItemId) => {};
-
-    const handleAddImage = (productItemId) => {
-        setEditingProductItemId(productItemId);
+    const handleDeleteProductItem = (productItemId) => {
+        deleteProductVariant(productItemId);
     };
 
     const handleOpenAddVariantModal = () => {
@@ -142,6 +157,10 @@ export default function ProductDetailPage() {
         });
     };
 
+    const handleOpenEditVariantModal = (productItem) => {
+        setEditVariant(productItem);
+    };
+
     const handleAddProductItem = () => {
         if (
             newProductItem?.color?.colorId ||
@@ -150,7 +169,7 @@ export default function ProductDetailPage() {
             newProductItem.productImages.filter((img) => img.mainImage)
                 .length !== 1
         ) {
-            console.log();
+            console.log('Adding new product item:', newProductItem);
             addProductVariant(
                 {
                     productId: product.productId,
@@ -193,37 +212,6 @@ export default function ProductDetailPage() {
                 },
             }
         );
-        if (
-            newProductItem !== null ||
-            newProductItem?.color?.colorId ||
-            newProductItem.sku ||
-            newProductItem.productImages.length === 0 ||
-            newProductItem.productImages.filter((img) => img.mainImage)
-                .length !== 1
-        ) {
-            addProductVariant(
-                {
-                    productId: product.productId,
-                    sku: newProductItem.sku,
-                    originalPrice: newProductItem.originalPrice,
-                    salePrice: newProductItem.salePrice,
-                    stockQuantity: newProductItem.stockQuantity,
-                    colorId: newProductItem.color.colorId,
-                    colorName: newProductItem.color.colorName,
-                    hexCode: newProductItem.color.hexCode,
-                    productImages: newProductItem.productImages.map((img) => ({
-                        file: img.file,
-                        mainImage: img.mainImage,
-                    })),
-                },
-                {
-                    onSettled: () => {
-                        setIsEditing(false);
-                        setNewProductItem(null);
-                    },
-                }
-            );
-        }
     };
 
     const handleSelectColor = (color) => {
@@ -249,47 +237,155 @@ export default function ProductDetailPage() {
         }
     };
 
-    const handleSetMainImage = (imageId) => {
+    const handleSetMainImage = (index) => {
         setNewProductItem((prev) => ({
             ...prev,
-            productImages: prev.productImages.map((img) => ({
+            productImages: prev.productImages.map((img, i) => ({
                 ...img,
-                mainImage: img.imageId === imageId,
+
+                mainImage: i === index,
             })),
         }));
     };
 
-    const handleImageUpload = (files) => {
-        const file = files[0];
-        const reader = new FileReader();
+    const handleSetMainImageForEditVariant = (imageId) => {
+        setEditVariant({
+            ...editVariant,
+            productImages: editVariant.productImages.map((img) => ({
+                ...img,
+                mainImage: img.imageId === imageId,
+            })),
+        });
 
-        reader.onload = (e) => {
-            const previewUrl = e.target.result;
-
-            setNewProductItem((prev) => ({
-                ...prev,
-                productImages: [
-                    ...prev.productImages,
-                    {
-                        imageId: Date.now(),
-                        imageUrl: '',
-                        previewUrl: previewUrl,
-                        mainImage: prev.productImages.length === 0,
-                    },
-                ],
-            }));
-        };
-
-        reader.readAsDataURL(file);
+        setNewImages((prev) =>
+            prev.map((img) => ({
+                ...img,
+                mainImage: false,
+            }))
+        );
     };
 
-    const handleDeleteImage = (imageId) => {
+    const handleSetMainImageForNewImages = (index) => {
+        setNewImages((prev) =>
+            prev.map((image, i) => ({
+                ...image,
+                mainImage: i === index,
+            }))
+        );
+
+        setEditVariant({
+            ...editVariant,
+            productImages: editVariant.productImages.map((img) => ({
+                ...img,
+                mainImage: false,
+            })),
+        });
+    };
+
+    const handleImageUpload = (event) => {
+        // Ensure that the target is a file input element and that files are present
+        const files = event.target?.files;
+
+        if (!files || files.length === 0) {
+            console.error('No files selected or invalid input element');
+            return; // Prevent errors if no file selected or if it's not a valid input element
+        }
+
+        const uploadedImages = Array.from(files)
+            .map((file) => {
+                if (!(file instanceof Blob)) {
+                    console.error('Invalid file type:', file);
+                    return null; // Ignore invalid files
+                }
+
+                return {
+                    imageId: null, // New images have no ID yet
+                    imageUrl: URL.createObjectURL(file), // Preview image
+                    mainImage: false,
+                    file: file, // Store file object for API upload
+                };
+            })
+            .filter((img) => img !== null); // Remove null entries
+
         setNewProductItem((prev) => ({
             ...prev,
+            productImages: [...prev.productImages, ...uploadedImages],
+        }));
+    };
+
+    const handleImageUploadForEditVariant = (event) => {
+        // Ensure that the target is a file input element and that files are present
+        const files = event.target?.files;
+
+        if (!files || files.length === 0) {
+            console.error('No files selected or invalid input element');
+            return; // Prevent errors if no file selected or if it's not a valid input element
+        }
+
+        const uploadedImages = Array.from(files)
+            .map((file) => {
+                if (!(file instanceof Blob)) {
+                    console.error('Invalid file type:', file);
+                    return null; // Ignore invalid files
+                }
+
+                return {
+                    imageId: null, // New images have no ID yet
+                    imageUrl: URL.createObjectURL(file), // Preview image
+                    mainImage: false,
+                    file: file, // Store file object for API upload
+                };
+            })
+            .filter((img) => img !== null); // Remove null entries
+
+        setNewImages([...newImages, ...uploadedImages]);
+    };
+
+    const handleDeleteImage = (index) => {
+        setNewProductItem((prev) => ({
+            ...prev,
+            productImages: prev.productImages.filter((img, i) => i !== index),
+        }));
+    };
+
+    const handleDeleteImageInEditVariant = (id) => {
+        setEditVariant((prev) => ({
+            ...prev,
             productImages: prev.productImages.filter(
-                (img) => img.imageId !== imageId
+                (img) => img.imageId !== id
             ),
         }));
+    };
+
+    const handleDeleteImageInNewImages = (index) => {
+        setNewImages((prev) => prev.filter((img, i) => i !== index));
+    };
+
+    // Save Changes
+    const handleSaveEditVariant = () => {
+        if (editVariant) {
+            if (editVariant.salePrice > editVariant.originalPrice) {
+                alert('Sale price cannot be higher than original price.');
+                return;
+            }
+            console.log('Saving variant changes:', editVariant);
+            console.log('New images:', newImages);
+            // if (newImages.length > 0) {
+            //     // Handle image uploads
+            //     updateProductVariant({ editVariant, newImages });
+            // } else {
+            //     // No new images, just update the product variant
+            //     updateProductVariant({ editVariant, newImages: [] });
+            // }
+
+            // setEditVariant(null); // Exit edit mode
+        }
+    };
+
+    // Cancel Editing & Restore Original Data
+    const handleCancelEdit = () => {
+        setEditVariant(null); // Exit edit mode
+        setNewImages([]); // Clear new images
     };
 
     return (
@@ -379,7 +475,7 @@ export default function ProductDetailPage() {
             >
                 <InputLabel>Category</InputLabel>
                 <Select
-                    value={category.categoryId || ''}
+                    value={category?.categoryId || ''}
                     onChange={(e) => {
                         setCategory(
                             categories?.find(
@@ -418,7 +514,7 @@ export default function ProductDetailPage() {
             >
                 <InputLabel>Brand</InputLabel>
                 <Select
-                    value={brand.brandId || ''}
+                    value={brand?.brandId || ''}
                     onChange={(e) => {
                         setBrand(
                             brands?.find(
@@ -436,7 +532,7 @@ export default function ProductDetailPage() {
                         mb: 0,
                     }}
                 >
-                    {brands.map((brand) => (
+                    {brands?.map((brand) => (
                         <MenuItem key={brand.brandId} value={brand.brandId}>
                             {brand.brandName}
                         </MenuItem>
@@ -453,7 +549,7 @@ export default function ProductDetailPage() {
             >
                 <InputLabel>Material</InputLabel>
                 <Select
-                    value={material.materialId || ''}
+                    value={material?.materialId || ''}
                     onChange={(e) => {
                         setMaterial(
                             materials?.find(
@@ -492,6 +588,7 @@ export default function ProductDetailPage() {
                 startIcon={<AddIcon />}
                 onClick={handleOpenAddVariantModal}
                 sx={{ mb: 2 }}
+                disabled={!isEditing}
             >
                 Add Variant
             </Button>
@@ -518,6 +615,16 @@ export default function ProductDetailPage() {
                                             gap: 2,
                                         }}
                                     >
+                                        <Avatar
+                                            src={
+                                                item.productImages.find(
+                                                    (img) => img.mainImage
+                                                )?.imageUrl
+                                            }
+                                            variant='rounded'
+                                            alt={item.color.colorName}
+                                        ></Avatar>
+
                                         <Box
                                             sx={{
                                                 bgcolor: item.color.hexCode,
@@ -530,74 +637,36 @@ export default function ProductDetailPage() {
                                         </Typography>
                                     </Box>
                                 </TableCell>
+                                <TableCell>{item.sku}</TableCell>
+                                <TableCell>{item.originalPrice}</TableCell>
+                                <TableCell>{item.salePrice}</TableCell>
+                                <TableCell>{item.stockQuantity}</TableCell>
                                 <TableCell>
-                                    <TextField
-                                        size='small'
-                                        value={item.sku}
-                                        onChange={(e) =>
-                                            handleProductItemChange(
-                                                item.productItemId,
-                                                'sku',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        size='small'
-                                        type='number'
-                                        value={item.originalPrice}
-                                        onChange={(e) =>
-                                            handleProductItemChange(
-                                                item.productItemId,
-                                                'originalPrice',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        size='small'
-                                        type='number'
-                                        value={item.salePrice}
-                                        onChange={(e) =>
-                                            handleProductItemChange(
-                                                item.productItemId,
-                                                'salePrice',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        size='small'
-                                        type='number'
-                                        value={item.stockQuantity}
-                                        onChange={(e) =>
-                                            handleProductItemChange(
-                                                item.productItemId,
-                                                'stockQuantity',
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <EditIcon
-                                        onClick={() =>
-                                            handleAddImage(item.productItemId)
-                                        }
-                                    ></EditIcon>
-                                    <DeleteIcon
-                                        onClick={() =>
-                                            handleDeleteProductItem(
-                                                item.productItemId
-                                            )
-                                        }
-                                    ></DeleteIcon>
+                                    <Stack
+                                        direction='row'
+                                        spacing={1}
+                                        justifyContent='start'
+                                        alignItems='center'
+                                    >
+                                        <IconButton
+                                            color='primary'
+                                            onClick={() =>
+                                                handleOpenEditVariantModal(item)
+                                            }
+                                        >
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            color='error'
+                                            onClick={() =>
+                                                handleDeleteProductItem(
+                                                    item.productItemId
+                                                )
+                                            }
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Stack>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -605,7 +674,7 @@ export default function ProductDetailPage() {
                 </Table>
             </TableContainer>
 
-            {/* Model for Adding New Product Item */}
+            {/* Modal for Adding New Product Item */}
             <Modal
                 open={newProductItem !== null}
                 onClose={() => setNewProductItem(null)}
@@ -776,11 +845,9 @@ export default function ProductDetailPage() {
                                     Upload
                                     <input
                                         type='file'
+                                        multiple
                                         hidden
-                                        accept='image/*'
-                                        onChange={(e) =>
-                                            handleImageUpload(e.target.files)
-                                        }
+                                        onChange={handleImageUpload}
                                     />
                                 </Button>
                             </Box>
@@ -794,68 +861,70 @@ export default function ProductDetailPage() {
                                     overflowX: 'auto',
                                 }}
                             >
-                                {newProductItem?.productImages?.map((img) => (
-                                    <Box
-                                        key={img.imageId}
-                                        sx={{
-                                            position: 'relative',
-                                            display: 'inline-block',
-                                            width: 80,
-                                            height: 80,
-                                            border: img.mainImage
-                                                ? '2px solid green'
-                                                : '1px solid #ddd',
-                                            borderRadius: 2,
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() =>
-                                            handleSetMainImage(img.imageId)
-                                        }
-                                    >
-                                        <Avatar
-                                            src={img.previewUrl} // Use the preview URL here
-                                            variant='square'
+                                {newProductItem?.productImages?.map(
+                                    (img, index) => (
+                                        <Box
+                                            key={index}
                                             sx={{
-                                                width: '100%',
-                                                height: '100%',
+                                                position: 'relative',
+                                                display: 'inline-block',
+                                                width: 80,
+                                                height: 80,
+                                                border: img.mainImage
+                                                    ? '2px solid green'
+                                                    : '1px solid #ddd',
+                                                borderRadius: 2,
+                                                cursor: 'pointer',
                                             }}
-                                        />
-                                        <IconButton
-                                            size='small'
-                                            sx={{
-                                                position: 'absolute',
-                                                top: -10,
-                                                right: -10,
-                                                bgcolor: 'white',
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteImage(img.imageId);
-                                            }}
+                                            onClick={() =>
+                                                handleSetMainImage(index)
+                                            }
                                         >
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                        {img.mainImage && (
-                                            <Typography
+                                            <Avatar
+                                                src={img.imageUrl} // Use the preview URL here
+                                                variant='square'
+                                                sx={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                }}
+                                            />
+                                            <IconButton
+                                                size='small'
                                                 sx={{
                                                     position: 'absolute',
-                                                    bottom: 2,
-                                                    left: '50%',
-                                                    transform:
-                                                        'translateX(-50%)',
-                                                    bgcolor:
-                                                        'rgba(0, 0, 0, 0.6)',
-                                                    color: 'white',
-                                                    fontSize: '0.75rem',
-                                                    borderRadius: 1,
-                                                    px: 0.5,
+                                                    top: -10,
+                                                    right: -10,
+                                                    bgcolor: 'white',
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteImage(index);
                                                 }}
                                             >
-                                                Main
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                ))}
+                                                <DeleteIcon fontSize='small' />
+                                            </IconButton>
+                                            {img.mainImage && (
+                                                <Typography
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        bottom: 2,
+                                                        left: '50%',
+                                                        transform:
+                                                            'translateX(-50%)',
+                                                        bgcolor:
+                                                            'rgba(0, 0, 0, 0.6)',
+                                                        color: 'white',
+                                                        fontSize: '0.75rem',
+                                                        borderRadius: 1,
+                                                        px: 0.5,
+                                                    }}
+                                                >
+                                                    Main
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    )
+                                )}
                             </Box>
                         </Box>
                     </Box>
@@ -874,7 +943,7 @@ export default function ProductDetailPage() {
                                 handleAddProductItem(editProduct);
                             }}
                             disabled={
-                                isUpdating ||
+                                isAddingVariant ||
                                 !newProductItem?.color.colorId ||
                                 !newProductItem.sku ||
                                 newProductItem.productImages.length === 0 ||
@@ -883,7 +952,7 @@ export default function ProductDetailPage() {
                                 ).length !== 1
                             }
                         >
-                            Save Variant
+                            {isAddingVariant ? 'Adding...' : 'Add Variant'}
                         </Button>
                     </Box>
                 </Box>
@@ -943,6 +1012,276 @@ export default function ProductDetailPage() {
                     >
                         Add Color
                     </Button>
+                </Box>
+            </Modal>
+
+            {/* Modal for Editing Product Variant */}
+            <Modal
+                open={editVariant !== null && editVariant?.productItemId > 0}
+                onClose={() => {
+                    setEditVariant(null);
+                    setNewImages([]);
+                }}
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 500,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                    }}
+                >
+                    <Typography variant='h6' gutterBottom>
+                        Edit Product Variant
+                    </Typography>
+
+                    {editVariant && (
+                        <Stack spacing={2}>
+                            <Box>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        gap: 2,
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Typography variant='subtitle1'>
+                                        Color: {editVariant?.color?.colorName}
+                                    </Typography>
+
+                                    <Box
+                                        sx={{
+                                            bgcolor:
+                                                editVariant?.color?.hexCode,
+                                            width: 24,
+                                            height: 24,
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+                            <TextField
+                                label='SKU'
+                                value={editVariant.sku}
+                                onChange={(e) =>
+                                    setEditVariant({
+                                        ...editVariant,
+                                        sku: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                label='Original Price'
+                                type='number'
+                                value={editVariant.originalPrice}
+                                onChange={(e) =>
+                                    setEditVariant({
+                                        ...editVariant,
+                                        originalPrice: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                label='Sale Price'
+                                type='number'
+                                value={editVariant.salePrice}
+                                onChange={(e) =>
+                                    setEditVariant({
+                                        ...editVariant,
+                                        salePrice: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                label='Stock Quantity'
+                                type='number'
+                                value={editVariant.stockQuantity}
+                                onChange={(e) =>
+                                    setEditVariant({
+                                        ...editVariant,
+                                        stockQuantity: e.target.value,
+                                    })
+                                }
+                            />
+
+                            {/* IMAGE MANAGEMENT */}
+                            <Typography variant='subtitle1'>
+                                Product Images
+                            </Typography>
+                            <Stack spacing={2}>
+                                {editVariant?.productImages?.map((img) => (
+                                    <Box
+                                        key={img.imageId}
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 2,
+                                        }}
+                                    >
+                                        <img
+                                            src={img.imageUrl}
+                                            alt='Product'
+                                            width={70}
+                                            height={70}
+                                            style={{
+                                                borderRadius: 8,
+                                                objectFit: 'cover',
+                                            }}
+                                        />
+                                        <Button
+                                            size='small'
+                                            variant={
+                                                img.mainImage
+                                                    ? 'contained'
+                                                    : 'outlined'
+                                            }
+                                            color='primary'
+                                            onClick={() => {
+                                                if (!img.mainImage) {
+                                                    handleSetMainImageForEditVariant(
+                                                        img.imageId
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            {img.mainImage
+                                                ? 'Main Image'
+                                                : 'Set as Main'}
+                                        </Button>
+
+                                        <IconButton
+                                            color='error'
+                                            onClick={() =>
+                                                handleDeleteImageInEditVariant(
+                                                    img.imageId
+                                                )
+                                            }
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                            </Stack>
+
+                            {/* UPLOAD NEW IMAGES */}
+                            <Button variant='contained' component='label'>
+                                Upload New Images
+                                <input
+                                    type='file'
+                                    multiple
+                                    hidden
+                                    onChange={handleImageUploadForEditVariant}
+                                />
+                            </Button>
+
+                            {/* PREVIEW NEW UPLOADED IMAGES */}
+                            <Stack
+                                spacing={2}
+                                direction='row'
+                                sx={{ overflowX: 'auto' }}
+                            >
+                                {newImages?.map((img, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                            position: 'relative',
+                                            border:
+                                                img.mainImage === true
+                                                    ? '2px solid rgb(31, 173, 67)'
+                                                    : 'none',
+                                            borderRadius: 4,
+                                            cursor: 'pointer',
+                                            overflow: 'hidden', // Hide overflow if the image exceeds box dimensions
+                                            width: '80px',
+                                            height: '80px', // Set the height explicitly, or set it based on the parent container
+                                        }}
+                                        onClick={() =>
+                                            handleSetMainImageForNewImages(
+                                                index
+                                            )
+                                        }
+                                    >
+                                        <img
+                                            src={img.imageUrl}
+                                            alt='New Upload'
+                                            style={{
+                                                borderRadius: 8,
+                                                width: '100%', // Ensure the image takes full width
+                                                height: '100%', // Ensure the image takes full height of the container
+                                                objectFit: 'cover', // Ensure the image covers the full container area
+                                            }}
+                                        />
+                                        {/* Delete button */}
+                                        <IconButton
+                                            size='small'
+                                            sx={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 0,
+                                                backgroundColor:
+                                                    'rgba(255, 255, 255, 0.7)',
+                                                '&:hover': {
+                                                    backgroundColor:
+                                                        'rgba(255, 255, 255, 0.9)',
+                                                },
+                                                padding: '2px',
+                                                m: 0.5,
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering the parent box's onClick
+                                                handleDeleteImageInNewImages(
+                                                    index
+                                                );
+                                            }}
+                                        >
+                                            <DeleteIcon
+                                                fontSize='small'
+                                                sx={{ color: 'error.main' }}
+                                            />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                            </Stack>
+
+                            {/* BUTTONS */}
+                            <Stack
+                                direction='row'
+                                spacing={2}
+                                justifyContent='flex-end'
+                            >
+                                <Button
+                                    onClick={handleCancelEdit}
+                                    color='secondary'
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleSaveEditVariant}
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={
+                                        isUpdatingVariant ||
+                                        !editVariant?.color?.colorId ||
+                                        !editVariant.sku ||
+                                        editVariant.productImages.length ===
+                                            0 ||
+                                        (editVariant.productImages.filter(
+                                            (img) => img.mainImage
+                                        ).length !== 1 &&
+                                            newImages.filter(
+                                                (img) => img.mainImage
+                                            ).length !== 1)
+                                    }
+                                >
+                                    Save
+                                </Button>
+                            </Stack>
+                        </Stack>
+                    )}
                 </Box>
             </Modal>
         </Box>
