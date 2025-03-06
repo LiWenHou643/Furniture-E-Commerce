@@ -142,7 +142,7 @@ public class ProductService {
 			@CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId") })
 	@Transactional // Ensures the update operation is atomic
 	public ProductDTO updateProduct(ProductDTO productDTO) {
-		Product product = productRepository.findById(productDTO.getProductId()).orElseThrow(
+		Product product = productRepository.findByIdAndProductStatusTrue(productDTO.getProductId()).orElseThrow(
 				() -> new IllegalArgumentException("Product with id " + productDTO.getProductId() + " not found"));
 
 		if (productDTO.getCategoryId() != null) {

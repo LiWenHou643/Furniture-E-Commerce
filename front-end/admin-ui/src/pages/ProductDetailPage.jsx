@@ -198,6 +198,8 @@ export default function ProductDetailPage() {
 
     const toggleEditingMode = () => {
         setIsEditing((prev) => !prev);
+
+        setEditProduct(product); // Reset the editProduct state to the original product data
     };
 
     const handleUpdateProduct = (product) => {
@@ -670,6 +672,7 @@ export default function ProductDetailPage() {
                                             onClick={() =>
                                                 handleOpenEditVariantModal(item)
                                             }
+                                            disabled={!isEditing}
                                         >
                                             <EditIcon />
                                         </IconButton>
@@ -679,6 +682,9 @@ export default function ProductDetailPage() {
                                                 handleDeleteProductItem(
                                                     item.productItemId
                                                 )
+                                            }
+                                            disabled={
+                                                !isEditing || isDeletingVariant
                                             }
                                         >
                                             <DeleteIcon />
