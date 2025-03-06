@@ -3,24 +3,19 @@ import toast from 'react-hot-toast';
 import axiosPrivate from '../api/axiosPrivate';
 
 const updateProductVariant = async (editVariant, newImages) => {
-    if (newImages.length === 0) {
-        const response = await axiosPrivate.put('/products/product-items', {
-            ...editVariant,
-        });
-        return response.data;
-    }
-
     const formData = new FormData();
 
-    // Append general product details
-    formData.append('productId', editVariant.productId);
-    formData.append('sku', editVariant.sku);
-    formData.append('originalPrice', editVariant.originalPrice);
-    formData.append('salePrice', editVariant.salePrice);
-    formData.append('stockQuantity', editVariant.stockQuantity);
-
-    // Append color details
     formData.append('color', JSON.stringify(editVariant.color));
+    formData.append('originalPrice', editVariant.originalPrice);
+    formData.append('productId', editVariant.productId);
+    formData.append('productItemId', editVariant.productItemId);
+    formData.append(
+        'productItemStatus',
+        JSON.stringify(editVariant.productItemStatus)
+    );
+    formData.append('salePrice', editVariant.salePrice);
+    formData.append('sku', editVariant.sku);
+    formData.append('stockQuantity', editVariant.stockQuantity);
 
     // Append existing images
     editVariant.productImages.forEach((image, imageIndex) => {
@@ -31,6 +26,10 @@ const updateProductVariant = async (editVariant, newImages) => {
                 `productImages[${imageIndex}].imageUrl`,
                 image.imageUrl
             );
+            formData.append(
+                `productImages[${imageIndex}].imageId`,
+                image.imageId
+            );
         }
         formData.append(
             `productImages[${imageIndex}].mainImage`,
@@ -38,13 +37,18 @@ const updateProductVariant = async (editVariant, newImages) => {
         );
     });
 
-    // Append new images
-    newImages.forEach((img, newIndex) => {
-        if (img.file) {
-            formData.append(`newProductImages[${newIndex}]`, img.file);
-            formData.append(`newProductImagesMain[${newIndex}]`, img.mainImage);
-        }
-    });
+    if (newImages.length !== 0) {
+        // Append new images
+        newImages.forEach((img, newIndex) => {
+            if (img.file) {
+                formData.append(`newProductImages[${newIndex}].file`, img.file);
+                formData.append(
+                    `newProductImages[${newIndex}].mainImage`,
+                    img.mainImage
+                );
+            }
+        });
+    }
 
     console.log('FormData Contents:');
     for (let [key, value] of formData.entries()) {

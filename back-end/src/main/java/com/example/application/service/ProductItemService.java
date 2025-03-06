@@ -102,7 +102,7 @@ public class ProductItemService {
 		// Update for productImages in this service
 		// 1. Update existing images (main image status) and remove deleted images
 		// Update image URLs in the database
-		if (productItemDTO.getProductImages() != null) {
+		if (productItemDTO.getProductImages() != null && !productItemDTO.getProductImages().isEmpty()) {
 			// Create a map for fast lookup of existing images by imageId
 			Map<Long, ProductImage> existingImagesMap = productItem.getProductImages().stream()
 					.collect(Collectors.toMap(ProductImage::getImageId, image -> image));
@@ -121,8 +121,6 @@ public class ProductItemService {
 					if (existingImage != null) {
 						// Update main image status in case it has changed
 						existingImage.setMainImage(productImageDTO.isMainImage());
-						// Remove it from the set to avoid deleting this image later
-						frontEndImageIds.remove(imageId);
 					}
 				}
 			}
@@ -132,11 +130,14 @@ public class ProductItemService {
 					.filter(image -> !frontEndImageIds.contains(image.getImageId())).collect(Collectors.toList());
 
 			productItem.getProductImages().removeAll(imagesToRemove);
+			log.info("Existing images: {}", existingImagesMap);
+			log.info("Front end images: {}", frontEndImageIds);
+			log.info("Images to remove: {}", imagesToRemove);
 		}
 
 		// 2. Add new images
 		// Upload images to Cloudinary and update productDTO with secure URLs
-		if (productItemDTO.getNewProductImages() != null) {
+		if (productItemDTO.getNewProductImages() != null && !productItemDTO.getNewProductImages().isEmpty()) {
 			for (ProductImageDTO productImage : productItemDTO.getNewProductImages()) {
 				if (productImage.getFile() != null) {
 					var uploadResult = cloudinary.uploader().upload(productImage.getFile().getBytes(),

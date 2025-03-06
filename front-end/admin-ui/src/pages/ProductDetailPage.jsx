@@ -158,7 +158,10 @@ export default function ProductDetailPage() {
     };
 
     const handleOpenEditVariantModal = (productItem) => {
-        setEditVariant(productItem);
+        setEditVariant({
+            ...productItem,
+            productId: productId,
+        });
     };
 
     const handleAddProductItem = () => {
@@ -370,15 +373,29 @@ export default function ProductDetailPage() {
             }
             console.log('Saving variant changes:', editVariant);
             console.log('New images:', newImages);
-            // if (newImages.length > 0) {
-            //     // Handle image uploads
-            //     updateProductVariant({ editVariant, newImages });
-            // } else {
-            //     // No new images, just update the product variant
-            //     updateProductVariant({ editVariant, newImages: [] });
-            // }
-
-            // setEditVariant(null); // Exit edit mode
+            if (newImages.length > 0) {
+                // Handle image uploads
+                updateProductVariant(
+                    { editVariant, newImages },
+                    {
+                        onSettled: () => {
+                            setEditVariant(null);
+                            setNewImages([]);
+                        },
+                    }
+                );
+            } else {
+                // No new images, just update the product variant
+                updateProductVariant(
+                    { editVariant, newImages: [] },
+                    {
+                        onSettled: () => {
+                            setEditVariant(null);
+                            setNewImages([]);
+                        },
+                    }
+                );
+            }
         }
     };
 
@@ -1267,8 +1284,6 @@ export default function ProductDetailPage() {
                                         isUpdatingVariant ||
                                         !editVariant?.color?.colorId ||
                                         !editVariant.sku ||
-                                        editVariant.productImages.length ===
-                                            0 ||
                                         (editVariant.productImages.filter(
                                             (img) => img.mainImage
                                         ).length !== 1 &&
@@ -1277,7 +1292,7 @@ export default function ProductDetailPage() {
                                             ).length !== 1)
                                     }
                                 >
-                                    Save
+                                    {isUpdatingVariant ? 'Saving...' : 'Save'}
                                 </Button>
                             </Stack>
                         </Stack>
