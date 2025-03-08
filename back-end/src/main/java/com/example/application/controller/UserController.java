@@ -69,10 +69,12 @@ public class UserController {
 				userService.deleteAddress(userId, addressId)));
 	}
 
-	@PutMapping("/profile")
-	@PreAuthorize("hasAnyRole('USER')")
-	public ResponseEntity<?> updateProfile(@RequestBody UserDTO request) {
-		var userId = getUserId();
+	@PutMapping("/{userId}/profile")
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<?> updateProfile(@PathVariable(required = false) Long userId, @RequestBody UserDTO request) {
+		if (userId == null) {
+			userId = getUserId();
+		}
 		return ResponseEntity
 				.ok(new ApiResponse<>("success", "User updated successfully", userService.updateUser(userId, request)));
 	}
@@ -111,9 +113,18 @@ public class UserController {
 		}
 	}
 
-	@PutMapping("/ban/{userId}")
+	@PutMapping("/{userId}/status")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> banUser(@PathVariable Long userId) {
-		return ResponseEntity.ok(new ApiResponse<>("success", "User banned successfully", userService.banUser(userId)));
+	public ResponseEntity<?> changeUserStatus(@PathVariable Long userId) {
+		return ResponseEntity
+				.ok(new ApiResponse<>("success", "User banned successfully", userService.changeUserStatus(userId)));
 	}
+
+	@GetMapping("/user-count")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getUserCount() {
+		return ResponseEntity
+				.ok(new ApiResponse<>("success", "User count retrieved successfully", userService.countUsers()));
+	}
+
 }

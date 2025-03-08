@@ -13,7 +13,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         format-sql: true
         jdbc:
           time-zone: UTC

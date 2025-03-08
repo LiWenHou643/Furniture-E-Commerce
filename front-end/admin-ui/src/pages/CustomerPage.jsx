@@ -1,9 +1,12 @@
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import SearchIcon from '@mui/icons-material/Search';
 import {
     Avatar,
     Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     IconButton,
     Pagination,
     Paper,
@@ -23,15 +26,25 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loading from '../components/Loading';
 import useFetchCustomers from '../hooks/useFetchCustomers';
+import useToggleUserStatus from '../hooks/useToggleUserStatus';
+import useUpdateUser from '../hooks/useUpdateUser'; // Import the hook for updating user info
+
 const CustomerPage = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [search, setSearch] = useState('');
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const [openModal, setOpenModal] = useState(false); // To control modal visibility
+    const [userIdToToggle, setUserIdToToggle] = useState(null); // To store the user ID for toggling
     const { data: customers, isLoading } = useFetchCustomers({
         page: currentPage - 1,
         size: 8,
     });
+    const { mutate } = useToggleUserStatus();
+    const { mutate: updateUser, isLoading: isUpdating } = useUpdateUser();
+
+    // State for edit user modal
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     if (isLoading) {
         return <Loading />;
@@ -47,24 +60,60 @@ const CustomerPage = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleToggleUserStatus = (userId) => {
+        // Trigger the mutation to change user status
+        mutate(userId);
+        setOpenModal(false); // Close the modal after confirming the change
+    };
+
+    const handleSwitchChange = (userId) => {
+        // Show confirmation modal instead of immediately toggling the switch
+        setUserIdToToggle(userId);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setUserIdToToggle(null); // Clear the stored userId when modal is closed
+    };
+
+    // Handle opening edit modal
+    const handleOpenEditModal = (user) => {
+        setSelectedUser({ ...user });
+        setOpenEditModal(true);
+    };
+
+    // Handle closing edit modal
+    const handleCloseEditModal = () => {
+        setOpenEditModal(false);
+        setSelectedUser(null);
+    };
+
+    // Handle user information change
+    const handleUserInfoChange = (e) => {
+        const { name, value } = e.target;
+        setSelectedUser((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    // Handle save user changes
+    const handleSaveUserChanges = () => {
+        if (selectedUser) {
+            updateUser(selectedUser, {
+                onSuccess: () => {
+                    handleCloseEditModal();
+                },
+            });
+        }
+    };
+
     return (
         <Box sx={{ p: 4 }}>
             <Typography variant='h4' gutterBottom>
                 Customers Management
             </Typography>
-
-            {/* Search Input */}
-            <TextField
-                label='Search by Name, Email, Phone'
-                variant='outlined'
-                fullWidth
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                InputProps={{
-                    startAdornment: <SearchIcon sx={{ marginRight: 1 }} />,
-                }}
-                sx={{ marginBottom: 2 }}
-            />
 
             <TableContainer component={Paper}>
                 <Table>
@@ -111,19 +160,22 @@ const CustomerPage = () => {
                                     <Switch
                                         checked={customer.userStatus}
                                         color='primary'
+                                        onChange={() =>
+                                            handleSwitchChange(customer.userId)
+                                        }
                                     />
                                 </TableCell>
 
                                 {/* Actions */}
                                 <TableCell>
                                     <Tooltip title='Edit'>
-                                        <IconButton color='primary'>
+                                        <IconButton
+                                            color='primary'
+                                            onClick={() =>
+                                                handleOpenEditModal(customer)
+                                            }
+                                        >
                                             <EditIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title='Delete'>
-                                        <IconButton color='error'>
-                                            <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
                                 </TableCell>
@@ -152,6 +204,105 @@ const CustomerPage = () => {
                     </Stack>
                 )
             }
+
+            {/* Confirmation Modal for Status Toggle */}
+            <Dialog open={openModal} onClose={handleCloseModal}>
+                <DialogTitle>Confirm User Status Change</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to change the user status?
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleCloseModal}
+                        color='primary'
+                        variant='outlined'
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => handleToggleUserStatus(userIdToToggle)}
+                        color='primary'
+                        variant='contained'
+                    >
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Edit User Modal */}
+            <Dialog
+                open={openEditModal}
+                onClose={handleCloseEditModal}
+                fullWidth
+                maxWidth='sm'
+            >
+                <DialogTitle>Edit User Information</DialogTitle>
+                <DialogContent>
+                    {selectedUser && (
+                        <Stack spacing={2} sx={{ mt: 1 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    mb: 2,
+                                }}
+                            >
+                                <Avatar
+                                    src={selectedUser.avatar || ''}
+                                    alt={selectedUser.firstName}
+                                    sx={{ width: 80, height: 80 }}
+                                />
+                            </Box>
+
+                            <TextField
+                                name='firstName'
+                                label='First Name'
+                                value={selectedUser.firstName || ''}
+                                onChange={handleUserInfoChange}
+                                fullWidth
+                            />
+
+                            <TextField
+                                name='lastName'
+                                label='Last Name'
+                                value={selectedUser.lastName || ''}
+                                onChange={handleUserInfoChange}
+                                fullWidth
+                            />
+
+                            <TextField
+                                name='email'
+                                label='Email'
+                                value={selectedUser.email || ''}
+                                onChange={handleUserInfoChange}
+                                fullWidth
+                                type='email'
+                            />
+
+                            <TextField
+                                name='phoneNumber'
+                                label='Phone Number'
+                                value={selectedUser.phoneNumber || ''}
+                                onChange={handleUserInfoChange}
+                                fullWidth
+                            />
+                        </Stack>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseEditModal} color='secondary'>
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleSaveUserChanges}
+                        color='primary'
+                        variant='contained'
+                        disabled={isUpdating}
+                    >
+                        {isUpdating ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
