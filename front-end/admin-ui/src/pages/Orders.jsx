@@ -14,7 +14,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -34,7 +33,6 @@ const filterStatusList = [
 export default function Orders() {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
-    const [search, setSearch] = useState('');
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = searchParams.get('page') || 1;
     const filterStatus = searchParams.get('filterStatus') || 'pending';
@@ -43,8 +41,6 @@ export default function Orders() {
         size: 10,
         status: searchParams.get('filterStatus') || 'pending',
     });
-
-    const handleSearch = (e) => setSearch(e.target.value);
 
     const handleFilterChange = (e) => {
         searchParams.set('filterStatus', e.target.value);
@@ -73,15 +69,8 @@ export default function Orders() {
                 Order Management
             </Typography>
 
-            {/* Filters and Search */}
+            {/* Filters */}
             <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                <TextField
-                    label='Search by Order ID or Customer Name'
-                    variant='outlined'
-                    size='small'
-                    value={search}
-                    onChange={handleSearch}
-                />
                 <Select
                     value={filterStatus}
                     onChange={handleFilterChange}

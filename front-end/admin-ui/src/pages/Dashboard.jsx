@@ -1,18 +1,12 @@
 import {
     AppBar,
-    Avatar,
     Box,
     Card,
     CardContent,
     Container,
     Grid,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
+    Stack,
     Toolbar,
     Typography,
 } from '@mui/material';
@@ -32,6 +26,9 @@ import {
     YAxis,
 } from 'recharts';
 import Notification from '../components/Notification';
+
+import Loading from '../components/Loading';
+import useFetchMonthlyIncome from '../hooks/useFetchMonthlyIncome';
 import {
     useFetchMonthly,
     useFetchOrderCountByDayAndStatus,
@@ -39,45 +36,11 @@ import {
     useFetchOrderCountByMonthAndStatus,
     useFetchOrderCountByYear,
 } from '../hooks/useFetchOrdersCount';
-
-// Sample Sales Data
-const salesData = [
-    { month: 'Jan', sales: 4000 },
-    { month: 'Feb', sales: 3000 },
-    { month: 'Mar', sales: 5000 },
-    { month: 'Apr', sales: 7000 },
-    { month: 'May', sales: 6000 },
-    { month: 'Jun', sales: 8000 },
-];
-
-// Sample Orders Data
-const orders = [
-    { id: 1, customer: 'Alice Johnson', date: '2025-02-15', amount: '$120.00' },
-    { id: 2, customer: 'John Doe', date: '2025-02-16', amount: '$95.00' },
-    { id: 3, customer: 'Emma Smith', date: '2025-02-17', amount: '$250.00' },
-];
-
-// Sample Top Products Data
-const topProducts = [
-    {
-        id: 1,
-        name: 'Wireless Earbuds',
-        image: 'https://via.placeholder.com/50',
-        sales: '1,200',
-    },
-    {
-        id: 2,
-        name: 'Smart Watch',
-        image: 'https://via.placeholder.com/50',
-        sales: '980',
-    },
-    {
-        id: 3,
-        name: 'Gaming Mouse',
-        image: 'https://via.placeholder.com/50',
-        sales: '870',
-    },
-];
+import useFetchTopSales from '../hooks/useFetchTopSales';
+import useFetchTotalIncome from '../hooks/useFetchTotalIncome';
+import useFetchTotalOrderCount from '../hooks/useFetchTotalOrderCount';
+import useFetchTotalSales from '../hooks/useFetchTotalSales';
+import useFetchUserCount from '../hooks/useFetchUserCount';
 
 export default function Dashboard() {
     const { data: date_status, isLoading: isLoadingDate } =
@@ -88,18 +51,34 @@ export default function Dashboard() {
         useFetchOrderCountByMonthAndStatus();
     const { data: year, isLoading: isLoadingYear } = useFetchOrderCountByYear();
     const { data: monthly, isLoading: isLoadingMonthly } = useFetchMonthly();
+    const { data: topProductsData, isLoading: isLoadingTopProducts } =
+        useFetchTopSales();
+    const { data: userCount, isLoading: isLoadingUserCount } =
+        useFetchUserCount();
+    const { data: totalOrderCount, isLoading: isLoadingTotalOrderCount } =
+        useFetchTotalOrderCount();
+    const { data: totalSales, isLoading: isLoadingTotalSales } =
+        useFetchTotalSales();
+    const { data: totalIncome, isLoading: isLoadingTotalIncome } =
+        useFetchTotalIncome();
+    const { data: monthlyIncome, isLoading: isLoadingMonthlyIncome } =
+        useFetchMonthlyIncome();
 
     if (
         isLoadingDate ||
         isLoadingMonth ||
         isLoadingMonthStatus ||
         isLoadingYear ||
-        isLoadingMonthly
+        isLoadingMonthly ||
+        isLoadingTopProducts ||
+        isLoadingUserCount ||
+        isLoadingTotalOrderCount ||
+        isLoadingTotalSales ||
+        isLoadingTotalIncome ||
+        isLoadingMonthlyIncome
     ) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
-
-    console.log({ date_status, month, month_status, year, monthly });
 
     // Convert numeric month to readable format
     const monthLabels = [
@@ -117,12 +96,30 @@ export default function Dashboard() {
         'Dec',
     ];
     // Color mapping for charts
-    const COLORS = ['#ff6961', '#77dd77', '#fd1d93', '#84b6f4', '#f16ae1'];
+    const COLORS = ['#cc6d00', '#ced100', '#0049d1', '#008c13', '#a60000'];
 
     const formattedMonthlyData = Array.from({ length: 12 }, (_, index) => {
         const found = monthly.find((m) => m.month === index + 1);
         return { month: monthLabels[index], count: found ? found.count : 0 };
     });
+
+    const emptyDateStatus =
+        date_status.filter((item) => item.count !== 0).length === 0;
+
+    const emptyMonthStatus =
+        month_status.filter((item) => item.count !== 0).length === 0;
+
+    // Prepare data for the chart (ensuring every month is present)
+    const allMonths = Array.from({ length: 12 }, (_, index) => index + 1); // Array [1, 2, ..., 12]
+
+    const salesData = allMonths.map((month) => {
+        const dataForMonth = monthlyIncome.find((data) => data.month === month);
+        return {
+            month,
+            sales: dataForMonth ? dataForMonth.value : 0,
+        };
+    });
+
     return (
         <Box sx={{ display: 'flex' }}>
             {/* Main Content */}
@@ -153,32 +150,41 @@ export default function Dashboard() {
                         <Grid item xs={12} md={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
                                 <Typography variant='h6'>
-                                    Total Sales
+                                    Sold Products
                                 </Typography>
-                                <Typography variant='h4'>$12,345</Typography>
+                                <Typography variant='h4'>
+                                    {totalSales}
+                                </Typography>
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
                                 <Typography variant='h6'>Orders</Typography>
-                                <Typography variant='h4'>234</Typography>
+                                <Typography variant='h4'>
+                                    {totalOrderCount}
+                                    {console.log(totalOrderCount)}
+                                </Typography>
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
                                 <Typography variant='h6'>Customers</Typography>
-                                <Typography variant='h4'>1,234</Typography>
+                                <Typography variant='h4'>
+                                    {userCount}
+                                </Typography>
                             </Paper>
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
                                 <Typography variant='h6'>Revenue</Typography>
-                                <Typography variant='h4'>$67,890</Typography>
+                                <Typography variant='h4'>
+                                    ${totalIncome}
+                                </Typography>
                             </Paper>
                         </Grid>
 
                         {/* Sales Analytics */}
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} md={7}>
                             <Paper sx={{ p: 3, borderRadius: 2 }}>
                                 <Typography variant='h6' gutterBottom>
                                     📈 Sales Analytics
@@ -200,60 +206,18 @@ export default function Dashboard() {
                             </Paper>
                         </Grid>
 
-                        {/* Recent Orders */}
-                        <Grid item xs={12} md={4}>
-                            <Paper sx={{ p: 3, borderRadius: 2 }}>
-                                <Typography variant='h6' gutterBottom>
-                                    🛒 Recent Orders
-                                </Typography>
-                                <TableContainer>
-                                    <Table size='small'>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <b>Customer</b>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <b>Date</b>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <b>Amount</b>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {orders.map((order) => (
-                                                <TableRow key={order.id}>
-                                                    <TableCell>
-                                                        {order.customer}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {order.date}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {order.amount}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Paper>
-                        </Grid>
-
                         {/* Top Products */}
-                        <Grid item xs={12}>
+                        <Grid item xs={12} md={5}>
                             <Paper sx={{ p: 3, borderRadius: 2 }}>
                                 <Typography variant='h6' gutterBottom>
                                     🔥 Top Selling Products
                                 </Typography>
                                 <Grid container spacing={2}>
-                                    {topProducts.map((product) => (
+                                    {topProductsData.map((product) => (
                                         <Grid
                                             item
                                             xs={12}
-                                            sm={4}
-                                            key={product.id}
+                                            key={product.productId}
                                         >
                                             <Paper
                                                 sx={{
@@ -264,23 +228,20 @@ export default function Dashboard() {
                                                     borderRadius: 2,
                                                 }}
                                             >
-                                                <Avatar
-                                                    variant='square'
-                                                    src={product.image}
-                                                    sx={{
-                                                        width: 50,
-                                                        height: 50,
-                                                    }}
-                                                />
                                                 <div>
                                                     <Typography variant='subtitle1'>
-                                                        <b>{product.name}</b>
+                                                        <b>
+                                                            {
+                                                                product.productName
+                                                            }
+                                                        </b>
                                                     </Typography>
                                                     <Typography
                                                         variant='body2'
                                                         color='text.secondary'
                                                     >
-                                                        Sold: {product.sales}
+                                                        Sold:{' '}
+                                                        {product.soldQuantity}
                                                     </Typography>
                                                 </div>
                                             </Paper>
@@ -290,90 +251,241 @@ export default function Dashboard() {
                             </Paper>
                         </Grid>
                     </Grid>
+
+                    {/* Order Status Overview (Pie Chart) */}
+                    <Grid
+                        container
+                        spacing={2} // Optional: Adds spacing between columns
+                        sx={{ my: 2 }}
+                    >
+                        <Grid item xs={4} sx={{ p: 3 }}>
+                            {!emptyDateStatus ? (
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant='h6'>
+                                            Order Today
+                                        </Typography>
+                                        <ResponsiveContainer height={300}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={date_status}
+                                                    dataKey='count'
+                                                    nameKey='status'
+                                                    cx='50%'
+                                                    cy='50%'
+                                                    outerRadius={80}
+                                                    label
+                                                >
+                                                    {date_status.map(
+                                                        (entry, index) => (
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={
+                                                                    COLORS[
+                                                                        index %
+                                                                            COLORS.length
+                                                                    ]
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </Pie>
+                                                <Tooltip />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <Typography
+                                    variant='h6'
+                                    sx={{
+                                        my: 2,
+                                        textAlign: 'center',
+                                        width: '100%',
+                                    }}
+                                >
+                                    No data order today available
+                                </Typography>
+                            )}
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant='h6'>
+                                        Order Status Details
+                                    </Typography>
+                                    <DataGrid
+                                        rows={date_status.map(
+                                            (item, index) => ({
+                                                id: index,
+                                                ...item,
+                                            })
+                                        )}
+                                        columns={[
+                                            {
+                                                field: 'status',
+                                                headerName: 'Status',
+                                                flex: 1,
+                                            },
+                                            {
+                                                field: 'count',
+                                                headerName: 'Order Count',
+                                                flex: 1,
+                                            },
+                                        ]}
+                                        autoHeight
+                                        pageSizeOptions={[1000]} // Set a very high value to show all rows
+                                        hideFooterPagination // Hide pagination controls
+                                    />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+
+                    {/* Order Status Overview (Pie Chart) */}
+                    <Grid
+                        container
+                        spacing={2} // Optional: Adds spacing between columns
+                        sx={{ my: 2 }}
+                    >
+                        <Grid item xs={4} sx={{ p: 3 }}>
+                            {!emptyMonthStatus ? (
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant='h6'>
+                                            Order In This Month
+                                        </Typography>
+                                        <ResponsiveContainer height={300}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={month_status}
+                                                    dataKey='count'
+                                                    nameKey='status'
+                                                    cx='50%'
+                                                    cy='50%'
+                                                    outerRadius={80}
+                                                    label
+                                                >
+                                                    {month_status.map(
+                                                        (entry, index) => (
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={
+                                                                    COLORS[
+                                                                        index %
+                                                                            COLORS.length
+                                                                    ]
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </Pie>
+                                                <Tooltip />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                        <Stack
+                                            direction='row'
+                                            spacing={2}
+                                            flexWrap='wrap'
+                                            justifyContent='center'
+                                        >
+                                            {month_status.map(
+                                                (entry, index) => (
+                                                    <Stack
+                                                        key={index}
+                                                        direction='row'
+                                                        alignItems='center'
+                                                        spacing={1}
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                width: 12,
+                                                                height: 12,
+                                                                backgroundColor:
+                                                                    COLORS[
+                                                                        index %
+                                                                            COLORS.length
+                                                                    ],
+                                                                borderRadius:
+                                                                    '50%',
+                                                            }}
+                                                        />
+                                                        <Typography variant='body2'>
+                                                            {entry.status}
+                                                        </Typography>
+                                                    </Stack>
+                                                )
+                                            )}
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <Typography
+                                    variant='h6'
+                                    sx={{
+                                        my: 2,
+                                        textAlign: 'center',
+                                        width: '100%',
+                                    }}
+                                >
+                                    No data order this month available
+                                </Typography>
+                            )}
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant='h6'>
+                                        Order Status Details
+                                    </Typography>
+                                    <DataGrid
+                                        rows={month_status.map(
+                                            (item, index) => ({
+                                                id: index,
+                                                ...item,
+                                            })
+                                        )}
+                                        columns={[
+                                            {
+                                                field: 'status',
+                                                headerName: 'Status',
+                                                flex: 1,
+                                            },
+                                            {
+                                                field: 'count',
+                                                headerName: 'Order Count',
+                                                flex: 1,
+                                            },
+                                        ]}
+                                        autoHeight
+                                        pageSizeOptions={[1000]} // Set a very high value to show all rows
+                                        hideFooterPagination // Hide pagination controls
+                                    />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+
+                    {/* Monthly Order Trend (Bar Chart) */}
+                    <Grid item xs={12}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant='h6'>
+                                    Monthly Finished Orders In{' '}
+                                    {new Date().getFullYear()}
+                                </Typography>
+                                <ResponsiveContainer width='100%' height={300}>
+                                    <BarChart data={formattedMonthlyData}>
+                                        <XAxis dataKey='month' />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Bar dataKey='count' fill='#82ca9d' />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Container>
-
-                {/* Order Status Overview (Pie Chart) */}
-                <Grid item xs={12} md={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant='h6'>
-                                Order Status Breakdown
-                            </Typography>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <PieChart>
-                                    <Pie
-                                        data={date_status}
-                                        dataKey='count'
-                                        nameKey='status'
-                                        cx='50%'
-                                        cy='50%'
-                                        outerRadius={80}
-                                        label
-                                    >
-                                        {date_status.map((entry, index) => (
-                                            <Cell
-                                                key={`cell-${index}`}
-                                                fill={
-                                                    COLORS[
-                                                        index % COLORS.length
-                                                    ]
-                                                }
-                                            />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Monthly Order Trend (Bar Chart) */}
-                <Grid item xs={12} md={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant='h6'>Monthly Orders</Typography>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <BarChart data={formattedMonthlyData}>
-                                    <XAxis dataKey='month' />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey='count' fill='#82ca9d' />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Order Status Data Table */}
-                <Grid item xs={12}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant='h6'>
-                                Order Status Details
-                            </Typography>
-                            <DataGrid
-                                rows={date_status.map((item, index) => ({
-                                    id: index,
-                                    ...item,
-                                }))}
-                                columns={[
-                                    {
-                                        field: 'status',
-                                        headerName: 'Status',
-                                        flex: 1,
-                                    },
-                                    {
-                                        field: 'count',
-                                        headerName: 'Order Count',
-                                        flex: 1,
-                                    },
-                                ]}
-                                autoHeight
-                            />
-                        </CardContent>
-                    </Card>
-                </Grid>
             </Box>
         </Box>
     );

@@ -60,13 +60,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	int findTotalFinishedOrdersByYear(@Param("year") int year);
 
 	@Query("""
-			SELECT new com.example.application.dto.MonthlyOrderCountDTO(MONTH(o.createdAt), COUNT(o))
+			SELECT new com.example.application.dto.MonthlyOrderCountDTO(MONTH(o.deliveryDate), COUNT(o))
 			FROM Order o
-			WHERE YEAR(o.createdAt) = :year
-			GROUP BY MONTH(o.createdAt)
+			WHERE YEAR(o.deliveryDate) = :year
+			GROUP BY MONTH(o.deliveryDate)
 			""")
-	List<MonthlyOrderCountDTO> findMonthlyOrderCount(@Param("year") int year);
+	List<MonthlyOrderCountDTO> findMonthlyFinishedOrderCount(@Param("year") int year);
 
-	// Find
+	// Find total finished orders all time
+	@Query("""
+			SELECT COUNT(o) FROM Order o
+			WHERE o.orderStatus = 'DELIVERED'
+			""")
+	int findTotalFinishedOrders();
 
 }

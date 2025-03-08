@@ -170,8 +170,8 @@ public class OrderController {
 
 	@GetMapping("/order-count-by-month")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findOrdersCountByStatusAndMonth(@RequestParam @Min(1) Integer year,
-			@RequestParam @Min(1) @Max(12) Integer month) {
+	public ResponseEntity<?> findOrdersCountByStatusAndMonth(@RequestParam(required = false) @Min(1) Integer year,
+			@RequestParam(required = false) @Min(1) @Max(12) Integer month) {
 		return ResponseEntity.ok(ApiResponse.builder().status("success")
 				.message("Orders retrieved successfully for %d-%d".formatted(year, month))
 				.data(orderService.findOrdersCountByStatusAndMonth(year, month)).build());
@@ -179,7 +179,7 @@ public class OrderController {
 
 	@GetMapping("/total-by-month")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findTotalFinishedOrdersByMonth(@RequestParam @Min(1) Integer year,
+	public ResponseEntity<?> findTotalFinishedOrdersByMonth(@RequestParam(required = false) @Min(1) Integer year,
 			@RequestParam @Min(1) @Max(12) Integer month) {
 		return ResponseEntity.ok(ApiResponse.builder().status("success")
 				.message("Orders retrieved successfully for %d-%d".formatted(year, month))
@@ -188,7 +188,7 @@ public class OrderController {
 
 	@GetMapping("/total-by-year")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findTotalFinishedOrdersByYear(@RequestParam @Min(1) Integer year) {
+	public ResponseEntity<?> findTotalFinishedOrdersByYear(@RequestParam(required = false) @Min(1) Integer year) {
 		return ResponseEntity.ok(ApiResponse.builder().status("success")
 				.message("Orders retrieved successfully for year %d".formatted(year))
 				.data(orderService.findTotalFinishedOrdersByYear(year)).build());
@@ -196,10 +196,18 @@ public class OrderController {
 
 	@GetMapping("/monthly-count")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> findMonthlyOrderCount(@RequestParam @Min(1) Integer year) {
+	public ResponseEntity<?> findMonthlyOrderCount(@RequestParam(required = false) @Min(1) Integer year) {
 		return ResponseEntity.ok(ApiResponse.builder().status("success")
 				.message("Monthly orders retrieved successfully for year %d".formatted(year))
 				.data(orderService.findMonthlyOrderCount(year)).build());
+	}
+
+	@GetMapping("/total-all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> findTotalOrders() {
+		return ResponseEntity.ok(ApiResponse.builder().status("success").message("Total orders retrieved successfully")
+				.data(orderService.findTotalFinishedOrdersAllTime()).build());
+
 	}
 
 	private Long getUserId() {

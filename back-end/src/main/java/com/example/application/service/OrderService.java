@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -123,9 +125,17 @@ public class OrderService {
 				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
 	}
 
-	public List<OrderCountByStatusDTO> findOrdersCountByStatusAndMonth(int year, int month) {
+	public List<OrderCountByStatusDTO> findOrdersCountByStatusAndMonth(Integer year, Integer month) {
+
+		if (year == null || year <= 0) {
+			year = Year.now().getValue();
+		}
+		if (month == null) {
+			month = LocalDate.now().getMonthValue();
+		}
+
 		// Step 1: Initialize a map with all statuses and set count = 0
-		Map<String, Long> statusCountMap = new HashMap<>();
+		Map<String, Long> statusCountMap = new LinkedHashMap<>();
 		for (OrderStatus orderStatus : OrderStatus.values()) {
 			statusCountMap.put(orderStatus.name(), 0L);
 		}
@@ -143,6 +153,10 @@ public class OrderService {
 				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
 	}
 
+	public int findTotalFinishedOrdersAllTime() {
+		return orderRepository.findTotalFinishedOrders();
+	}
+
 	public int findTotalFinishedOrdersByMonth(int year, int month) {
 		return orderRepository.findTotalFinishedOrdersByMonth(year, month);
 	}
@@ -151,8 +165,11 @@ public class OrderService {
 		return orderRepository.findTotalFinishedOrdersByYear(year);
 	}
 
-	public List<MonthlyOrderCountDTO> findMonthlyOrderCount(int year) {
-		return orderRepository.findMonthlyOrderCount(year);
+	public List<MonthlyOrderCountDTO> findMonthlyOrderCount(Integer year) {
+		if (year == null || year <= 0) {
+			year = Year.now().getValue();
+		}
+		return orderRepository.findMonthlyFinishedOrderCount(year);
 	}
 
 	public OrderDTO getOrderById(Long userId, Long orderId, boolean isAdmin) {
