@@ -61,6 +61,10 @@ public class AuthService {
 			user = userRepository.findByEmail(request.getUsername())
 					.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 		}
+		
+		if (user.getUserStatus() == false) {
+			throw new BadCredentialsException("This user has been blocked. Please contact the administrator for more information.");
+		}
 
 		if (request.isAdmin()) {
 			// If user is not an admin, throw an exception
