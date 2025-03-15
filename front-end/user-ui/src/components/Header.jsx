@@ -18,6 +18,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useFetchCart from '../hooks/useFetchCart';
+import useFetchUserProfile from '../hooks/useFetchUserProfile';
 import useLogout from '../hooks/useLogout';
 import { isAuthenticated } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
@@ -32,6 +33,7 @@ function ResponsiveAppBar() {
     const navigate = useNavigate();
     const logout = useLogout();
     const { data: cart, isLoading } = useFetchCart();
+    const { data: profile } = useFetchUserProfile();
 
     const cartCount = isAuthenticated() && cart ? cart.cartItems.length : 0;
 
@@ -65,6 +67,8 @@ function ResponsiveAppBar() {
         // Navigate to the selected page
         navigate(`/${setting.toLowerCase()}`);
     };
+
+    console.log(profile);
 
     return (
         <AppBar position='fixed'>
@@ -228,8 +232,12 @@ function ResponsiveAppBar() {
                                     sx={{ p: 0 }}
                                 >
                                     <Avatar
-                                        alt='Remy Sharp'
-                                        src='/static/images/avatar/1.jpg'
+                                        alt={
+                                            profile?.lastName +
+                                            ' ' +
+                                            profile?.firstName
+                                        }
+                                        src={profile?.avatar}
                                     />
                                 </IconButton>
                             </CustomTooltip>

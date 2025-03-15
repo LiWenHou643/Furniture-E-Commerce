@@ -78,14 +78,26 @@ function AvatarUploader() {
                 maxWidth='sm'
             >
                 <DialogTitle>Preview Avatar</DialogTitle>
-                <DialogContent>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
                     <Box
                         component='img'
                         src={preview}
                         alt='Preview'
-                        sx={{ width: '100%', borderRadius: '50%' }}
+                        sx={{
+                            width: '400px', // Set a fixed width
+                            height: '400px', // Set a fixed height to make it square
+                            objectFit: 'cover', // Ensure the image fills the square without distorting
+                            borderRadius: '50%', // This will make it circular
+                        }}
                     />
                 </DialogContent>
+
                 <DialogActions>
                     <Button
                         startIcon={<Crop />}
