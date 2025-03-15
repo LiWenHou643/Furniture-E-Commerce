@@ -28,8 +28,6 @@ CREATE TABLE users
     FOREIGN KEY (role_id) REFERENCES roles (role_id)
 );
 
-ALTER TABLE users ADD FULLTEXT(first_name, last_name, phone_number, email);
-    
 CREATE TABLE invalidated_tokens
 (
     token_id   INT AUTO_INCREMENT PRIMARY KEY,

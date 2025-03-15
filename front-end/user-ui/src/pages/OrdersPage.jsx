@@ -211,6 +211,55 @@ const OrdersPage = () => {
                                     <Divider sx={{ mb: 2 }} />
 
                                     {/* Customer Details */}
+                                    {order?.payment ? (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 2,
+                                            }}
+                                        >
+                                            <Typography variant='body1'>
+                                                Payment Method:{' '}
+                                                {order?.payment?.paymentMethod}
+                                            </Typography>
+                                            <Chip
+                                                label={
+                                                    order?.payment
+                                                        ?.paymentStatus
+                                                }
+                                                style={{
+                                                    backgroundColor: 'green',
+                                                    color: 'white',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                size='small'
+                                            />
+                                        </Box>
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 2,
+                                            }}
+                                        >
+                                            <Typography variant='body1'>
+                                                Payment Method: {'COD'}
+                                            </Typography>
+                                            <Chip
+                                                label={'UNPAID'}
+                                                style={{
+                                                    backgroundColor: 'red',
+                                                    color: 'white',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                }}
+                                                size='small'
+                                            />
+                                        </Box>
+                                    )}
                                     <Typography variant='body1' gutterBottom>
                                         Shipping Address:{' '}
                                         {order.shippingAddress}

@@ -41,6 +41,7 @@ const OrderDetailPage = () => {
         notes,
         createdAt,
         orderDetails,
+        payment,
     } = data;
 
     const getStatusColor = (status) => {
@@ -175,7 +176,7 @@ const OrderDetailPage = () => {
 
                 <Grid container spacing={4}>
                     {/* Left Section: Order and Shipping Information */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={5}>
                         <Box
                             sx={{
                                 backgroundColor: '#fff',
@@ -192,6 +193,51 @@ const OrderDetailPage = () => {
                             >
                                 Order Details
                             </Typography>
+                            {payment ? (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 2,
+                                    }}
+                                >
+                                    <Typography variant='body1'>
+                                        Payment Method: {payment?.paymentMethod}
+                                    </Typography>
+                                    <Chip
+                                        label={payment?.paymentStatus}
+                                        style={{
+                                            backgroundColor: 'green',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            textTransform: 'uppercase',
+                                        }}
+                                        size='small'
+                                    />
+                                </Box>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 2,
+                                    }}
+                                >
+                                    <Typography variant='body1'>
+                                        Payment Method: {'COD'}
+                                    </Typography>
+                                    <Chip
+                                        label={'UNPAID'}
+                                        style={{
+                                            backgroundColor: 'red',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            textTransform: 'uppercase',
+                                        }}
+                                        size='small'
+                                    />
+                                </Box>
+                            )}
                             <Typography variant='body1'>
                                 <strong>Created At:</strong>{' '}
                                 {formatDate(createdAt)}
@@ -255,7 +301,7 @@ const OrderDetailPage = () => {
                     </Grid>
 
                     {/* Right Section: Order Items */}
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} md={7}>
                         <Box
                             sx={{
                                 backgroundColor: '#fff',

@@ -1,11 +1,9 @@
 package com.example.application.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Date;
 
-import com.example.application.constants.OrderStatus;
 import com.example.application.constants.PaymentMethod;
-import com.example.application.constants.ShipmentMethod;
+import com.example.application.constants.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.EnumType;
@@ -24,44 +22,22 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class OrderDTO {
+public class PaymentDTO {
+	
+	Long paymentId;
+
 	Long orderId;
 
-	Long userId;
+	Date paymentDate;
 
-	Double subtotal;
-
-	Double total;
-
-	OrderStatus orderStatus;
-
-	LocalDateTime confirmDate;
-
-	LocalDateTime shippingDate;
-
-	LocalDateTime deliveryDate;
-
-	LocalDateTime cancelDate;
-
-	String shippingAddress;
-
-	ShipmentMethod shippingMethod;
+	Double paymentAmount;
 
 	@Enumerated(EnumType.STRING)
 	PaymentMethod paymentMethod;
 
-	Double shippingCost;
+	@Enumerated(EnumType.STRING)
+	PaymentStatus paymentStatus;
 
-	String notes;
-
-	Boolean leaveFeedback;
-
-	LocalDateTime createdAt;
-
-	LocalDateTime updatedAt;
-
-	List<OrderDetailDTO> orderDetails;
-	
-	PaymentDTO payment;
+	String transactionReference;
 
 }
