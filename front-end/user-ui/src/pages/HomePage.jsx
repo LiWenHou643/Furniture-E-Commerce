@@ -116,7 +116,7 @@ const Home = () => {
                         variant='contained'
                         color='primary'
                         component={Link}
-                        to='/shop'
+                        to='/products'
                         size='large'
                     >
                         Shop Now

@@ -24,8 +24,8 @@ import { isAuthenticated } from '../utils/auth';
 import CustomTooltip from './CustomTooltip';
 import Notification from './Notification';
 
-const pages = ['Products', 'News', 'Orders'];
-const settings = ['Profile', 'Logout'];
+const pages = ['Products', 'News'];
+const settings = ['Profile', 'Orders', 'Logout'];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);

@@ -115,7 +115,7 @@ const ChatBox = () => {
         console.log('Sending message:', newMessage);
 
         // Send message to the server
-        // WebSocketService.sendMessage('/app/send', newMessage);
+        WebSocketService.sendMessage('/app/send', newMessage);
 
         setInput('');
     };
