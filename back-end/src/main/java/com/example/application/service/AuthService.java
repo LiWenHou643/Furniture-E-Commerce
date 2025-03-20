@@ -121,9 +121,12 @@ public class AuthService {
 		if (existedPhoneNumber)
 			throw new DataExistedException("User", "phone number", request.getPhoneNumber());
 
-		String ROLE_USER = AppRoles.USER.name();
+		AppRoles ROLE_USER = AppRoles.USER;
+		
 		Role roleUser = rolesRepository.findByRoleName(ROLE_USER)
 				.orElseThrow(() -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
+		
+		log.info(roleUser.getRoleName().getName());
 
 		User user = User.builder().firstName(request.getFirstName()).lastName(request.getLastName())
 				.avatar(request.getAvatar()).email(request.getEmail()).phoneNumber(request.getPhoneNumber())
