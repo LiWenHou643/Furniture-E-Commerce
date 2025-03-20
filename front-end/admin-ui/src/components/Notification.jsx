@@ -11,6 +11,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useFetchNotifications from '../hooks/useFetchNotifications';
 import useMarkNotiAsRead from '../hooks/useMarkNotiAsRead';
 import WebSocketService from '../services/WebSocketService';
@@ -18,6 +19,7 @@ import { formatDate } from '../utils/helper';
 import CustomTooltip from './CustomTooltip';
 
 const Notification = () => {
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [notifications, setNotifications] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
@@ -77,6 +79,14 @@ const Notification = () => {
         markNotiAsRead(notificationIds);
     };
 
+    const handleRedirect = (notification) => {
+        handleClose();
+
+        console.log('Redirecting to:', notification);
+        // Redirect to the appropriate page based on the notification
+        navigate(notification.actionUrl);
+    };
+
     if (isLoading) {
         return null;
     }
@@ -116,7 +126,7 @@ const Notification = () => {
                 {notifications.map((notification) => (
                     <MenuItem
                         key={notification.notificationId}
-                        onClick={handleClose}
+                        onClick={() => handleRedirect(notification)}
                         sx={{
                             padding: 1,
                             display: 'flex',

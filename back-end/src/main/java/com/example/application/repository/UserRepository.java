@@ -20,4 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Boolean existsByEmail(String email);
 
 	Boolean existsByPhoneNumber(String phoneNumber);
+	
+	@Query("SELECT u.userId FROM User u WHERE u.role.roleName = 'ADMIN'")
+	Long findAdminId();
 }

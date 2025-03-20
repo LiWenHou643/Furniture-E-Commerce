@@ -31,6 +31,10 @@ public class UserService {
 		var users = userRepository.findAllUsers(pageable);
 		return users.map(UserMapper.INSTANCE::toDTO);
 	}
+	
+	public Long getAdminId() {
+        return userRepository.findAdminId();
+        }
 
 	public UserDTO getUserById(Long userId) {
 		var user = userRepository.findById(userId)

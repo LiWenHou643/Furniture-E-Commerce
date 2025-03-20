@@ -29,6 +29,7 @@ import com.example.application.dto.OrderDTO;
 import com.example.application.producer.MessageProducer;
 import com.example.application.service.CartService;
 import com.example.application.service.OrderService;
+import com.example.application.service.UserService;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.validation.constraints.Max;
@@ -48,6 +49,7 @@ public class OrderController {
 	OrderService orderService;
 	MessageProducer messageProducer;
 	CartService cartService;
+	UserService userService;
 
 	@GetMapping("")
 	public ResponseEntity<?> getOrdersByUserId(@RequestParam(defaultValue = "0") int page,
@@ -87,12 +89,14 @@ public class OrderController {
 		} else if (paymentMethod.equals(PaymentMethod.CASH_ON_DELIVERY)) {
 			// Remove items from cart
 			cartService.removeItemsFromCart(userId, savedOrder.getOrderId());
+			
+			var adminId = userService.getAdminId();
 
 			// Push notification of new order to Shop owner
 			messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
-					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(1L).title("New order received")
+					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(adminId).title("New order received")
 							.message("New order received with order ID: %d".formatted(savedOrder.getOrderId()))
-							.readStatus(false).actionUrl("/orders/%d".formatted(savedOrder.getOrderId()))
+							.readStatus(false).actionUrl("/orders-management/%d".formatted(savedOrder.getOrderId()))
 							.createdAt(LocalDateTime.now()).build());
 
 			// For COD, just confirm the order
@@ -134,6 +138,15 @@ public class OrderController {
 	public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
 		var userId = getUserId();
 		var order = orderService.cancelOrder(userId, orderId);
+		
+		var adminId = userService.getAdminId();
+
+		// Push notification to Shop owner
+		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
+				NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(adminId).title("Order cancelled!")
+						.message("Order ID %d has been cancelled".formatted(order.getOrderId()))
+						.readStatus(false).actionUrl("/orders-management/%d".formatted(order.getOrderId()))
+						.createdAt(LocalDateTime.now()).build());
 		return ResponseEntity.ok(
 				ApiResponse.builder().status("success").message("Order cancelled successfully").data(order).build());
 	}
