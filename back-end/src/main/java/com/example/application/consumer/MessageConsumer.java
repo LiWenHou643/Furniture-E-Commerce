@@ -34,10 +34,33 @@ public class MessageConsumer {
 				.orElseThrow(() -> new IllegalArgumentException("Notification channel cannot be null"));
 
 		switch (channel) {
-		case EMAIL -> emailService.sendEmailAfterRegisterUser(notificationDTO);
-		case IN_APP -> notificationService.pushNotification(notificationDTO);
-		default -> throw new UnsupportedOperationException(
-				MessageFormat.format("Unsupported notification channel: {0}", channel));
+		case EMAIL:
+			// Check the notification type and act accordingly
+			switch (notificationDTO.getNotificationType()) {
+			case WELCOME_EMAIL:
+				emailService.sendWelcomeEmail(notificationDTO); // Assuming you have a method for sending a welcome
+																// email
+				break;
+
+			case FORGOT_PASSWORD:
+				emailService.sendPasswordResetEmail(notificationDTO); // Assuming you have a method for sending a
+																		// password reset email
+				break;
+
+			default:
+				throw new UnsupportedOperationException(MessageFormat.format("Unsupported email notification type: {0}",
+						notificationDTO.getNotificationType()));
+			}
+			break;
+
+		case IN_APP:
+			notificationService.pushNotification(notificationDTO);
+			break;
+
+		default:
+			throw new UnsupportedOperationException(
+					MessageFormat.format("Unsupported notification channel: {0}", channel));
 		}
+
 	}
 }

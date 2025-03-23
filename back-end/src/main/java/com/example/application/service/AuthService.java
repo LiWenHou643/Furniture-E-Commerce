@@ -1,5 +1,7 @@
 package com.example.application.service;
 
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +14,7 @@ import com.example.application.config.Jwt.JwtUtils;
 import com.example.application.config.Kafka.KafkaTopics;
 import com.example.application.constants.AppRoles;
 import com.example.application.constants.NotificationChannel;
+import com.example.application.constants.NotificationType;
 import com.example.application.dto.AuthDTO;
 import com.example.application.dto.CreateUserRequest;
 import com.example.application.dto.NotificationDTO;
@@ -61,9 +64,10 @@ public class AuthService {
 			user = userRepository.findByEmail(request.getUsername())
 					.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 		}
-		
+
 		if (user.getUserStatus() == false) {
-			throw new BadCredentialsException("This user has been blocked. Please contact the administrator for more information.");
+			throw new BadCredentialsException(
+					"This user has been blocked. Please contact the administrator for more information.");
 		}
 
 		if (request.isAdmin()) {
@@ -122,10 +126,10 @@ public class AuthService {
 			throw new DataExistedException("User", "phone number", request.getPhoneNumber());
 
 		AppRoles ROLE_USER = AppRoles.USER;
-		
+
 		Role roleUser = rolesRepository.findByRoleName(ROLE_USER)
 				.orElseThrow(() -> new ResourceNotFoundException("Role", "role name", ROLE_USER));
-		
+
 		log.info(roleUser.getRoleName().getName());
 
 		User user = User.builder().firstName(request.getFirstName()).lastName(request.getLastName())
@@ -147,11 +151,33 @@ public class AuthService {
 		cartRepository.save(cart);
 
 		NotificationDTO notificationDTO = NotificationDTO.builder().channel(NotificationChannel.EMAIL)
-				.recipient(user.getEmail()).subject("Welcome to LuxeHouse").build();
+				.recipient(user.getEmail()).subject("Welcome to LuxeHouse")
+				.notificationType(NotificationType.WELCOME_EMAIL).build();
 
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 
 		return UserMapper.INSTANCE.toDTO(isSaved);
+	}
+
+	public UserDTO resetPassword(String username) {
+		// Find the user by email or phone number
+		User user = userRepository.findByEmail(username).or(() -> userRepository.findByPhoneNumber(username))
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email or phone number", username));
+
+		// Generate a new password
+		String newPassword = generateRandomPassword(8);
+		user.setPassword(passwordEncoder.encode(newPassword));
+		User updatedUser = userRepository.save(user);
+
+		// Send a notification Email to the user
+		NotificationDTO notificationDTO = NotificationDTO.builder().channel(NotificationChannel.EMAIL)
+				.recipient(user.getEmail()).subject("Reset password").notificationType(NotificationType.FORGOT_PASSWORD)
+				.message(newPassword).build();
+
+		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
+
+		// Return the updated user
+		return UserMapper.INSTANCE.toDTO(updatedUser);
 	}
 
 	public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
@@ -192,5 +218,24 @@ public class AuthService {
 
 	private boolean isPhoneNumber(String phoneNumber) {
 		return phoneNumber.matches("^\\+?[0-9]{10,11}$");
+	}
+
+	// Utility method to generate a random password
+	private String generateRandomPassword(int length) {
+		// Define the characters to use for the password
+		String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+		String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String digits = "0123456789";
+		String specialCharacters = "!@#$%^&*()-_+=<>?";
+
+		String allCharacters = lowerCaseLetters + upperCaseLetters + digits + specialCharacters;
+		Random random = new SecureRandom();
+		StringBuilder password = new StringBuilder(length);
+
+		for (int i = 0; i < length; i++) {
+			password.append(allCharacters.charAt(random.nextInt(allCharacters.length())));
+		}
+
+		return password.toString();
 	}
 }

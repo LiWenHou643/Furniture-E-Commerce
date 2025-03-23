@@ -3,6 +3,7 @@ package com.example.application.dto;
 import java.time.LocalDateTime;
 
 import com.example.application.constants.NotificationChannel;
+import com.example.application.constants.NotificationType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationDTO {
 	NotificationChannel channel;
+	NotificationType notificationType;
 	String recipient;
 	String subject;
 

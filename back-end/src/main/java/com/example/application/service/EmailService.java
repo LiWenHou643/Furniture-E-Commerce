@@ -49,12 +49,12 @@ public class EmailService {
 	@NonFinal
 	String port;
 
-	public void sendEmailAfterRegisterUser(NotificationDTO request) {
+	public void sendWelcomeEmail(NotificationDTO request) {
 		// Email subject and HTML content with image
 		String subject = request.getSubject();
 
 		// Paths to HTML and image files
-		String htmlFilePath = "src/main/resources/templates/email-content.html";
+		String htmlFilePath = "src/main/resources/templates/welcome-content.html";
 
 		try {
 			// Load HTML content from file
@@ -87,6 +87,76 @@ public class EmailService {
 			// HTML part
 			MimeBodyPart htmlPart = new MimeBodyPart();
 			htmlContent = htmlContent.replace("cid:LOGO", "cid:" + cid);
+			htmlPart.setContent(htmlContent, "text/html");
+
+			// Image part
+			MimeBodyPart imagePart = new MimeBodyPart();
+			String imagePath = "static/logo.png"; // Path relative to src/main/resources
+			InputStream imageStream = EmailService.class.getClassLoader().getResourceAsStream(imagePath);
+			if (imageStream == null) {
+				throw new Exception("Image not found: " + imagePath);
+			}
+			DataSource dataSource = new ByteArrayDataSource(imageStream, "image/png");
+			imagePart.setDataHandler(new DataHandler(dataSource));
+			imagePart.setHeader("Content-ID", "<" + cid + ">");
+			imagePart.setDisposition(MimeBodyPart.INLINE);
+			imagePart.setFileName("logo.png");
+
+			// Set the content for the message
+			MimeMultipart multipart = new MimeMultipart("related");
+			multipart.addBodyPart(htmlPart);
+			multipart.addBodyPart(imagePart);
+			message.setContent(multipart);
+
+			// Send the email
+			Transport.send(message);
+			System.out.println("Email sent successfully with inline image!");
+
+		} catch (Exception e) {
+			log.error("Error sending email: ", e);
+		}
+	}
+
+	public void sendPasswordResetEmail(NotificationDTO request) {
+		// Email subject and HTML content with image
+		String subject = request.getSubject();
+
+		// Paths to HTML and image files
+		String htmlFilePath = "src/main/resources/templates/reset-pwd-content.html";
+
+		try {
+			// Load HTML content from file
+			String htmlContent = new String(Files.readAllBytes(Paths.get(htmlFilePath)));
+
+			// Set up properties for the SMTP server
+			Properties props = new Properties();
+			props.put("mail.smtp.host", host);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+
+			// Create a session with authentication
+			Session session = Session.getInstance(props, new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			// Create a MimeMessage
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(username));
+			message.setRecipient(Message.RecipientType.TO, new InternetAddress(request.getRecipient()));
+			message.setSubject(subject);
+
+			// Generate a CID for the image
+			String cid = generateCID();
+
+			// HTML part
+			MimeBodyPart htmlPart = new MimeBodyPart();
+			htmlContent = htmlContent.replace("cid:LOGO", "cid:" + cid);
+			htmlContent = htmlContent.replace("[NEW_PASSWORD]", request.getMessage());
+
 			htmlPart.setContent(htmlContent, "text/html");
 
 			// Image part
