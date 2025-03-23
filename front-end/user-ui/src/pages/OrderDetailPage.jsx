@@ -447,8 +447,17 @@ const OrderDetailPage = () => {
                                                     marginTop: 1,
                                                     display: 'flex',
                                                     justifyContent: 'flex-end',
+                                                    alignItems: 'center',
                                                 }}
                                             >
+                                                <Typography
+                                                    variant='body2'
+                                                    color='textSecondary'
+                                                >
+                                                    You can only leave feedback
+                                                    for delivered items.
+                                                </Typography>
+
                                                 <Button
                                                     variant='contained'
                                                     color='primary'
@@ -458,6 +467,10 @@ const OrderDetailPage = () => {
                                                             item.productItemId,
                                                             item.productId
                                                         )
+                                                    }
+                                                    disabled={
+                                                        orderStatus !==
+                                                        'DELIVERED'
                                                     }
                                                 >
                                                     Leave Feedback
