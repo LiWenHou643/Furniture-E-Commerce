@@ -54,6 +54,9 @@ const formatMessageTime = (timestamp) => {
 };
 
 const formatDate = (dateString) => {
+    if (!dateString) {
+        return '';
+    } // Return empty string if no date provided
     const date = new Date(dateString); // Convert string to Date object
 
     // Extract date components

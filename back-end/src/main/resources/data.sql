@@ -487,10 +487,10 @@ VALUES ('Antique Taupe', '#d4c1b1'),
 -- Insert product variants for the Seating Category (Example: Swivel Chair, Chesterfield Sofa)
 INSERT INTO product_item (product_id, color_id, sku, original_price, sale_price, stock_quantity)
 VALUES (1, 12, 'SEAT01AMBER', 200.00, 180.00, 5),
-       (1, 15, 'SEAT01FOREST', 200.00, 190.00, 5),
+       (1, 15, 'SEAT01FOREST', 200.00, 190.00, 7),
        (2, 1, 'SEAT02', 100.00, 90.00, 50),
-       (3, 3, 'SEAT03', 100.00, 80.00, 50),
-       (4, 3, 'SEAT04', 100.00, 90.00, 50),
+       (3, 3, 'SEAT03', 100.00, 80.00, 55),
+       (4, 3, 'SEAT04', 100.00, 90.00, 45),
        (5, 1, 'SEAT05', 500.00, 480.00, 10),
        (6, 6, 'SEAT06', 500.00, 490.00, 10),
        (7, 8, 'SEAT07CADET', 50.00, 40.00, 20),

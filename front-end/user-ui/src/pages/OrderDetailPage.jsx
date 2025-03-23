@@ -1,4 +1,5 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckIcon from '@mui/icons-material/Check';
 import {
     Box,
     Button,
@@ -6,20 +7,36 @@ import {
     Container,
     Divider,
     Grid,
+    Input,
+    Modal,
+    Rating,
+    Step,
+    StepLabel,
+    Stepper,
+    TextField,
     Typography,
 } from '@mui/material';
+import { styled } from '@mui/system';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosPublic from '../api/axiosPublic';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import useCancelOrder from '../hooks/useCancelOrder';
+import useCreateFeedback from '../hooks/useCreateFeedback';
 import useFetchOrder from '../hooks/useFetchOrder';
 import { formatDate } from '../utils/helper';
+
 const OrderDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { data, isLoading, error } = useFetchOrder(id);
     const { mutate: cancelOrder, isLoading: isCanceling } = useCancelOrder();
+    const { mutate: createFeedback, isLoading: isCreating } =
+        useCreateFeedback();
+    const [open, setOpen] = useState(false);
+    const [selectedItemId, setSelectedItemId] = useState({});
+
     if (isLoading) {
         return <Loading />;
     }
@@ -33,6 +50,7 @@ const OrderDetailPage = () => {
         subtotal,
         total,
         orderStatus,
+        confirmDate,
         shippingDate,
         deliveryDate,
         shippingAddress,
@@ -76,8 +94,6 @@ const OrderDetailPage = () => {
             },
         });
 
-        console.log(productItems);
-
         const selectedCartItems = productItems.data.data.map((item) => ({
             productId: item.productId,
             productItemId: item.productItemId,
@@ -92,8 +108,6 @@ const OrderDetailPage = () => {
             ).imageUrl,
         }));
 
-        console.log(selectedCartItems);
-
         // Save the selected item objects to local storage (optional)
         localStorage.setItem(
             'selectedCartItems',
@@ -102,6 +116,37 @@ const OrderDetailPage = () => {
 
         // Navigate to the checkout page and pass the selected item objects as state
         navigate('/checkout', { state: { selectedCartItems } });
+    };
+
+    const handleOpenFeedbackModal = (
+        orderDetailId,
+        productItemId,
+        productId
+    ) => {
+        setSelectedItemId({
+            orderDetailId,
+            productItemId,
+            productId,
+        });
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedItemId(null);
+    };
+
+    const handleSubmitFeedback = ({ rating, comment, images }) => {
+        createFeedback({
+            rating,
+            comment,
+            orderDetailId: selectedItemId.orderDetailId,
+            productItemId: selectedItemId.productItemId,
+            productId: selectedItemId.productId,
+            orderId: orderId,
+            images,
+        });
+        handleClose();
     };
 
     return (
@@ -173,6 +218,20 @@ const OrderDetailPage = () => {
                         }}
                     />
                 </Box>
+
+                {/* Order Status Tracker */}
+                {
+                    // Show the status tracker only if the order is not in "CANCELLED" status
+                    orderStatus !== 'CANCELLED' && (
+                        <OrderStatusTracker
+                            orderStatus={orderStatus}
+                            createdAt={createdAt}
+                            confirmDate={confirmDate}
+                            shippingDate={shippingDate}
+                            deliveryDate={deliveryDate}
+                        />
+                    )
+                }
 
                 <Grid container spacing={4}>
                     {/* Left Section: Order and Shipping Information */}
@@ -322,51 +381,83 @@ const OrderDetailPage = () => {
                                     <Box
                                         key={item.orderDetailId}
                                         sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            padding: 2,
                                             borderBottom: '1px solid #e0e0e0',
+                                            padding: 2,
                                         }}
                                     >
-                                        <img
-                                            src={item.productImage}
-                                            alt={item.productName}
-                                            style={{
-                                                width: 60,
-                                                height: 60,
-                                                objectFit: 'cover',
-                                                borderRadius: 8,
-                                                marginRight: 16,
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
                                             }}
-                                        />
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Typography
-                                                variant='body1'
-                                                fontWeight='bold'
-                                            >
-                                                {item.productName}
-                                            </Typography>
-                                            <Typography
-                                                variant='body2'
-                                                color='textSecondary'
-                                            >
-                                                Color: {item.colorType}
-                                            </Typography>
+                                        >
+                                            <img
+                                                src={item.productImage}
+                                                alt={item.productName}
+                                                style={{
+                                                    width: 60,
+                                                    height: 60,
+                                                    objectFit: 'cover',
+                                                    borderRadius: 8,
+                                                    marginRight: 16,
+                                                }}
+                                            />
+                                            <Box sx={{ flexGrow: 1 }}>
+                                                <Typography
+                                                    variant='body1'
+                                                    fontWeight='bold'
+                                                >
+                                                    {item.productName}
+                                                </Typography>
+                                                <Typography
+                                                    variant='body2'
+                                                    color='textSecondary'
+                                                >
+                                                    Color: {item.colorType}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Typography variant='body2'>
+                                                    Quantity: {item.quantity}
+                                                </Typography>
+                                                <Typography variant='body2'>
+                                                    Price: $
+                                                    {item.price.toFixed(2)}
+                                                </Typography>
+                                                <Typography
+                                                    variant='body1'
+                                                    fontWeight='bold'
+                                                >
+                                                    Total: $
+                                                    {item.total.toFixed(2)}
+                                                </Typography>
+                                            </Box>
                                         </Box>
-                                        <Box sx={{ textAlign: 'right' }}>
-                                            <Typography variant='body2'>
-                                                Quantity: {item.quantity}
-                                            </Typography>
-                                            <Typography variant='body2'>
-                                                Price: ${item.price.toFixed(2)}
-                                            </Typography>
-                                            <Typography
-                                                variant='body1'
-                                                fontWeight='bold'
+
+                                        {/* Conditionally render feedback button */}
+                                        {!item.feedbackGiven && (
+                                            <Box
+                                                sx={{
+                                                    marginTop: 1,
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-end',
+                                                }}
                                             >
-                                                Total: ${item.total.toFixed(2)}
-                                            </Typography>
-                                        </Box>
+                                                <Button
+                                                    variant='contained'
+                                                    color='primary'
+                                                    onClick={() =>
+                                                        handleOpenFeedbackModal(
+                                                            item.orderDetailId,
+                                                            item.productItemId,
+                                                            item.productId
+                                                        )
+                                                    }
+                                                >
+                                                    Leave Feedback
+                                                </Button>
+                                            </Box>
+                                        )}
                                     </Box>
                                 ))}
                             </Box>
@@ -411,9 +502,284 @@ const OrderDetailPage = () => {
                             )}
                         </Box>
                     </Grid>
+
+                    <FeedbackModal
+                        open={open}
+                        onClose={handleClose}
+                        onSubmit={handleSubmitFeedback}
+                        productName={
+                            orderDetails.find(
+                                (item) =>
+                                    item.orderDetailId ===
+                                    selectedItemId?.orderDetailId
+                            )?.productName
+                        }
+                        isCreating={isCreating}
+                    />
                 </Grid>
             </Container>
         </Box>
+    );
+};
+
+const FeedbackModal = ({
+    open,
+    onClose,
+    onSubmit,
+    productName,
+    isCreating = false,
+}) => {
+    const [rating, setRating] = useState(0); // State for rating value
+    const [comment, setComment] = useState(''); // State for comment text
+    const [images, setImages] = useState([]); // State for multiple images
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files); // Convert FileList to array
+        setImages(files); // Store the selected files
+    };
+
+    const handleSubmit = () => {
+        // Bundle rating, comment, and images for submission
+        onSubmit(
+            { rating, comment, images },
+            {
+                onSettled: () => {
+                    // Reset the form
+                    setRating(0);
+                    setComment('');
+                    setImages([]);
+                    // Close the modal
+                    onClose();
+                },
+            }
+        );
+    };
+
+    const handleOnclose = () => {
+        onClose();
+        setRating(0);
+        setComment('');
+        setImages([]);
+    };
+
+    return (
+        <Modal
+            open={open}
+            onClose={handleOnclose}
+            aria-labelledby='feedback-modal-title'
+            aria-describedby='feedback-modal-description'
+        >
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400, // Adjust width as needed
+                    bgcolor: 'white', // White background
+                    borderRadius: 2, // Rounded corners
+                    boxShadow: 24, // Subtle shadow for depth
+                    p: 4, // Padding inside the modal
+                    outline: 'none', // Remove default outline
+                }}
+            >
+                <Typography
+                    id='feedback-modal-title'
+                    variant='h6'
+                    component='h2'
+                    sx={{ mb: 2 }}
+                >
+                    Rate your {productName}
+                </Typography>
+
+                {/* Star Rating Placeholder */}
+                <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                    <Typography variant='body1'>Rating:</Typography>
+                    {/* Replace this with your star rating component, e.g., a library like react-rating */}
+                    <Typography variant='body2' color='textSecondary'>
+                        <Rating
+                            name='product-rating'
+                            value={rating} // Controlled value
+                            onChange={(event, newValue) => {
+                                setRating(newValue); // Update rating state
+                            }}
+                            precision={1}
+                            sx={{ mt: '3px' }}
+                        />
+                    </Typography>
+                </Box>
+
+                {/* Comment Input */}
+                <TextField
+                    id='feedback-comment'
+                    label='Your Feedback'
+                    multiline
+                    rows={4}
+                    fullWidth
+                    variant='outlined'
+                    value={comment} // Controlled value
+                    onChange={(e) => setComment(e.target.value)} // Update comment state
+                    sx={{ mb: 2 }}
+                />
+
+                {/* Image Upload */}
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant='body1'>Upload Images:</Typography>
+                    <Input
+                        type='file'
+                        inputProps={{ multiple: true, accept: 'image/*' }}
+                        onChange={handleImageChange}
+                        sx={{ width: '100%', mb: 1 }}
+                    />
+                    {images.length > 0 && (
+                        <Typography variant='body2' sx={{ mb: 1 }}>
+                            {images.length} image(s) selected
+                        </Typography>
+                    )}
+
+                    {/* Image Previews */}
+                    {images.length > 0 && (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 1,
+                                mb: 2,
+                            }}
+                        >
+                            {images.map((image, index) => (
+                                <img
+                                    key={index}
+                                    src={URL.createObjectURL(image)}
+                                    alt={`Preview ${index + 1}`}
+                                    style={{
+                                        width: 80,
+                                        height: 80,
+                                        objectFit: 'cover',
+                                        borderRadius: 4,
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    )}
+                </Box>
+
+                {/* Submit Button */}
+                <Button
+                    variant='contained'
+                    color='primary'
+                    fullWidth
+                    onClick={handleSubmit} // Replace with actual submit logic if needed
+                    disabled={!rating || isCreating} // Disable button if rating or comment is empty
+                >
+                    Submit Feedback
+                </Button>
+            </Box>
+        </Modal>
+    );
+};
+
+// Status Mapping for Progress Bar
+const statusSteps = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+
+// Custom styling for completed steps
+const StyledStepper = styled(Stepper)({
+    marginTop: '20px',
+    padding: '20px',
+    backgroundColor: 'transparent',
+});
+
+const OrderStatusTracker = ({
+    orderStatus,
+    createdAt,
+    confirmDate,
+    shippingDate,
+    deliveryDate,
+}) => {
+    const activeStep = statusSteps.indexOf(orderStatus);
+
+    return (
+        <StyledStepper alternativeLabel activeStep={activeStep}>
+            {statusSteps.map((label, index) => (
+                <Step key={label}>
+                    <StepLabel
+                        icon={
+                            index < activeStep ? (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'green',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <CheckIcon
+                                        style={{ color: 'white', fontSize: 16 }}
+                                    />
+                                </div>
+                            ) : index === activeStep ? (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'green',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <CheckIcon
+                                        style={{ color: 'white', fontSize: 16 }}
+                                    />
+                                </div>
+                            ) : (
+                                <div
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'gray',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'Arial',
+                                        fontSize: 12,
+                                    }}
+                                >
+                                    {index + 1}
+                                </div>
+                            )
+                        }
+                    >
+                        <Typography variant='body1'>{label}</Typography>
+
+                        {label === 'PENDING' ? (
+                            <Typography variant='caption'>
+                                {formatDate(createdAt)}
+                            </Typography>
+                        ) : label === 'PROCESSING' ? (
+                            <Typography variant='caption'>
+                                {formatDate(confirmDate)}
+                            </Typography>
+                        ) : label === 'SHIPPED' ? (
+                            <Typography variant='caption'>
+                                {formatDate(shippingDate)}
+                            </Typography>
+                        ) : label === 'DELIVERED' ? (
+                            <Typography variant='caption'>
+                                {formatDate(deliveryDate)}
+                            </Typography>
+                        ) : null}
+                    </StepLabel>
+                </Step>
+            ))}
+        </StyledStepper>
     );
 };
 

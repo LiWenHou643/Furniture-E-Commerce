@@ -1,7 +1,12 @@
 package com.example.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
@@ -13,22 +18,24 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class OrderDetailDTO {
 
-    Long orderDetailId;
+	Long orderDetailId;
 
-    Long productId;
+	Long productId;
 
-    String productName;
+	String productName;
 
-    String productImage;
+	String productImage;
 
-    String colorType;
+	String colorType;
 
-    Long productItemId;
+	Long productItemId;
 
-    Integer quantity;
+	Integer quantity;
 
-    Double price;
+	Double price;
 
-    Double total;
+	Double total;
+
+	Boolean feedbackGiven;
 
 }

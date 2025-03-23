@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,9 @@ public class Product extends BaseEntity {
 	String productName;
 
 	String productDescription;
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	DescriptionDetail descriptionDetail;
 
 	@Builder.Default
 	double averageRating = 0.0;
