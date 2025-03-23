@@ -65,10 +65,10 @@ public class FeedbackService {
 		var orderDetail = orderDetailRepository.findById(feedbackDTO.getOrderDetailId()).orElseThrow(
 				() -> new ResourceNotFoundException("Order detail", "productItemId", feedbackDTO.getOrderDetailId()));
 
-		var oldRatingCount = product.getRatingCount();
-		var oldAverageRating = product.getAverageRating();
-		var newRatingCount = oldRatingCount + 1;
-		var newAverageRating = (oldAverageRating * oldRatingCount + feedback.getRating()) / newRatingCount;
+		int oldRatingCount = product.getRatingCount();
+		double oldAverageRating = product.getAverageRating();
+		int newRatingCount = oldRatingCount + 1;
+		double newAverageRating = (oldAverageRating * oldRatingCount + feedback.getRating()) / newRatingCount;
 
 		product.setRatingCount(newRatingCount);
 		product.setAverageRating(newAverageRating);
