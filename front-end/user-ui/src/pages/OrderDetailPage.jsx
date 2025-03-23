@@ -137,16 +137,22 @@ const OrderDetailPage = () => {
     };
 
     const handleSubmitFeedback = ({ rating, comment, images }) => {
-        createFeedback({
-            rating,
-            comment,
-            orderDetailId: selectedItemId.orderDetailId,
-            productItemId: selectedItemId.productItemId,
-            productId: selectedItemId.productId,
-            orderId: orderId,
-            images,
-        });
-        handleClose();
+        createFeedback(
+            {
+                rating,
+                comment,
+                orderDetailId: selectedItemId.orderDetailId,
+                productItemId: selectedItemId.productItemId,
+                productId: selectedItemId.productId,
+                orderId: orderId,
+                images,
+            },
+            {
+                onSettled: () => {
+                    handleClose();
+                },
+            }
+        );
     };
 
     return (
@@ -540,19 +546,7 @@ const FeedbackModal = ({
 
     const handleSubmit = () => {
         // Bundle rating, comment, and images for submission
-        onSubmit(
-            { rating, comment, images },
-            {
-                onSettled: () => {
-                    // Reset the form
-                    setRating(0);
-                    setComment('');
-                    setImages([]);
-                    // Close the modal
-                    onClose();
-                },
-            }
-        );
+        onSubmit({ rating, comment, images });
     };
 
     const handleOnclose = () => {
@@ -672,7 +666,7 @@ const FeedbackModal = ({
                     onClick={handleSubmit} // Replace with actual submit logic if needed
                     disabled={!rating || isCreating} // Disable button if rating or comment is empty
                 >
-                    Submit Feedback
+                    {isCreating ? 'Submitting...' : 'Submit Feedback'}
                 </Button>
             </Box>
         </Modal>
