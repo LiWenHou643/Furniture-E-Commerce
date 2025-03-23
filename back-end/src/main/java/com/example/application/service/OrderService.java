@@ -342,8 +342,9 @@ public class OrderService {
 		NotificationDTO notificationDTO = NotificationDTO.builder().channel(NotificationChannel.IN_APP)
 				.recipient(order.getUser().getEmail()).subject("Order Status Update")
 				.userId(order.getUser().getUserId()).title("Order #%d".formatted(order.getOrderId()))
-				.message("Your order #%d has been %s".formatted(order.getOrderId(), orderStatus)).readStatus(false)
-				.actionUrl("/orders/%d".formatted(order.getOrderId())).build();
+				.message("Your order #%d has been %s".formatted(order.getOrderId(), orderStatus.name().toLowerCase()))
+				.readStatus(false).actionUrl("/orders/%d".formatted(order.getOrderId())).createdAt(LocalDateTime.now())
+				.build();
 
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 	}

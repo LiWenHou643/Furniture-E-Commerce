@@ -89,12 +89,13 @@ public class OrderController {
 		} else if (paymentMethod.equals(PaymentMethod.CASH_ON_DELIVERY)) {
 			// Remove items from cart
 			cartService.removeItemsFromCart(userId, savedOrder.getOrderId());
-			
+
 			var adminId = userService.getAdminId();
 
 			// Push notification of new order to Shop owner
 			messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
-					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(adminId).title("New order received")
+					NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(adminId)
+							.title("New order received")
 							.message("New order received with order ID: %d".formatted(savedOrder.getOrderId()))
 							.readStatus(false).actionUrl("/orders-management/%d".formatted(savedOrder.getOrderId()))
 							.createdAt(LocalDateTime.now()).build());
@@ -121,7 +122,7 @@ public class OrderController {
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
 				NotificationDTO.builder().channel(NotificationChannel.IN_APP).title("New order received").userId(1L)
 						.readStatus(false).message("New order received with order ID: %d".formatted(orderId))
-						.createdAt(LocalDateTime.now()).actionUrl("/orders/%d".formatted(orderId)).build());
+						.createdAt(LocalDateTime.now()).actionUrl("/orders-management/%d".formatted(orderId)).build());
 
 		return ResponseEntity.status(HttpStatus.FOUND)
 				.location(URI.create("http" + "://localhost:3000/orders/%d".formatted(orderId))).build();
@@ -138,15 +139,15 @@ public class OrderController {
 	public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
 		var userId = getUserId();
 		var order = orderService.cancelOrder(userId, orderId);
-		
+
 		var adminId = userService.getAdminId();
 
 		// Push notification to Shop owner
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY,
 				NotificationDTO.builder().channel(NotificationChannel.IN_APP).userId(adminId).title("Order cancelled!")
-						.message("Order ID %d has been cancelled".formatted(order.getOrderId()))
-						.readStatus(false).actionUrl("/orders-management/%d".formatted(order.getOrderId()))
-						.createdAt(LocalDateTime.now()).build());
+						.message("Order ID %d has been cancelled".formatted(order.getOrderId())).readStatus(false)
+						.actionUrl("/orders-management/%d".formatted(order.getOrderId())).createdAt(LocalDateTime.now())
+						.build());
 		return ResponseEntity.ok(
 				ApiResponse.builder().status("success").message("Order cancelled successfully").data(order).build());
 	}
@@ -161,10 +162,18 @@ public class OrderController {
 				ApiResponse.builder().status("success").message("Orders retrieved successfully").data(orders).build());
 	}
 
-	@PutMapping("/management")
+	@PutMapping("/management/{orderId}/confirm")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> confirmOrder(@RequestBody Long orderId) {
+	public ResponseEntity<?> confirmOrder(@PathVariable Long orderId) {
 		orderService.updateOrderStatus(orderId, OrderStatus.PROCESSING);
+		return ResponseEntity
+				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
+	}
+
+	@PutMapping("/management/{orderId}/shipped")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> completeOrder(@PathVariable Long orderId) {
+		orderService.updateOrderStatus(orderId, OrderStatus.SHIPPED);
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
 	}
