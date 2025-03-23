@@ -11,9 +11,6 @@ const useFetchNotifications = () => {
     return useQuery({
         queryKey: ['notifications'],
         queryFn: fetchNotifications,
-        onSuccess: (data) => {
-            console.log('Fetched notifications', data);
-        },
         onError: (error) => {
             console.error('Failed to fetch notifications', error);
             // Show an error toast

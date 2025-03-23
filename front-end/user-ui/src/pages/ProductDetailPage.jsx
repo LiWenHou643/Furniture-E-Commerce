@@ -7,7 +7,6 @@ import {
     Card,
     CardContent,
     CardMedia,
-    CircularProgress,
     Container,
     Divider,
     Grid,
@@ -26,6 +25,7 @@ import CustomTooltip from '../components/CustomTooltip';
 import Error from '../components/Error';
 import ImageMagnifier from '../components/ImageMagnifier';
 import Loading from '../components/Loading';
+import ProductDescriptionDetail from '../features/products/ProductDescriptionDetail';
 import useAddToCart from '../hooks/useAddToCart';
 import useFetchProduct from '../hooks/useFetchProduct';
 
@@ -55,6 +55,15 @@ const ProductDetailPage = () => {
     if (error) {
         return <Error error={error} />;
     }
+
+    const productFeedbacks = product?.feedbacks;
+    productFeedbacks.map((feedback) => {
+        const productItem = product.productItems.find(
+            (item) => item.productItemId === feedback.productItemId
+        );
+
+        feedback.productItem = productItem;
+    });
 
     const productItemsObject = product;
 
@@ -476,6 +485,9 @@ const ProductDetailPage = () => {
                         </Card>
                     </Grid>
                 </Grid>
+                <ProductDescriptionDetail
+                    descriptionDetail={product?.descriptionDetail}
+                />
             </Box>
 
             {/* Customer Feedbacks */}
@@ -483,13 +495,13 @@ const ProductDetailPage = () => {
                 <Typography variant='h5' gutterBottom>
                     Customer Feedbacks
                 </Typography>
-                {product?.feedbacks?.length === 0 && (
+                {productFeedbacks?.length === 0 && (
                     <Typography variant='body1' color='text.secondary'>
                         No feedbacks yet
                     </Typography>
                 )}
                 <List>
-                    {product?.feedbacks?.map((feedback, index) => (
+                    {productFeedbacks?.map((feedback, index) => (
                         <Box key={index}>
                             <ListItem
                                 alignItems='flex-start'
@@ -498,7 +510,7 @@ const ProductDetailPage = () => {
                                 <ListItemAvatar>
                                     <Avatar
                                         alt={feedback.userFirstName}
-                                        src={feedback.userImage}
+                                        src={feedback.userAvatar}
                                     />
                                 </ListItemAvatar>
 
@@ -509,19 +521,33 @@ const ProductDetailPage = () => {
                                         width: '100%',
                                     }}
                                 >
+                                    {/* User Name and Rating and Date */}
                                     <Box
                                         sx={{
                                             display: 'flex',
                                             justifyContent: 'space-between',
                                         }}
                                     >
-                                        <Typography
-                                            variant='body1'
-                                            fontWeight='bold'
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                gap: 1,
+                                                alignItems: 'center',
+                                            }}
                                         >
-                                            {feedback.userLastName}{' '}
-                                            {feedback.userFirstName}
-                                        </Typography>
+                                            <Typography
+                                                variant='body1'
+                                                fontWeight='bold'
+                                            >
+                                                {feedback.userLastName}{' '}
+                                                {feedback.userFirstName}
+                                            </Typography>
+                                            <Rating
+                                                value={feedback.rating}
+                                                readOnly
+                                                precision={0.1}
+                                            />
+                                        </Box>
                                         <Typography
                                             variant='body2'
                                             color='text.secondary'
@@ -531,12 +557,28 @@ const ProductDetailPage = () => {
                                             ).toLocaleString()}
                                         </Typography>
                                     </Box>
+
+                                    {/* Comment and Images */}
                                     <Box>
-                                        <Rating
-                                            value={feedback.rating}
-                                            readOnly
-                                            precision={0.1}
-                                        />
+                                        {/* Product Name and Type */}
+                                        <Box>
+                                            <Typography
+                                                variant='body2'
+                                                color='text.secondary'
+                                            >
+                                                Color Type:{' '}
+                                                {
+                                                    feedback.productItem?.color
+                                                        .colorName
+                                                }
+                                            </Typography>
+                                            <Typography
+                                                variant='body2'
+                                                color='text.secondary'
+                                            >
+                                                Sku: {feedback.productItem?.sku}
+                                            </Typography>
+                                        </Box>
                                         <Typography
                                             variant='body2'
                                             sx={{ mt: 1 }}
@@ -587,91 +629,14 @@ const ProductDetailPage = () => {
                                     </Box>
                                 </Box>
                             </ListItem>
-                            {index < product?.feedbacks?.length - 1 && (
+                            {index < productFeedbacks?.length - 1 && (
                                 <Divider sx={{ my: 2 }} />
                             )}
                         </Box>
                     ))}
                 </List>
             </Box>
-
-            <RelatedProducts />
         </Container>
-    );
-};
-
-const RelatedProducts = () => {
-    const [relatedProducts, setRelatedProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    const handleProductClick = (id) => {
-        console.log('Navigate to product ID:', id);
-        // Implement navigation logic (e.g., React Router's useNavigate)
-    };
-
-    if (loading) {
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    mt: 4,
-                }}
-            >
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    return (
-        <Box sx={{ mt: 4, p: 2, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
-            <Typography variant='h5' gutterBottom>
-                Related Products
-            </Typography>
-            <Grid container spacing={2}>
-                {relatedProducts.map((product) => (
-                    <Grid item xs={12} sm={6} md={3} key={product.id}>
-                        <Card sx={{ height: '100%' }}>
-                            <CardMedia
-                                component='img'
-                                height='140'
-                                image={product.image} // Replace with product.image URL
-                                alt={product.name}
-                            />
-                            <CardContent>
-                                <Typography variant='h6' noWrap>
-                                    {product.name}
-                                </Typography>
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'
-                                >
-                                    ${product.price}
-                                </Typography>
-                            </CardContent>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    pb: 2,
-                                }}
-                            >
-                                <Button
-                                    size='small'
-                                    variant='contained'
-                                    onClick={() =>
-                                        handleProductClick(product.id)
-                                    }
-                                >
-                                    View Details
-                                </Button>
-                            </Box>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-        </Box>
     );
 };
 
