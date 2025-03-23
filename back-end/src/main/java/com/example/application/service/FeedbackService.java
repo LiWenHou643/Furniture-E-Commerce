@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class FeedbackService {
+	private static final String PRODUCT_LIST_CACHE_KEY = "productList";
 	private static final String PRODUCT_CACHE_KEY = "product";
 	FeedbackRepository feedbackRepository;
 	ProductRepository productRepository;
@@ -44,7 +46,8 @@ public class FeedbackService {
 		return feedbacks.stream().map(FeedbackMapper.INSTANCE::toDTO).collect(Collectors.toList());
 	}
 
-	@CachePut(cacheNames = PRODUCT_CACHE_KEY, key = "#result.productId")
+	@Caching(evict = { @CacheEvict(value = PRODUCT_LIST_CACHE_KEY, allEntries = true),
+			@CacheEvict(value = PRODUCT_CACHE_KEY, key = "#result.productId") })
 	@Transactional
 	public ProductDTO saveFeedback(Long userId, FeedbackDTO feedbackDTO, MultipartFile[] files) {
 		System.out.println("FeedbackDTO: " + feedbackDTO.toString());
