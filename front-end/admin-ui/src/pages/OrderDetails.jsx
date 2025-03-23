@@ -22,6 +22,7 @@ import {
 import { styled } from '@mui/system';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import useConfirmOrder from '../hooks/useConfirmOrder';
 import useFetchOrder from '../hooks/useFetchOrder';
 import { formatDate } from '../utils/helper';
 
@@ -37,16 +38,14 @@ const OrderDetails = () => {
     const [orderStatus, setOrderStatus] = useState('PENDING');
     const { data: order, isLoading } = useFetchOrder(orderId);
     const [editing, setEditing] = useState(false);
+    const { mutate: confirmOrder } = useConfirmOrder();
 
     if (isLoading) {
         return <Typography>Loading...</Typography>;
     }
 
-    console.log('Order:', order);
-
     const handleConfirmOrder = () => {
-        // Logic to confirm the order
-        // Update order status and trigger necessary processes
+        confirmOrder(orderId);
     };
 
     const handleAssignDelivery = () => {
@@ -62,8 +61,6 @@ const OrderDetails = () => {
         console.log('Updated Order:', order);
     };
 
-    console.log('Order:', order);
-
     return (
         <Box sx={{ padding: 2 }}>
             <Button
@@ -77,8 +74,7 @@ const OrderDetails = () => {
 
             <StyledCard>
                 <CardContent>
-                    <Typography variant='h6'>Order Details</Typography>
-                    <Grid container spacing={2} sx={{ marginTop: 2 }}>
+                    <Grid container spacing={2} sx={{ marginTop: 0 }}>
                         <Grid item xs={6}>
                             <Typography variant='body1'>
                                 <strong>Order ID:</strong> {order.orderId}
@@ -107,6 +103,25 @@ const OrderDetails = () => {
                                     <strong>Order Status:</strong>
                                 </Typography>
                                 <OrderStatus status={order.orderStatus} />
+
+                                {/* Show Button actions match with order status */}
+                                {order.orderStatus === 'PENDING' ? (
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={handleConfirmOrder}
+                                    >
+                                        Confirm Order
+                                    </Button>
+                                ) : order.orderStatus === 'PROCESSING' ? (
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={() => setEditing(true)}
+                                    >
+                                        Assign Delivery
+                                    </Button>
+                                ) : null}
                             </Box>
 
                             {/* Show the status dropdown only if the order is not in "CANCELLED" status */}
@@ -134,6 +149,11 @@ const OrderDetails = () => {
                             <Typography variant='body1'>
                                 <strong>Shipping Address:</strong>{' '}
                                 {order.shippingAddress}
+                            </Typography>
+
+                            <Typography variant='body1'>
+                                <strong>Shipping Method:</strong>{' '}
+                                {order.shippingMethod}
                             </Typography>
                         </Grid>
                     </Grid>
