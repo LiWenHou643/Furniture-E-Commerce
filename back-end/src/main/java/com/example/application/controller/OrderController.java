@@ -170,9 +170,9 @@ public class OrderController {
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());
 	}
 
-	@PutMapping("/management/{orderId}/shipped")
+	@PutMapping("/management/{orderId}/ship")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> completeOrder(@PathVariable Long orderId) {
+	public ResponseEntity<?> shipOrder(@PathVariable Long orderId) {
 		orderService.updateOrderStatus(orderId, OrderStatus.SHIPPED);
 		return ResponseEntity
 				.ok(ApiResponse.builder().status("success").message("Orders updated successfully").build());

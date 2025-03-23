@@ -20,8 +20,8 @@ import {
     Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import useAssignShipment from '../hooks/useAssignShipment';
 import useConfirmOrder from '../hooks/useConfirmOrder';
 import useFetchOrder from '../hooks/useFetchOrder';
 import { formatDate } from '../utils/helper';
@@ -34,11 +34,9 @@ const StyledCard = styled(Card)({
 const OrderDetails = () => {
     const navigate = useNavigate();
     const { orderId } = useParams();
-    const [deliveryService, setDeliveryService] = useState('');
-    const [orderStatus, setOrderStatus] = useState('PENDING');
     const { data: order, isLoading } = useFetchOrder(orderId);
-    const [editing, setEditing] = useState(false);
     const { mutate: confirmOrder } = useConfirmOrder();
+    const { mutate: assginShipment } = useAssignShipment();
 
     if (isLoading) {
         return <Typography>Loading...</Typography>;
@@ -49,16 +47,7 @@ const OrderDetails = () => {
     };
 
     const handleAssignDelivery = () => {
-        // Logic to assign the order to a delivery service
-        // Send order details to the selected delivery service
-    };
-
-    const handleStatusChange = (event) => {};
-
-    const handleSave = () => {
-        setEditing(false);
-        // Here, you can integrate API call to update order status
-        console.log('Updated Order:', order);
+        assginShipment(orderId);
     };
 
     return (
@@ -117,7 +106,7 @@ const OrderDetails = () => {
                                     <Button
                                         variant='contained'
                                         color='primary'
-                                        onClick={() => setEditing(true)}
+                                        onClick={handleAssignDelivery}
                                     >
                                         Assign Delivery
                                     </Button>

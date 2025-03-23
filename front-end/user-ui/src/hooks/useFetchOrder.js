@@ -9,8 +9,8 @@ const fetchOrder = async ({ orderId }) => {
 const useFetchOrder = (orderId) => {
     return useQuery(['order', orderId], () => fetchOrder({ orderId }), {
         keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
         staleTime: 0,
         cacheTime: 0,
         retry: 1,
