@@ -4,6 +4,10 @@ import {
     Button,
     Checkbox,
     Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Grid,
     IconButton,
@@ -211,6 +215,9 @@ function CartPage() {
 
 const CartItem = ({ cartItem, isSelected, onSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [open, setOpen] = useState(false); // For the confirmation modal
+    const [itemToRemove, setItemToRemove] = useState(null); // The item to remove
+
     const handleOpen = () => {
         setAnchorEl(tableCellRef.current); // Set the TableCell as the anchor
     };
@@ -266,12 +273,12 @@ const CartItem = ({ cartItem, isSelected, onSelect }) => {
     };
 
     // Remove item from cart
-    const handleRemoveItem = (cartItemId) => {
-        // Remove the item from the cart
-        console.log('Remove item with id:', cartItemId);
-
+    const handleConfirmRemove = () => {
         // Call the removeCartItem function
-        removeCartItem(cartItemId);
+        if (itemToRemove !== null) {
+            console.log('Removing item:', itemToRemove);
+            removeCartItem(itemToRemove);
+        }
     };
 
     // Update selected color
@@ -291,6 +298,18 @@ const CartItem = ({ cartItem, isSelected, onSelect }) => {
 
         // Close the popover
         handleClose();
+    };
+
+    const handleOpenModal = (itemId) => {
+        // Open the modal
+        setItemToRemove(itemId); // Set the item to be removed
+        setOpen(true); // Open the modal
+    };
+
+    const handleCloseModal = () => {
+        // Close the modal
+        setOpen(false); // Close the modal without removing the item
+        setItemToRemove(null); // Reset the item to remove
     };
 
     const isOpen = Boolean(anchorEl);
@@ -473,12 +492,28 @@ const CartItem = ({ cartItem, isSelected, onSelect }) => {
             <TableCell align='center'>
                 <IconButton
                     color='error'
-                    onClick={() => handleRemoveItem(cartItem.cartItemId)}
+                    onClick={() => handleOpenModal(cartItem.cartItemId)}
                     aria-label='delete'
                 >
                     <DeleteIcon />
                 </IconButton>
             </TableCell>
+
+            {/* Confirmation Dialog */}
+            <Dialog open={open} onClose={handleCloseModal}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to remove this item from your cart?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseModal} color='primary'>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmRemove} color='error'>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </TableRow>
     );
 };
