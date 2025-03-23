@@ -193,8 +193,14 @@ export default function Dashboard() {
                                     <LineChart data={salesData}>
                                         <CartesianGrid strokeDasharray='3 3' />
                                         <XAxis dataKey='month' />
-                                        <YAxis />
-                                        <Tooltip />
+                                        <YAxis
+                                            tickFormatter={(value) =>
+                                                `$${value}`
+                                            }
+                                        />
+                                        <Tooltip
+                                            formatter={(value) => `$${value}`}
+                                        />
                                         <Line
                                             type='monotone'
                                             dataKey='sales'

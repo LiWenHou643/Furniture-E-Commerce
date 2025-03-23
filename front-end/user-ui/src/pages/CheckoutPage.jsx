@@ -151,7 +151,7 @@ function CheckoutPage() {
 
     const handleSubmitOrder = () => {
         const order = {
-            shippingAddress: phone + ' - ' + address,
+            shippingAddress: address,
             shippingMethod: deliveryMethod,
             paymentMethod: paymentMethod,
             shippingCost: shippingCost,
