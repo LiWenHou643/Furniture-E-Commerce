@@ -9,76 +9,17 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Slider from 'react-slick';
 import Loading from '../components/Loading';
-import useFetchBrand from '../hooks/useFetchBrand';
 import useFetchCategory from '../hooks/useFetchCategory';
-import useFetchMaterial from '../hooks/useFetchMaterial';
-import useFetchTopFeature from '../hooks/useFetchTopFeature';
 
 const Home = () => {
-    const carouselSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 4,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                },
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
-    };
     const navigate = useNavigate();
-    const [isDragging, setIsDragging] = useState(false);
 
-    const handleMouseDown = () => setIsDragging(false);
-    const handleMouseMove = () => setIsDragging(true);
-    const handleClick = (e, productId) => {
-        if (isDragging) e.preventDefault();
-        else navigate(`/products/${productId}`);
-    };
-
-    const addToCart = (e, product) => {
-        e.stopPropagation();
-        console.log('Added to cart:', product);
-    };
-
-    const { data: top_features, isLoading: loadingFeature } =
-        useFetchTopFeature();
     const { data: categories, isLoading: loadingCategories } =
         useFetchCategory();
 
-    const { data: brands, isLoading: loadingBrands } = useFetchBrand();
-
-    const { data: materials, isLoading: loadingMaterials } = useFetchMaterial();
-
-    if (
-        loadingFeature ||
-        loadingCategories ||
-        loadingBrands ||
-        loadingMaterials
-    ) {
+    if (loadingCategories) {
         return <Loading />;
     }
 
@@ -105,12 +46,12 @@ const Home = () => {
                 >
                     <Typography
                         variant='h3'
-                        sx={{ color: 'white', fontWeight: 'bold', mb: 2 }}
+                        sx={{ color: 'black', fontWeight: 'bold', mb: 2 }}
                     >
-                        Welcome to MyShop
+                        Welcome to LuxeHouse
                     </Typography>
-                    <Typography variant='h6' sx={{ color: 'white', mb: 3 }}>
-                        Shop the best products at unbeatable prices.
+                    <Typography variant='h6' sx={{ color: 'black', mb: 3 }}>
+                        Shop the best furnitures products at unbeatable prices.
                     </Typography>
                     <Button
                         variant='contained'
@@ -123,114 +64,6 @@ const Home = () => {
                     </Button>
                 </Container>
             </Box>
-
-            {/* Featured Products Carousel */}
-            <Container sx={{ my: 5 }}>
-                <Typography variant='h4' sx={{ mb: 3, fontWeight: 'bold' }}>
-                    Featured Products
-                </Typography>
-                <Slider {...carouselSettings}>
-                    {top_features?.map((product) => (
-                        <Card
-                            sx={{
-                                height: '100%',
-                                cursor: 'pointer',
-                                borderRadius: '0px',
-                            }}
-                            key={product.productId}
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={() =>
-                                setTimeout(() => setIsDragging(false), 0)
-                            }
-                            onClick={(e) => handleClick(e, product.productId)}
-                        >
-                            <CardMedia
-                                component='img'
-                                height='250'
-                                image={
-                                    product.productItems[0].productImages.find(
-                                        (image) => image.mainImage
-                                    )?.imageUrl ||
-                                    product.productItems[0].productImages[0] ||
-                                    'https://placeholder.com/200' // Fallback if no mainImage is true
-                                }
-                                alt='Product Image'
-                                style={{
-                                    objectFit: 'fill',
-                                    objectPosition: 'center',
-                                }}
-                            />
-
-                            <CardContent>
-                                <Typography variant='h6' gutterBottom>
-                                    {product.productName}
-                                </Typography>
-                                <Box
-                                    display='flex'
-                                    justifyContent='space-between'
-                                    alignItems='center'
-                                    p={0}
-                                >
-                                    <Typography
-                                        variant='body2'
-                                        color='text.primary'
-                                    >
-                                        SKU: {product.productItems[0].sku}
-                                    </Typography>
-                                    <Typography
-                                        variant='body2'
-                                        color='text.primary'
-                                    >
-                                        Stock:{' '}
-                                        {product.productItems[0].stockQuantity}
-                                    </Typography>
-                                </Box>
-                                {/* Pricing Information */}
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Box>
-                                        <Typography
-                                            variant='body2'
-                                            sx={{
-                                                textDecoration: 'line-through',
-                                                color: 'text.secondary',
-                                            }}
-                                        >
-                                            $
-                                            {product.productItems[0].originalPrice.toFixed(
-                                                2
-                                            )}
-                                        </Typography>
-                                        <Typography
-                                            variant='h6'
-                                            color='primary'
-                                        >
-                                            $
-                                            {product.productItems[0].salePrice.toFixed(
-                                                2
-                                            )}
-                                        </Typography>
-                                    </Box>
-
-                                    <Button
-                                        variant='contained'
-                                        color='primary'
-                                        onClick={(e) => addToCart(e, product)}
-                                    >
-                                        Add to Cart
-                                    </Button>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </Slider>
-            </Container>
 
             {/* Promotions Section */}
             <Container sx={{ my: 5 }}>
