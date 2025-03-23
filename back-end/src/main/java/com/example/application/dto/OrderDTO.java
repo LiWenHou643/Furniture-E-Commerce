@@ -29,6 +29,12 @@ public class OrderDTO {
 
 	Long userId;
 
+	String userName;
+
+	String userEmail;
+
+	String userPhone;
+
 	Double subtotal;
 
 	Double total;
@@ -61,7 +67,7 @@ public class OrderDTO {
 	LocalDateTime updatedAt;
 
 	List<OrderDetailDTO> orderDetails;
-	
+
 	PaymentDTO payment;
 
 }

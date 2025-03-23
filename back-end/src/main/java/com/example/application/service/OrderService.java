@@ -192,6 +192,10 @@ public class OrderService {
 
 		var orderDTO = OrderMapper.INSTANCE.toDTO(order);
 		orderDTO.setOrderDetails(orderDetailsDto);
+		orderDTO.setUserName(new StringBuilder().append(order.getUser().getLastName()).append(" ")
+				.append(order.getUser().getFirstName()).toString());
+		orderDTO.setUserEmail(order.getUser().getEmail());
+		orderDTO.setUserPhone(order.getUser().getPhoneNumber());
 
 		return orderDTO;
 	}

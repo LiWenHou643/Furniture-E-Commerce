@@ -1456,7 +1456,7 @@ VALUES (1, 1, 10);
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (2, 360, 400, 'DELIVERED', '2025-01-07 14:10:38', '2025-01-08 7:15:38', '2025-01-10 10:10:38', null,
-        '0931234567 - 123, ABC Street, XYZ Ward, HCM City', 'EXPRESS', 40,
+        '123, ABC Street, XYZ Ward, HCM City', 'EXPRESS', 40,
         'I will be at home after 5pm. Please delivery me after that time!', '2025-01-07 12:13:38',
         '2025-01-10 10:10:38');
 
@@ -1474,7 +1474,7 @@ VALUES (1, '2025-01-10 10:10:38', 400, 'CASH_ON_DELIVERY', 'PAID', null, '2025-0
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (3, 370, 400, 'DELIVERED', '2025-03-02 10:20:10', '2025-03-03 8:00:00', '2025-03-05 14:15:00', null,
-        '0912345678 - 456, DEF Street, XYZ Ward, HCM City', 'STANDARD', 20,
+        '456, DEF Street, XYZ Ward, HCM City', 'STANDARD', 20,
         'Please leave the package at the door if I am not home!', '2025-03-02 09:00:00',
         '2025-03-05 14:15:00');
 
@@ -1489,7 +1489,7 @@ UPDATE products SET sold_quantity = 4 WHERE product_id = 2;
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (4, 380, 420, 'DELIVERED', '2025-03-03 11:00:10', '2025-03-04 10:30:00', '2025-03-06 15:00:00', null,
-        '0923456789 - 789, GHI Street, ABC Ward, HCM City', 'EXPRESS', 50,
+        '789, GHI Street, ABC Ward, HCM City', 'EXPRESS', 50,
         'Kindly call when arriving!', '2025-03-03 10:00:00', '2025-03-06 15:00:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
@@ -1503,7 +1503,7 @@ UPDATE products SET sold_quantity = 6 WHERE product_id = 4;
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (5, 400, 440, 'DELIVERED', '2025-03-04 12:45:20', '2025-03-05 12:30:00', '2025-03-07 16:00:00', null,
-        '0909876543 - 123, JKL Street, LMN Ward, HCM City', 'STANDARD', 30,
+        '123, JKL Street, LMN Ward, HCM City', 'STANDARD', 30,
         'Leave the package at the front gate if no one answers!', '2025-03-04 12:30:00', '2025-03-07 16:00:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
@@ -1517,7 +1517,7 @@ UPDATE products SET sold_quantity = 8 WHERE product_id = 4;
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (6, 360, 400, 'DELIVERED', '2025-03-05 13:20:30', '2025-03-06 13:15:00', '2025-03-08 17:30:00', null,
-        '0945678901 - 234, MNO Street, PQR Ward, HCM City', 'EXPRESS', 50,
+        '234, MNO Street, PQR Ward, HCM City', 'EXPRESS', 50,
         'I will be at home after 4pm. Please deliver it then!', '2025-03-05 12:30:00', '2025-03-08 17:30:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
@@ -1531,7 +1531,7 @@ UPDATE products SET sold_quantity = 10 WHERE product_id = 4;
 INSERT INTO orders (user_id, subtotal, total, order_status, confirm_date, shipping_date, delivery_date, cancel_date,
                     shipping_address, shipping_method, shipping_cost, notes, created_at, updated_at)
 VALUES (7, 350, 380, 'DELIVERED', '2025-03-06 14:00:25', '2025-03-07 9:30:00', '2025-03-09 11:30:00', null,
-        '0987654321 - 321, STU Street, VWX Ward, HCM City', 'STANDARD', 40,
+        '321, STU Street, VWX Ward, HCM City', 'STANDARD', 40,
         'Please leave it at the front door if no one is around!', '2025-03-06 13:30:00', '2025-03-09 11:30:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)

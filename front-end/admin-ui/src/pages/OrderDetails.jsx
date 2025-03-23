@@ -61,6 +61,9 @@ const OrderDetails = () => {
         // Here, you can integrate API call to update order status
         console.log('Updated Order:', order);
     };
+
+    console.log('Order:', order);
+
     return (
         <Box sx={{ padding: 2 }}>
             <Button
@@ -82,8 +85,14 @@ const OrderDetails = () => {
                             </Typography>
 
                             <Typography variant='body1'>
-                                <strong>Shipping Address:</strong>{' '}
-                                {order.shippingAddress}
+                                <strong>Subtotal:</strong> ${order.subtotal}
+                            </Typography>
+                            <Typography variant='body1'>
+                                <strong>Shipping Cost:</strong> $
+                                {order.shippingCost}
+                            </Typography>
+                            <Typography variant='body1'>
+                                <strong>Total:</strong> ${order.total}
                             </Typography>
 
                             <Box
@@ -108,16 +117,23 @@ const OrderDetails = () => {
                                 </Typography>
                             )}
                         </Grid>
+
                         <Grid item xs={6}>
                             <Typography variant='body1'>
-                                <strong>Subtotal:</strong> ${order.subtotal}
+                                <strong>Customer:</strong> {order.userName}
                             </Typography>
+
                             <Typography variant='body1'>
-                                <strong>Shipping Cost:</strong> $
-                                {order.shippingCost}
+                                <strong>Phone:</strong> {order.userPhone}
                             </Typography>
+
                             <Typography variant='body1'>
-                                <strong>Total:</strong> ${order.total}
+                                <strong>Email:</strong> {order.userEmail}
+                            </Typography>
+
+                            <Typography variant='body1'>
+                                <strong>Shipping Address:</strong>{' '}
+                                {order.shippingAddress}
                             </Typography>
                         </Grid>
                     </Grid>
