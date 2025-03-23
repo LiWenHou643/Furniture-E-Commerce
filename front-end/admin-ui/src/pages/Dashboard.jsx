@@ -159,10 +159,11 @@ export default function Dashboard() {
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <Paper sx={{ p: 2, textAlign: 'center' }}>
-                                <Typography variant='h6'>Orders</Typography>
+                                <Typography variant='h6'>
+                                    Finished Orders
+                                </Typography>
                                 <Typography variant='h4'>
                                     {totalOrderCount}
-                                    {console.log(totalOrderCount)}
                                 </Typography>
                             </Paper>
                         </Grid>

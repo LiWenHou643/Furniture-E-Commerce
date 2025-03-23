@@ -100,35 +100,47 @@ export default function Orders() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orders.map((order) => (
-                            <TableRow key={order.orderId}>
-                                <TableCell>{order.orderId}</TableCell>
-                                <TableCell>
-                                    <OrderStatus status={order.orderStatus} />
-                                </TableCell>
-                                <TableCell>${order.total.toFixed(2)}</TableCell>
-                                <TableCell>
-                                    {formatDate(order.createdAt)}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDate(order.updatedAt)}
-                                </TableCell>
-                                <TableCell>
-                                    <Button
-                                        size='small'
-                                        variant='outlined'
-                                        startIcon={<VisibilityIcon />}
-                                        onClick={() =>
-                                            navigate(
-                                                `/orders-management/${order.orderId}`
-                                            )
-                                        }
-                                    >
-                                        View
-                                    </Button>
+                        {orders.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} align='center'>
+                                    No orders found
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            orders.map((order) => (
+                                <TableRow key={order.orderId}>
+                                    <TableCell>{order.orderId}</TableCell>
+                                    <TableCell>
+                                        <OrderStatus
+                                            status={order.orderStatus}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        ${order.total.toFixed(2)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatDate(order.createdAt)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatDate(order.updatedAt)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button
+                                            size='small'
+                                            variant='outlined'
+                                            startIcon={<VisibilityIcon />}
+                                            onClick={() =>
+                                                navigate(
+                                                    `/orders-management/${order.orderId}`
+                                                )
+                                            }
+                                        >
+                                            View
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
