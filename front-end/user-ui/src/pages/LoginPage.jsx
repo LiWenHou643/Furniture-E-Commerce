@@ -4,6 +4,10 @@ import {
     Button,
     Checkbox,
     Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     FormControlLabel,
     IconButton,
     InputAdornment,
@@ -13,12 +17,15 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
+import useResetPassword from '../hooks/useResetPassword';
 import { isAuthenticated } from '../utils/auth';
+
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [persistent, setPersistent] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [resetPasswordModalOpen, setResetPasswordModalOpen] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
         if (isAuthenticated()) {
@@ -32,6 +39,14 @@ const LoginPage = () => {
         event.preventDefault();
         // Call the login mutation
         loginMutation.mutate({ username, password, persistent });
+    };
+
+    const handleOpenResetPasswordModal = () => {
+        setResetPasswordModalOpen(true);
+    };
+
+    const handleCloseResetPasswordModal = () => {
+        setResetPasswordModalOpen(false);
     };
 
     return (
@@ -114,11 +129,7 @@ const LoginPage = () => {
                         label='Remember me'
                     />
                     {/* Register Link */}
-                    <Typography
-                        variant='body2'
-                        color='textSecondary'
-                        sx={{ marginBottom: 2 }}
-                    >
+                    <Typography variant='body2' color='textSecondary'>
                         Don’t have an account?{' '}
                         <Button
                             variant='text'
@@ -128,6 +139,23 @@ const LoginPage = () => {
                             Register
                         </Button>
                     </Typography>
+
+                    {/* Reset Password Link */}
+                    <Typography
+                        variant='body2'
+                        color='textSecondary'
+                        sx={{ marginBottom: 2 }}
+                    >
+                        Forgot password?{' '}
+                        <Button
+                            variant='text'
+                            color='primary'
+                            onClick={handleOpenResetPasswordModal}
+                        >
+                            Reset Password
+                        </Button>
+                    </Typography>
+
                     <Button
                         variant='contained'
                         color='primary'
@@ -138,7 +166,67 @@ const LoginPage = () => {
                     </Button>
                 </form>
             </Box>
+
+            <ResetPasswordModal
+                open={resetPasswordModalOpen}
+                onClose={handleCloseResetPasswordModal}
+            />
         </Container>
+    );
+};
+
+const ResetPasswordModal = ({ open, onClose }) => {
+    const [emailOrPhone, setEmailOrPhone] = useState('');
+    const { mutate: resetPassword } = useResetPassword();
+
+    const handleInputChange = (e) => {
+        setEmailOrPhone(e.target.value);
+    };
+
+    const handleSubmit = () => {
+        if (emailOrPhone) {
+            // Handle reset password logic here (e.g., API call)
+            console.log('Reset password for:', emailOrPhone);
+
+            resetPassword(
+                { username: emailOrPhone },
+                {
+                    onSettled: () => {
+                        setEmailOrPhone('');
+                        onClose();
+                    },
+                }
+            );
+        }
+    };
+
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogContent>
+                <Box>
+                    <TextField
+                        label='Email or Phone Number'
+                        fullWidth
+                        value={emailOrPhone}
+                        onChange={handleInputChange}
+                        placeholder='Enter your email or phone number'
+                        autoFocus
+                        margin='normal'
+                        variant='outlined'
+                        required
+                    />
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose} color='secondary'>
+                    Cancel
+                </Button>
+                <Button onClick={handleSubmit} color='primary'>
+                    Submit
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
