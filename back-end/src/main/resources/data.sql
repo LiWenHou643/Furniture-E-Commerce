@@ -104,196 +104,196 @@ INSERT INTO products (product_name, product_description, category_id, brand_id, 
                       rating_count, product_status)
 VALUES ('Chesterfield Sofa',
         'A timeless chesterfield sofa with deep button tufting and luxurious leather upholstery, perfect for any living room.',
-        1, 3, 4, 4.8, 220, TRUE),
+        1, 3, 4, 4.7, 3, TRUE),
        ('Hobro Don Sofa',
         'The sofa mattress is made of polyester fabric that is dust-proof, mold-resistant and the mattress cover can be easily removed for cleaning. Gray sofa cushions create a modern beauty, but no less luxurious and gentle',
-        1, 5, 3, 4.8, 178, TRUE),
+        1, 5, 3, 0, 0, TRUE),
        ('Egg Chair Type 1',
         'Add a touch of modern elegance to any room with the Egg Chair Type 1. Designed for ultimate comfort, its ergonomic shape cradles your body, while the soft upholstery and sturdy swivel base provide both style and support. Ideal for lounging, reading, or simply relaxing, this iconic chair is perfect for any contemporary space.',
-        1, 1, 3, 4.9, 123, TRUE),
+        1, 1, 3, 0, 0, TRUE),
        ('Egg Chair Type 2',
         'Add a touch of modern elegance to any room with the Egg Chair Type 1. Designed for ultimate comfort, its ergonomic shape cradles your body, while the soft upholstery and sturdy swivel base provide both style and support. Ideal for lounging, reading, or simply relaxing, this iconic chair is perfect for any contemporary space.',
-        1, 1, 3, 4.8, 128, TRUE),
+        1, 1, 3, 0, 0, TRUE),
        ('Hobro Armchair Sofa',
         'Hobro sofa is designed with a solid structure, along with good bearing capacity thanks to the solid characteristics of rubber wood such as toughness, hardness, not soft and water... thereby helping the product to be durable. Soak and use for a long time.',
-        1, 1, 3, 4.8, 146, TRUE),
+        1, 1, 3, 0, 0, TRUE),
        ('Modular Sectional Sofa',
         'Create a customized, comfortable seating area with the Modular Sectional Sofa. Designed to fit your space and style, this sofa features interchangeable pieces that allow you to arrange it however you like. The soft cushions and durable fabric provide long-lasting comfort, while the sleek, modern design complements any living room or lounge area.',
-        1, 2, 3, 4.7, 149, TRUE),
+        1, 2, 3, 0, 0, TRUE),
        ('Papasan Chair',
         'Relax in style with the Papasan Chair, a cozy and iconic piece of furniture perfect for any room. With its wide, cushioned seat and sturdy frame, this chair offers a comfortable, cradling experience for ultimate relaxation. Whether you\'re reading, lounging, or just unwinding, the Papasan Chair adds a touch of charm and comfort to your space.',
-        1, 3, 3, 4.7, 144, TRUE),
+        1, 3, 3, 0, 0, TRUE),
        ('Parsons Chair',
         'The Parsons Chair combines sleek design with timeless elegance. Featuring clean lines, a sturdy frame, and comfortable upholstery, this chair is perfect for any dining room, office, or living space. Its versatile style complements both modern and traditional interiors, offering both function and sophistication.',
-        1, 3, 3, 4.8, 140, TRUE),
+        1, 3, 3, 0, 0, TRUE),
        ('Swivel Chair', 'A versatile swivel chair with padded arms and back, perfect for offices or living rooms.', 1,
-        2, 3, 4.7, 180, TRUE),
+        2, 3, 0, 0, TRUE),
        ('Wood Rattan Cane Chair',
         'Use of Mango Wood as primary material gives this Dining Chair a solid & sturdy look. Secondary material is used as Rattan Cane at back side & Fabrics(Used in Seat).',
-        1, 3, 1, 4.8, 180, TRUE),
+        1, 3, 1, 0, 0, TRUE),
        ('Wood Heirloom Chair',
         'These heirloom quality chairs are crafted to compliment your Modular Table and complete your dining set. American-made and solid hardwood. Upholstered seating available on specified models.',
-        1, 4, 1, 4.9, 140, TRUE);
+        1, 4, 1, 0, 0, TRUE);
 
 -- Table Category: 10 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating,
                       rating_count, product_status)
 VALUES ('Glass Table Type 1',
         'Add a touch of sophistication to your space with the Glass Table Type 1. Featuring a sleek glass top and a sturdy base, this table offers a modern, minimalist design that enhances any room. Perfect for dining, working, or as a statement piece, it combines elegance with functionality.',
-        2, 2, 5, 4.9, 330, TRUE),
+        2, 2, 5, 0, 0, TRUE),
        ('Glass Table Type 2',
         'Add a touch of sophistication to your space with the Glass Table Type 2. Featuring a sleek glass top and a sturdy base, this table offers a modern, minimalist design that enhances any room. Perfect for dining, working, or as a statement piece, it combines elegance with functionality.',
-        2, 2, 5, 4.9, 330, TRUE),
+        2, 2, 5, 0, 0, TRUE),
        ('Nested Table',
         'Maximize space and style with the Nested Table. Featuring a set of smaller tables that tuck neatly together, this versatile design offers flexibility for any room. Whether used as individual accent tables or stacked together for a modern look, the Nested Table adds both function and elegance to your home.',
-        2, 3, 1, 4.9, 330, TRUE),
+        2, 3, 1, 0, 0, TRUE),
        ('Round Marble Table Type 1',
         'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.',
-        2, 1, 6, 4.9, 330, TRUE),
+        2, 1, 6, 0, 0, TRUE),
        ('Round Marble Table Type 2',
         'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.',
-        2, 1, 6, 4.7, 230, TRUE),
+        2, 1, 6, 0, 0, TRUE),
        ('Round Marble Table Type 3',
         'Elevate your space with the luxurious Round Marble Table. Featuring a sleek marble top and a sturdy base, this table exudes elegance and sophistication. Its timeless design makes it perfect for dining rooms, living areas, or as a statement piece in any modern home.',
-        2, 1, 6, 4.8, 310, TRUE),
+        2, 1, 6, 0, 0, TRUE),
        ('Round Wood Table Type 1',
         'The Round Wood Table combines natural beauty with timeless design. Crafted from high-quality wood, this table features a smooth, round surface and sturdy legs, making it a perfect addition to any dining room, kitchen, or living space. Its versatile design complements a variety of styles, from rustic to modern.',
-        2, 3, 1, 4.8, 350, TRUE),
+        2, 3, 1, 0, 0, TRUE),
        ('Round Wood Table Type 2',
         'The Round Wood Table combines natural beauty with timeless design. Crafted from high-quality wood, this table features a smooth, round surface and sturdy legs, making it a perfect addition to any dining room, kitchen, or living space. Its versatile design complements a variety of styles, from rustic to modern.',
-        2, 3, 1, 4.7, 235, TRUE),
+        2, 3, 1, 0, 0, TRUE),
        ('Square Wood Table',
         'The Square Wood Table offers a blend of durability and style, featuring a smooth wooden surface and sturdy construction. Its clean, square design makes it a versatile addition to dining rooms, kitchens, or workspaces. Perfect for both modern and traditional interiors, this table brings warmth and functionality to any room.',
-        2, 3, 1, 4.6, 335, TRUE),
+        2, 3, 1, 0, 0, TRUE),
        ('Convertible Wood Table',
         'The Convertible Wood Table offers versatile functionality with its innovative design. Crafted from durable wood, this table easily transforms from a compact size to a larger surface, perfect for both everyday use and hosting gatherings. Its stylish look and practical functionality make it a great addition to any modern home.',
-        2, 3, 1, 4.5, 300, TRUE);
+        2, 3, 1, 0, 0, TRUE);
 
 -- Bed Category: 10 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating,
                       rating_count, product_status)
 VALUES ('Luxury Modern Bed 1',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 1, 1, 4.9, 222, TRUE),
+        3, 1, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 2',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 1, 1, 4.9, 232, TRUE),
+        3, 1, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 3',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 2, 1, 4.8, 242, TRUE),
+        3, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 4',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 2, 1, 4.7, 252, TRUE),
+        3, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 5',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 3, 1, 4.8, 262, TRUE),
+        3, 3, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 6',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 3, 1, 4.7, 272, TRUE),
+        3, 3, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 7',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 4, 1, 4.8, 282, TRUE),
+        3, 4, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 8',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 4, 1, 4.7, 292, TRUE),
+        3, 4, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 9',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 5, 1, 4.9, 202, TRUE),
+        3, 5, 1, 0, 0, TRUE),
        ('Luxury Modern Bed 10',
         'Experience ultimate comfort and elegance with the Luxury Modern Bed. Featuring a sleek, contemporary design and premium materials, this bed creates a sophisticated focal point in any bedroom. Its plush headboard and sturdy frame provide both style and support, ensuring a restful night’s sleep.',
-        3, 5, 1, 4.8, 212, TRUE);
+        3, 5, 1, 0, 0, TRUE);
 
 -- Storage Category: 15 products
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating,
                       rating_count, product_status)
 VALUES ('Luxury Modern Drawer NightStand Type 1',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 1, 1, 4.9, 130, TRUE),
+        4, 1, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 2',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 1, 1, 4.7, 133, TRUE),
+        4, 1, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 3',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 2, 1, 4.8, 135, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 4',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 2, 1, 4.9, 136, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 5',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 3, 1, 4.8, 138, TRUE),
+        4, 3, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 6',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 3, 1, 4.7, 139, TRUE),
+        4, 3, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 7',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 4, 1, 4.9, 130, TRUE),
+        4, 4, 1, 0, 0, TRUE),
        ('Luxury Modern Drawer NightStand Type 8',
         'The Luxury Modern Drawer Nightstand blends contemporary style with practical storage. Featuring sleek lines, high-quality craftsmanship, and smooth-gliding drawers, it’s the perfect addition to any modern bedroom. Its elegant design and functional storage make it ideal for keeping essentials close at hand while enhancing your room’s décor.',
-        4, 4, 1, 4.8, 140, TRUE),
+        4, 4, 1, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 1',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 1, 2, 4.9, 130, TRUE),
+        4, 1, 2, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 2',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 1, 2, 4.8, 140, TRUE),
+        4, 1, 2, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 3',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 2, 1, 4.9, 150, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 4',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 2, 1, 4.8, 160, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 5',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 2, 1, 4.9, 170, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 6',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 2, 1, 4.9, 170, TRUE),
+        4, 2, 1, 0, 0, TRUE),
        ('Luxury Modern Shelf Type 7',
         'The Luxury Modern Shelf combines sophisticated design with practical storage. Crafted from high-quality materials, this sleek shelf offers a stylish way to display books, décor, or personal items. Its minimalist aesthetic fits seamlessly into any modern living room, bedroom, or office space.',
-        4, 1, 2, 4.8, 180, TRUE);
+        4, 1, 2, 0, 0, TRUE);
 
 -- Decor Category
 INSERT INTO products (product_name, product_description, category_id, brand_id, material_id, average_rating,
                       rating_count, product_status)
 VALUES ('Beautiful Picture Frame Type 1',
         'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.',
-        5, 1, 6, 4.7, 150, TRUE),
+        5, 1, 6, 0, 0, TRUE),
        ('Beautiful Picture Frame Type 2',
         'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.',
-        5, 2, 1, 4.8, 120, TRUE),
+        5, 2, 1, 0, 0, TRUE),
        ('Beautiful Picture Frame Type 3',
         'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.',
-        5, 3, 6, 4.9, 130, TRUE),
+        5, 3, 6, 0, 0, TRUE),
        ('Beautiful Picture Frame Type 4',
         'Showcase your cherished memories with the Beautiful Picture Frame. Designed with elegance, this frame features a classic yet modern style that complements any décor. Made from high-quality materials, it adds a touch of sophistication while highlighting your favorite photos.',
-        5, 4, 1, 4.8, 140, TRUE),
+        5, 4, 1, 0, 0, TRUE),
        ('Vintage Luxe Mirror Type 1',
         'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.',
-        5, 1, 1, 4.7, 150, TRUE),
+        5, 1, 1, 0, 0, TRUE),
        ('Vintage Luxe Mirror Type 2',
         'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.',
-        5, 2, 1, 4.8, 130, TRUE),
+        5, 2, 1, 0, 0, TRUE),
        ('Vintage Luxe Mirror Type 3',
         'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.',
-        5, 3, 6, 4.6, 120, TRUE),
+        5, 3, 6, 0, 0, TRUE),
        ('Vintage Luxe Mirror Type 4',
         'Add a touch of elegance and sophistication to your space with the Vintage Luxe Mirror. Featuring a timeless vintage design with intricate detailing, this mirror serves as both a functional piece and a striking focal point in any room. Its luxurious frame enhances any décor style, from classic to contemporary.',
-        5, 4, 6, 4.7, 110, TRUE),
+        5, 4, 6, 0, 0, TRUE),
        ('Room Decor Vase Type 1',
         'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.',
-        5, 1, 7, 4.7, 150, TRUE),
+        5, 1, 7, 0, 0, TRUE),
        ('Room Decor Vase Type 2',
         'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.',
-        5, 1, 7, 4.7, 150, TRUE),
+        5, 1, 7, 0, 0, TRUE),
        ('Room Decor Vase Type 3',
         'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.',
-        5, 1, 7, 4.7, 150, TRUE),
+        5, 1, 7, 0, 0, TRUE),
        ('Room Decor Vase Type 4',
         'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.',
-        5, 1, 7, 4.7, 150, TRUE),
+        5, 1, 7, 0, 0, TRUE),
        ('Room Decor Vase Type 5',
         'Enhance your space with this stylish Room Decor Vase. Perfect for flowers or as a standalone piece, its sleek design complements any decor. Made from high-quality materials, it adds a touch of elegance to your living room, bedroom, or office. A simple yet timeless accent for any room.',
-        5, 1, 7, 4.7, 150, TRUE);
+        5, 1, 7, 0, 0, TRUE);
 
 -- Linking products to areas
 -- 1: Living room
@@ -1383,6 +1383,50 @@ VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v173452
        (92, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734527182/coffee-vase-5-5_dr0llv.webp',
         FALSE);
 
+INSERT INTO description_detail (
+    product_id, short_description, style, upholstery_material, frame_material, cushion_filling, 
+    dimensions_length, dimensions_width, dimensions_height, weight, weight_capacity, features, 
+    ergonomic_design, assembly_required, care_instructions, intended_use, durability_rating
+) VALUES
+    -- Product 1: Chesterfield Sofa
+    (1, 'Timeless sofa with deep button tufting', 'Chesterfield', 'Leather', 'Wood', 'Foam', 
+     80.00, 35.00, 30.00, 120.00, 600.00, 'Button Tufting', 0, 0, 'Wipe with damp cloth', 'Living Room', 'High'),
+     
+    -- Product 2: Hobro Don Sofa
+    (2, 'Modern sofa with dust-proof, mold-resistant mattress', 'Modern', 'Polyester Fabric', 'Wood', 'Polyester Fiber', 
+     30.00, 30.00, 32.00, 20.00, 100.00, 'Removable Cover', 0, 1, 'Machine washable cover', 'Living Room', 'Medium'),
+     
+    -- Product 3: Egg Chair Type 1
+    (3, 'Elegant chair with ergonomic shape and swivel base', 'Modern', 'Fabric', 'Metal', 'Foam', 
+     35.00, 35.00, 55.00, 50.00, 100.00, 'Swivel Base', 1, 1, 'Spot clean', 'Living Room', 'High'),
+     
+    -- Product 4: Egg Chair Type 2 (similar to Type 1 with minor differences)
+    (4, 'Elegant chair with ergonomic shape and swivel base', 'Modern', 'Fabric', 'Metal', 'Foam',  
+     35.00, 35.00, 55.00, 50.00, 100.00, 'Swivel Base', 1, 1, 'Spot clean', 'Living Room', 'High'),
+     
+    -- Product 5: Hobro Armchair Sofa
+    (5, 'Durable sofa with solid structure', 'Modern', 'Fabric', 'Rubber Wood', 'Foam', 
+     70.00, 34.00, 32.00, 110.00, 550.00, 'High Load Bearing', 0, 0, 'Wipe with damp cloth', 'Living Room', 'High'),
+     
+    -- Product 6: Modular Sectional Sofa
+    (6, 'Customizable sectional sofa with soft cushions', 'Modern', 'Fabric', 'Wood', 'Polyester Fiber',
+     90.00, 60.00, 32.00, 150.00, 700.00, 'Interchangeable Pieces', 0, 1, 'Spot clean', 'Living Room', 'Medium'),
+     
+    -- Product 7: Papasan Chair
+    (7, 'Cozy chair with wide cushioned seat', 'Bohemian', 'Fabric', 'Wood', 'Polyester Fiber', 
+     40.00, 40.00, 35.00, 10.00, 150.00, 'Cradling Seat', 1, 0, 'Spot clean', 'Living Room', 'Medium'),
+     
+    -- Product 8: Parsons Chair
+    (8, 'Sleek chair with clean lines', 'Contemporary', 'Fabric', 'Wood', 'Foam',  
+     20.00, 20.00, 35.00, 5.00, 150.00, 'Clean Lines', 0, 0, 'Wipe with dry cloth', 'Dining Room', 'Medium'),
+     
+    -- Product 9: Swivel Chair
+    (9, 'Versatile chair with padded arms and back', 'Modern', 'Fabric', 'Metal', 'Foam',
+     30.00, 30.00, 40.00, 20.00, 300.00, 'Swivel Base, Padded Arms', 0, 1, 'Spot clean', 'Office', 'High'),
+     
+    -- Product 10: Wood Rattan Cane Chair
+    (10, 'Sturdy dining chair with rattan cane back', 'Traditional', 'Fabric', 'Mango Wood', 'Foam',
+     20.00, 20.00, 55.00, 5.00, 250.00, 'Rattan Cane Back', 0, 0, 'Wipe with dry cloth', 'Dining Room', 'High');
 
 INSERT INTO carts (user_id)
 VALUES (2),
@@ -1449,7 +1493,7 @@ VALUES (4, 380, 420, 'DELIVERED', '2025-03-03 11:00:10', '2025-03-04 10:30:00', 
         'Kindly call when arriving!', '2025-03-03 10:00:00', '2025-03-06 15:00:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
-VALUES (3, 1, 1, 180, 180, false, '2025-03-03 10:00:00', '2025-03-03 10:00:00'),
+VALUES (3, 1, 1, 180, 180, true, '2025-03-03 10:00:00', '2025-03-03 10:00:00'),
        (3, 5, 2, 90, 180, false, '2025-03-03 10:00:00', '2025-03-03 10:00:00');
 
 UPDATE products SET sold_quantity = 4 WHERE product_id = 1;
@@ -1463,8 +1507,8 @@ VALUES (5, 400, 440, 'DELIVERED', '2025-03-04 12:45:20', '2025-03-05 12:30:00', 
         'Leave the package at the front gate if no one answers!', '2025-03-04 12:30:00', '2025-03-07 16:00:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
-VALUES (4, 2, 1, 190, 190, true, '2025-03-04 12:30:00', '2025-03-04 12:30:00'),
-       (4, 4, 2, 90, 180, true, '2025-03-04 12:30:00', '2025-03-04 12:30:00');
+VALUES (4, 2, 1, 190, 190, false, '2025-03-04 12:30:00', '2025-03-04 12:30:00'),
+       (4, 4, 2, 90, 180, false, '2025-03-04 12:30:00', '2025-03-04 12:30:00');
 
 UPDATE products SET sold_quantity = 5 WHERE product_id = 2;
 UPDATE products SET sold_quantity = 8 WHERE product_id = 4;
@@ -1491,7 +1535,7 @@ VALUES (7, 350, 380, 'DELIVERED', '2025-03-06 14:00:25', '2025-03-07 9:30:00', '
         'Please leave it at the front door if no one is around!', '2025-03-06 13:30:00', '2025-03-09 11:30:00');
 
 INSERT INTO order_details (order_id, product_item_id, quantity, price, total, feedback_given, created_at, updated_at)
-VALUES (6, 3, 1, 80, 80, true, '2025-03-06 13:30:00', '2025-03-06 13:30:00'),
+VALUES (6, 3, 1, 80, 80, false, '2025-03-06 13:30:00', '2025-03-06 13:30:00'),
        (6, 5, 2, 90, 180, false, '2025-03-06 13:30:00', '2025-03-06 13:30:00');
 
 UPDATE products SET sold_quantity = 7 WHERE product_id = 3;
@@ -1519,20 +1563,21 @@ VALUES (6, '2025-03-09 12:00:00', 350 + 40, 'CASH_ON_DELIVERY', 'PAID', null, '2
 
 
 INSERT INTO feedbacks (user_id, product_item_id, comment, rating, created_at, updated_at)
-VALUES (2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,
+VALUES	(2, 1, 'Product is same as images and description. But delivery quite slow. so i rated 4 star.', 4,
         '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (3, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-01-12 12:13:38',
-        '2025-01-12 12:13:38');
+		(3, 2, 'It very gud. Shipment fast also.', 5,
+        '2025-03-05 18:15:00', '2025-03-05 18:15:00'),
+		(4, 1, 'Product was very good. i will introduce it to my friends.', 5, '2025-03-07 15:20:00',
+        '2025-03-07 15:20:00');
 
-INSERT INTO feedback_images (feedback_id, image_url, created_at, updated_at)
-VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289670/BENNETT-CHAIR_wgbahm.png',
-        '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
-        '2025-01-11 12:13:38', '2025-01-11 12:13:38'),
-       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
-        '2025-01-12 12:13:38', '2025-01-12 12:13:38'),
-       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289669/BENNETT-3_u1dqtw.jpg',
-        '2025-01-12 12:13:38', '2025-01-12 12:13:38');
+INSERT INTO feedback_images (feedback_id, image_url)
+VALUES (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523959/red-chesterfield-1_no1iqo.jpg'),
+       (1, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-6_xbztw7.jpg'),
+	   (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-9_kltafu.jpg'),
+       (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/green-chesterfield-3_szhbpl.png'),
+	   (2, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523957/green-chesterfield-1_qsynur.jpg'),
+       (3, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523961/red-chesterfield-9_hnaixz.jpg'),
+       (3, 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1734523958/red-chesterfield-0_infgxv.jpg');
 
 INSERT INTO chat_rooms (chat_id, sender_id, recipient_id) VALUES ('1_2', 1, 2), ('1_2', 2, 1), ('1_3', 1, 3), ('1_3', 3, 1);        
         

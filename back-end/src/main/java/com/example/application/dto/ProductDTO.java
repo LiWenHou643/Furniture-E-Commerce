@@ -22,6 +22,7 @@ public class ProductDTO {
 	Long productId;
 	String productName;
 	String productDescription;
+	DescriptionDetailDTO descriptionDetail;
 	CategoryDTO category;
 	BrandDTO brand;
 	MaterialDTO material;

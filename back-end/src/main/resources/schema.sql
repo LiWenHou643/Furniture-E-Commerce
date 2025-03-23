@@ -117,6 +117,28 @@ CREATE TABLE products
     FOREIGN KEY (material_id) REFERENCES materials (material_id)
 );
 
+CREATE TABLE description_detail (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    short_description TEXT,              -- Brief summary from product_description
+    style VARCHAR(100),                  -- e.g., Chesterfield, Modern, Traditional
+    upholstery_material VARCHAR(100),    -- e.g., Leather, Polyester, Fabric
+    frame_material VARCHAR(100),         -- e.g., Rubber Wood, Mango Wood, Metal
+    cushion_filling VARCHAR(100),        -- e.g., Foam, Polyester Fiber
+    dimensions_length DECIMAL(10,2),     -- Length in inches/cm
+    dimensions_width DECIMAL(10,2),      -- Width in inches/cm
+    dimensions_height DECIMAL(10,2),     -- Height in inches/cm
+    weight DECIMAL(10,2),                -- Weight in lbs/kg
+    weight_capacity DECIMAL(10,2),       -- Max weight it can hold in lbs/kg
+    features TEXT,                       -- e.g., Swivel base, Removable cover
+    ergonomic_design BOOLEAN,            -- Yes/No for ergonomic support
+    assembly_required BOOLEAN,           -- Yes/No for assembly
+    care_instructions TEXT,              -- e.g., "Wipe with damp cloth"
+    intended_use VARCHAR(100),           -- e.g., Living Room, Office, Dining
+    durability_rating VARCHAR(50),       -- e.g., "High", "Medium", based on material
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+);
+
 CREATE TABLE products_areas
 (
     area_id    INT NOT NULL,
@@ -254,8 +276,6 @@ CREATE TABLE feedback_images
     feedback_image_id INT AUTO_INCREMENT PRIMARY KEY,
     feedback_id       INT NOT NULL,
     image_url         VARCHAR(255),
-    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (feedback_id) REFERENCES feedbacks (feedback_id)
 );
 
