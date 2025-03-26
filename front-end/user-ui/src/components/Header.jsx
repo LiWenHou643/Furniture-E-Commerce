@@ -68,7 +68,10 @@ function ResponsiveAppBar() {
         navigate(`/${setting.toLowerCase()}`);
     };
 
-    console.log(profile);
+    const handleLogout = () => {
+        // Your logout logic here (e.g., clear tokens, update state)
+        handleCloseNavMenu(); // Close the menu after logout
+    };
 
     return (
         <AppBar position='fixed'>
@@ -94,52 +97,73 @@ function ResponsiveAppBar() {
                     >
                         LuxeHouse
                     </Typography>
-
                     <Box
                         sx={{
                             flexGrow: 1,
-                            display: { xs: 'none', md: 'flex' },
+                            display: {
+                                xs: 'none',
+                                md: 'flex',
+                                justifyContent: 'space-between',
+                            },
                         }}
                     >
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={() => handleCloseNavMenu(page)} // Pass the selected page
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
-                        ))}
-                    </Box>
-
-                    {/* Buttons (Login/Register or Logout) */}
-                    <Box>
-                        {!isAuthenticated() && (
-                            <>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: 'none', md: 'flex' },
+                            }}
+                        >
+                            {pages.map((page) => (
                                 <Button
-                                    variant='outlined'
-                                    color='inherit'
-                                    component={Link}
-                                    to='/login'
+                                    key={page}
+                                    onClick={() => handleCloseNavMenu(page)}
                                     sx={{
-                                        mr: 1,
+                                        my: 2,
+                                        color: 'white',
+                                        display: 'block',
                                     }}
                                 >
-                                    Login
+                                    {page}
                                 </Button>
+                            ))}
+                        </Box>
+
+                        {/* Desktop Authentication Buttons */}
+                        <Box sx={{ ml: 2 }}>
+                            {isAuthenticated() ? (
                                 <Button
                                     variant='outlined'
                                     color='inherit'
-                                    component={Link}
-                                    to='/register'
+                                    onClick={handleLogout} // You'll need to implement this function
+                                    sx={{ my: 2 }}
                                 >
-                                    Register
+                                    Logout
                                 </Button>
-                            </>
-                        )}
+                            ) : (
+                                <>
+                                    <Button
+                                        variant='outlined'
+                                        color='inherit'
+                                        component={Link}
+                                        to='/login'
+                                        sx={{ my: 2, mr: 1 }}
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
+                                        variant='outlined'
+                                        color='inherit'
+                                        component={Link}
+                                        to='/register'
+                                        sx={{ my: 2 }}
+                                    >
+                                        Register
+                                    </Button>
+                                </>
+                            )}
+                        </Box>
                     </Box>
 
-                    {/* Responsive Navigation */}
                     <Box
                         sx={{
                             flexGrow: 1,
@@ -175,16 +199,48 @@ function ResponsiveAppBar() {
                             {pages.map((page) => (
                                 <MenuItem
                                     key={page}
-                                    onClick={() => handleCloseNavMenu(page)} // Pass the selected page
+                                    onClick={() => handleCloseNavMenu(page)}
                                 >
                                     <Typography sx={{ textAlign: 'center' }}>
                                         {page}
                                     </Typography>
                                 </MenuItem>
                             ))}
+                            {/* Mobile Authentication Menu Items */}
+                            {isAuthenticated() ? (
+                                <MenuItem onClick={handleLogout}>
+                                    <Typography sx={{ textAlign: 'center' }}>
+                                        Logout
+                                    </Typography>
+                                </MenuItem>
+                            ) : (
+                                <>
+                                    <MenuItem
+                                        component={Link}
+                                        to='/login'
+                                        onClick={() => handleCloseNavMenu()}
+                                    >
+                                        <Typography
+                                            sx={{ textAlign: 'center' }}
+                                        >
+                                            Login
+                                        </Typography>
+                                    </MenuItem>
+                                    <MenuItem
+                                        component={Link}
+                                        to='/register'
+                                        onClick={() => handleCloseNavMenu()}
+                                    >
+                                        <Typography
+                                            sx={{ textAlign: 'center' }}
+                                        >
+                                            Register
+                                        </Typography>
+                                    </MenuItem>
+                                </>
+                            )}
                         </Menu>
                     </Box>
-
                     {/* Logo */}
                     <HomeIcon
                         sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
@@ -207,7 +263,6 @@ function ResponsiveAppBar() {
                     >
                         LuxeHouse
                     </Typography>
-
                     {/* Notification and User Menu */}
                     {isAuthenticated() && (
                         <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
