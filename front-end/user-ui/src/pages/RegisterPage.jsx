@@ -2,9 +2,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
     Button,
-    Checkbox,
     Container,
-    FormControlLabel,
     Grid,
     IconButton,
     InputAdornment,
@@ -35,9 +33,6 @@ const validationSchema = Yup.object({
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Confirm password is required'),
-    terms: Yup.bool()
-        .oneOf([true], 'You must agree to the terms and conditions')
-        .required('Terms and conditions must be accepted'),
 });
 
 const RegisterPage = () => {
@@ -100,12 +95,11 @@ const RegisterPage = () => {
                         phoneNumber: '',
                         password: '',
                         confirmPassword: '',
-                        terms: false, // Initial value for terms checkbox
                     }}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                 >
-                    {({ touched, errors, isValid, dirty, values }) => (
+                    {({ touched, errors, isValid, dirty }) => (
                         <Form>
                             {/* First Name and Last Name in 1 row */}
                             <Grid container spacing={2}>
@@ -220,9 +214,9 @@ const RegisterPage = () => {
                                                         edge='end'
                                                     >
                                                         {showPassword ? (
-                                                            <VisibilityOff />
-                                                        ) : (
                                                             <Visibility />
+                                                        ) : (
+                                                            <VisibilityOff />
                                                         )}
                                                     </IconButton>
                                                 </InputAdornment>
@@ -265,9 +259,9 @@ const RegisterPage = () => {
                                                         edge='end'
                                                     >
                                                         {showConfirmPassword ? (
-                                                            <VisibilityOff />
-                                                        ) : (
                                                             <Visibility />
+                                                        ) : (
+                                                            <VisibilityOff />
                                                         )}
                                                     </IconButton>
                                                 </InputAdornment>
@@ -277,38 +271,13 @@ const RegisterPage = () => {
                                 </Grid>
                             </Grid>
 
-                            {/* Terms & Conditions Checkbox */}
-                            <FormControlLabel
-                                control={
-                                    <Field
-                                        name='terms'
-                                        type='checkbox'
-                                        as={Checkbox}
-                                        color='primary'
-                                        checked={values.terms}
-                                    />
-                                }
-                                label='I agree to the terms and conditions'
-                                sx={{ marginBottom: 2 }}
-                            />
-                            <ErrorMessage
-                                name='terms'
-                                component='div'
-                                style={{ color: 'red', marginBottom: 8 }}
-                            />
-
                             {/* Submit Button */}
                             <Button
                                 variant='contained'
                                 color='primary'
                                 fullWidth
                                 type='submit'
-                                disabled={
-                                    !dirty ||
-                                    !isValid ||
-                                    !values.terms ||
-                                    isLoading
-                                } // Disable button until terms are checked
+                                disabled={!dirty || !isValid || isLoading} // Disable button until terms are checked
                             >
                                 {isLoading ? 'Loading...' : 'Register'}
                             </Button>
