@@ -37,45 +37,45 @@ const FeatureChip = styled(Chip)(({ theme }) => ({
 
 const DescriptionDetail = ({ descriptionDetail }) => {
     const tableRows = [
-        { label: 'Description', value: descriptionDetail.shortDescription },
-        { label: 'Style', value: descriptionDetail.style },
+        { label: 'Description', value: descriptionDetail?.shortDescription },
+        { label: 'Style', value: descriptionDetail?.style },
         {
             label: 'Upholstery Material',
-            value: descriptionDetail.upholsteryMaterial,
+            value: descriptionDetail?.upholsteryMaterial,
         },
-        { label: 'Frame Material', value: descriptionDetail.frameMaterial },
-        { label: 'Cushion Filling', value: descriptionDetail.cushionFilling },
+        { label: 'Frame Material', value: descriptionDetail?.frameMaterial },
+        { label: 'Cushion Filling', value: descriptionDetail?.cushionFilling },
         {
             label: 'Dimensions',
-            value: `${descriptionDetail.dimensionsLength}"L x ${descriptionDetail.dimensionsWidth}"W x ${descriptionDetail.dimensionsHeight}"H`,
+            value: `${descriptionDetail?.dimensionsLength}"L x ${descriptionDetail?.dimensionsWidth}"W x ${descriptionDetail?.dimensionsHeight}"H`,
         },
-        { label: 'Weight', value: `${descriptionDetail.weight} lbs` },
+        { label: 'Weight', value: `${descriptionDetail?.weight} lbs` },
         {
             label: 'Weight Capacity',
-            value: `${descriptionDetail.weightCapacity} lbs`,
+            value: `${descriptionDetail?.weightCapacity} lbs`,
         },
         {
             label: 'Features',
             value: (
-                <FeatureChip label={descriptionDetail.features} size='small' />
+                <FeatureChip label={descriptionDetail?.features} size='small' />
             ),
         },
         {
             label: 'Ergonomic Design',
-            value: descriptionDetail.ergonomicDesign ? 'Yes' : 'No',
+            value: descriptionDetail?.ergonomicDesign ? 'Yes' : 'No',
         },
         {
             label: 'Assembly Required',
-            value: descriptionDetail.assemblyRequired ? 'Yes' : 'No',
+            value: descriptionDetail?.assemblyRequired ? 'Yes' : 'No',
         },
         {
             label: 'Care Instructions',
-            value: descriptionDetail.careInstructions,
+            value: descriptionDetail?.careInstructions,
         },
-        { label: 'Intended Use', value: descriptionDetail.intendedUse },
+        { label: 'Intended Use', value: descriptionDetail?.intendedUse },
         {
             label: 'Durability Rating',
-            value: descriptionDetail.durabilityRating,
+            value: descriptionDetail?.durabilityRating,
         },
     ];
 
@@ -88,23 +88,33 @@ const DescriptionDetail = ({ descriptionDetail }) => {
             >
                 Description Details
             </Typography>
-            <StyledTableContainer component={Paper}>
-                <Table>
-                    <TableBody>
-                        {tableRows.map((row, index) => (
-                            <TableRow
-                                key={index}
-                                sx={{
-                                    '&:hover': { backgroundColor: '#f5f5f5' },
-                                }}
-                            >
-                                <HeaderCell>{row.label}</HeaderCell>
-                                <ValueCell>{row.value}</ValueCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </StyledTableContainer>
+
+            {descriptionDetail == null ||
+            Object.keys(descriptionDetail).length === 0 ? (
+                <Typography variant='body1' sx={{ color: 'text.secondary' }}>
+                    No description details available.
+                </Typography>
+            ) : (
+                <StyledTableContainer component={Paper}>
+                    <Table>
+                        <TableBody>
+                            {tableRows.map((row, index) => (
+                                <TableRow
+                                    key={index}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: '#f5f5f5',
+                                        },
+                                    }}
+                                >
+                                    <HeaderCell>{row.label}</HeaderCell>
+                                    <ValueCell>{row.value}</ValueCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </StyledTableContainer>
+            )}
         </Box>
     );
 };

@@ -254,7 +254,7 @@ const ProductDetailPage = () => {
                                         variant='body2'
                                         color='text.secondary'
                                     >
-                                        {product.soldQuantity || 1000} sold
+                                        {product.soldQuantity} sold
                                     </Typography>
                                 </Box>
 
