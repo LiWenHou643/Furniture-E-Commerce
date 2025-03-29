@@ -53,8 +53,8 @@ VALUES ('user1@example.com', '0931234567', 'Nguyen', 'Anh Tu',
 
 UPDATE users SET avatar = 'https://res.cloudinary.com/images-cloud-storage/image/upload/v1737289513/2AE14CDD-1265-470C-9B15F49024186C10_source_va1hoa.webp' WHERE user_id = 2;
 
-INSERT INTO addresses (user_id, street_address, ward, district, city)
-VALUES (2, '1 Mậu Thân', '31126', '916', '92');
+INSERT INTO addresses (user_id, street_address, ward, district, city, is_default)
+VALUES (2, '1 Mậu Thân', '31126', '916', '92', true), (2, '99 Mậu Thân', '31126', '916', '92', false);
 
 
 INSERT INTO categories (category_name, category_description, image_url)

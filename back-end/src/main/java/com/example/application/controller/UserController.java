@@ -126,5 +126,12 @@ public class UserController {
 		return ResponseEntity
 				.ok(new ApiResponse<>("success", "User count retrieved successfully", userService.countUsers()));
 	}
+	
+	@PutMapping("/addresses/set-default")
+	public ResponseEntity<?> changeDefaultAddress(@RequestParam Long oldDefaultAddressId,
+			@RequestParam Long newDefaultAddressId) {
+		return ResponseEntity.ok(new ApiResponse<>("success", "Default address changed successfully",
+				userService.changeDefaultAddress(oldDefaultAddressId, newDefaultAddressId)));
+	}
 
 }

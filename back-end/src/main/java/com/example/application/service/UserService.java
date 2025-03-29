@@ -130,6 +130,25 @@ public class UserService {
 		return UserMapper.INSTANCE.toDTO(userRepository.save(user));
 	}
 
+	public UserDTO changeDefaultAddress(Long oldDefaultAddressId, Long newDefaultAddressId) {
+		var oldDefaultAddress = addressRepository.findById(oldDefaultAddressId)
+				.orElseThrow(() -> new ResourceNotFoundException("Address", "id", oldDefaultAddressId));
+		var newDefaultAddress = addressRepository.findById(newDefaultAddressId)
+				.orElseThrow(() -> new ResourceNotFoundException("Address", "id", newDefaultAddressId));
+
+		if (oldDefaultAddress.getUser().getUserId() != newDefaultAddress.getUser().getUserId()) {
+			throw new IllegalArgumentException("Addresses do not belong to the same user");
+		}
+
+		oldDefaultAddress.setDefaultAddress(false);
+		newDefaultAddress.setDefaultAddress(true);
+
+		addressRepository.save(oldDefaultAddress);
+		addressRepository.save(newDefaultAddress);
+
+		return UserMapper.INSTANCE.toDTO(newDefaultAddress.getUser());
+	}
+	
 	public int countUsers() {
 		return (int) userRepository.count() - 1; // -1 to exclude the admin user
 	}

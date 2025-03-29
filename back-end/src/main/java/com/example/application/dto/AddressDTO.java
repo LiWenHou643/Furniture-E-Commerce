@@ -17,6 +17,7 @@ public class AddressDTO {
     String ward;
     String district;
     String city;
+    Boolean defaultAddress;
 
     // This is the user ID of the user whose address is being updated
     Long userId;

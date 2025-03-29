@@ -56,6 +56,7 @@ CREATE TABLE addresses
     ward           VARCHAR(10)  NOT NULL, -- Phường/Xã
     district       VARCHAR(10)  NOT NULL, -- Quận/Huyện
     city           VARCHAR(10)  NOT NULL, -- Thành phố/Tỉnh
+    is_default       BOOLEAN     NOT NULL DEFAULT FALSE, 
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (user_id)

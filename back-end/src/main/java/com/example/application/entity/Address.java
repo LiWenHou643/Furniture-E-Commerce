@@ -28,6 +28,9 @@ public class Address extends BaseEntity {
 
     @Column(nullable = false)
     String city;
+    
+    @Column(nullable = false, name = "is_default")
+    Boolean defaultAddress;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

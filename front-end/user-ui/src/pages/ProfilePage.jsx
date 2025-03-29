@@ -22,12 +22,14 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import Chip from '@mui/material/Chip';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
 import AvatarUploader from '../components/AvatarUploader';
 import Loading from '../components/Loading';
+import useChangeDefaultAddress from '../hooks/useChangeDefaultAddress';
 import useChangePwd from '../hooks/useChangePwd';
 import useDeleteAddress from '../hooks/useDeleteAddress';
 import useFetchUserProfile from '../hooks/useFetchUserProfile';
@@ -70,6 +72,8 @@ const ProfilePage = () => {
         setSelectedTab(newValue);
         setSearchParams({ tab: newValue });
     };
+
+    console.log(addresses);
 
     return (
         <Container sx={{ mt: 15 }} maxWidth='lg'>
@@ -279,6 +283,8 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
 
     const { mutate: deleteAddress } = useDeleteAddress();
 
+    const { mutate: changeDefaultAddress } = useChangeDefaultAddress();
+
     useEffect(() => {
         setCities(citiesData); // Load cities on initial render
     }, []);
@@ -425,6 +431,16 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
         setIsEditing(true);
     };
 
+    const handleSetDefault = (addressId) => {
+        const oldDefaultAddress = addresses.find(
+            (address) => address.defaultAddress
+        );
+        changeDefaultAddress({
+            oldDefaultAddressId: oldDefaultAddress.addressId,
+            newDefaultAddressId: addressId,
+        });
+    };
+
     return (
         <Box>
             {/* Add Address Button */}
@@ -456,9 +472,24 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                         <Card key={address.addressId} sx={{ marginBottom: 2 }}>
                             <CardContent>
                                 <Grid container alignItems='center' spacing={2}>
-                                    <Grid item xs={10}>
+                                    <Grid item xs={8}>
                                         <Typography variant='body1'>
                                             {address.streetAddress}
+
+                                            {address.defaultAddress ? (
+                                                <Chip
+                                                    label='Default Address'
+                                                    color='primary'
+                                                    size='small'
+                                                    variant='outlined'
+                                                    sx={{
+                                                        marginLeft: 1,
+                                                        mb: 0.5,
+                                                    }}
+                                                />
+                                            ) : (
+                                                ''
+                                            )}
                                         </Typography>
                                         <Typography variant='body2'>
                                             {address.wardName},{' '}
@@ -468,10 +499,23 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                                     </Grid>
                                     <Grid
                                         item
-                                        xs={2}
+                                        xs={4}
                                         display='flex'
                                         justifyContent='flex-end'
                                     >
+                                        {!address.defaultAddress && (
+                                            <Button
+                                                variant='outlined'
+                                                color='primary'
+                                                onClick={() =>
+                                                    handleSetDefault(
+                                                        address.addressId
+                                                    )
+                                                }
+                                            >
+                                                Set Default
+                                            </Button>
+                                        )}
                                         <IconButton
                                             sx={{ padding: 1 }}
                                             color='primary'

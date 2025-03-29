@@ -2,8 +2,15 @@ import {
     Box,
     Button,
     Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Grid,
+    List,
+    ListItem,
+    ListItemText,
     Paper,
     TextField,
     Typography,
@@ -47,6 +54,19 @@ function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState('CASH_ON_DELIVERY'); // Default to "cod"
     const [shippingCost, setShippingCost] = useState(5.0); // Default to standard delivery fee
     const [addresses, setAddresses] = useState([]);
+    // State to handle modal open/close
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+
+    // Open the modal dialog
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    // Close the modal dialog
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
     const getNameFromCode = (code, data) => {
         const item = data.find((item) => item.code === code);
@@ -71,26 +91,20 @@ function CheckoutPage() {
     useEffect(() => {
         if (profileData) {
             setAddresses(profileData.addresses);
-        }
-    }, [profileData]);
 
-    useEffect(() => {
-        if (formattedAddresses.length > 0) {
-            const defaultAddress = formattedAddresses[0];
-            const newBillingInfo = {
+            // Set the default address to the first address in the list
+            const defaultAddress = profileData.addresses.find(
+                (address) => address.defaultAddress
+            );
+
+            setSelectedAddress(defaultAddress);
+            setBillingInfo({
                 fullName: profileData.lastName + ' ' + profileData.firstName,
                 phone: profileData.phoneNumber,
-                address: `${defaultAddress.streetAddress}, ${defaultAddress.wardName}, ${defaultAddress.districtName}, ${defaultAddress.cityName}`,
-            };
-
-            // Only update if billingInfo has changed
-            if (
-                JSON.stringify(newBillingInfo) !== JSON.stringify(billingInfo)
-            ) {
-                setBillingInfo(newBillingInfo);
-            }
+                address: formatAddress(formatAddress(defaultAddress)),
+            });
         }
-    }, [formattedAddresses, billingInfo, profileData]); // Add formattedAddresses to the dependency array]);
+    }, [profileData]);
 
     // Handle case where no data is available
     if (selectedCartItems.length === 0) {
@@ -116,6 +130,15 @@ function CheckoutPage() {
     }
 
     const { fullName, phone, address } = billingInfo;
+
+    const handleAddressChange = (address) => {
+        setSelectedAddress(address);
+        setBillingInfo({
+            ...billingInfo,
+            address: formatAddress(address),
+        });
+        handleCloseDialog();
+    };
 
     // Function to map codes to names
     const handleNoteChange = (e) => {
@@ -151,7 +174,7 @@ function CheckoutPage() {
 
     const handleSubmitOrder = () => {
         const order = {
-            shippingAddress: address,
+            shippingAddress: addressToString(formatAddress(selectedAddress)),
             shippingMethod: deliveryMethod,
             paymentMethod: paymentMethod,
             shippingCost: shippingCost,
@@ -166,7 +189,15 @@ function CheckoutPage() {
             }),
         };
         // You can now send the order to your backend
+        // console.log(order);
         createOrder(order);
+    };
+
+    const addressToString = (address) => {
+        if (!address) {
+            return '';
+        }
+        return `${address.streetAddress}, ${address.wardName}, ${address.districtName}, ${address.cityName}`;
     };
 
     return (
@@ -177,9 +208,26 @@ function CheckoutPage() {
 
             {/* Delivery Address Row */}
             <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                <Typography variant='h6' gutterBottom>
-                    Delivery Address
-                </Typography>
+                <Box
+                    display='flex'
+                    justifyContent='space-between'
+                    alignItems='center'
+                    mb={2}
+                >
+                    <Typography variant='h6' gutterBottom>
+                        Delivery Address
+                        {/* Button to change address */}
+                    </Typography>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => handleOpenDialog()}
+                        size='small'
+                        sx={{ mt: 1 }}
+                    >
+                        Change Address
+                    </Button>
+                </Box>
                 {formattedAddresses.length === 0 ? (
                     <Typography variant='body1' color='error'>
                         Please add an address in your profile.
@@ -198,22 +246,60 @@ function CheckoutPage() {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={3}>
                             <Typography variant='body1'>
-                                <strong>Full Name:</strong> {fullName}
+                                <strong>Full Name:</strong> {fullName || 'N/A'}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={3}>
                             <Typography variant='body1'>
-                                <strong>Phone:</strong> {phone}
+                                <strong>Phone:</strong> {phone || 'N/A'}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant='body1'>
-                                <strong>Full Address:</strong> {address}
+                                <strong>Full Address:</strong>{' '}
+                                {addressToString(address) || 'N/A'}
                             </Typography>
                         </Grid>
                     </Grid>
                 )}
             </Paper>
+
+            {/* Modal Dialog for Address Selection */}
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Select a New Address</DialogTitle>
+                <DialogContent>
+                    <List>
+                        {formattedAddresses.map((address, index) => (
+                            <ListItem key={index}>
+                                <ListItemText
+                                    primary={addressToString(address)}
+                                />
+                                {
+                                    // Add a button to address which is not selected yet
+                                    address?.addressId !==
+                                        selectedAddress?.addressId && (
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            onClick={() => {
+                                                handleAddressChange(address);
+                                            }}
+                                            sx={{ ml: 1 }}
+                                        >
+                                            Select
+                                        </Button>
+                                    )
+                                }
+                            </ListItem>
+                        ))}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleCloseDialog()} color='primary'>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Order Summary Table */}
             <Paper elevation={3} sx={{ p: 3, mb: 3 }}>

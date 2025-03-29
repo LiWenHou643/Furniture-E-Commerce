@@ -130,16 +130,7 @@ function ResponsiveAppBar() {
 
                         {/* Desktop Authentication Buttons */}
                         <Box sx={{ ml: 2 }}>
-                            {isAuthenticated() ? (
-                                <Button
-                                    variant='outlined'
-                                    color='inherit'
-                                    onClick={handleLogout} // You'll need to implement this function
-                                    sx={{ my: 2 }}
-                                >
-                                    Logout
-                                </Button>
-                            ) : (
+                            {!isAuthenticated() && (
                                 <>
                                     <Button
                                         variant='outlined'
@@ -207,13 +198,7 @@ function ResponsiveAppBar() {
                                 </MenuItem>
                             ))}
                             {/* Mobile Authentication Menu Items */}
-                            {isAuthenticated() ? (
-                                <MenuItem onClick={handleLogout}>
-                                    <Typography sx={{ textAlign: 'center' }}>
-                                        Logout
-                                    </Typography>
-                                </MenuItem>
-                            ) : (
+                            {!isAuthenticated() && (
                                 <>
                                     <MenuItem
                                         component={Link}
@@ -241,6 +226,7 @@ function ResponsiveAppBar() {
                             )}
                         </Menu>
                     </Box>
+
                     {/* Logo */}
                     <HomeIcon
                         sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
