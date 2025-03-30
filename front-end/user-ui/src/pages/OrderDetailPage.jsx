@@ -441,42 +441,59 @@ const OrderDetailPage = () => {
                                         </Box>
 
                                         {/* Conditionally render feedback button */}
-                                        {!item.feedbackGiven && (
-                                            <Box
-                                                sx={{
-                                                    marginTop: 1,
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-end',
-                                                    alignItems: 'center',
-                                                }}
-                                            >
+                                        <Box
+                                            sx={{
+                                                marginTop: 1,
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            {item.feedbackGiven && (
+                                                <Typography
+                                                    variant='body2'
+                                                    color='textSecondary'
+                                                >
+                                                    You have already left
+                                                    feedback for this item.
+                                                </Typography>
+                                            )}
+
+                                            {orderStatus !== 'DELIVERED' && (
                                                 <Typography
                                                     variant='body2'
                                                     color='textSecondary'
                                                 >
                                                     You can only leave feedback
-                                                    for delivered items.
+                                                    after the order is
+                                                    delivered.
                                                 </Typography>
+                                            )}
 
-                                                <Button
-                                                    variant='contained'
-                                                    color='primary'
-                                                    onClick={() =>
-                                                        handleOpenFeedbackModal(
-                                                            item.orderDetailId,
-                                                            item.productItemId,
-                                                            item.productId
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        orderStatus !==
-                                                        'DELIVERED'
-                                                    }
-                                                >
-                                                    Leave Feedback
-                                                </Button>
-                                            </Box>
-                                        )}
+                                            {
+                                                // Show the feedback button only if the order is not feedback given
+                                                !item.feedbackGiven && (
+                                                    <Button
+                                                        variant='contained'
+                                                        color='primary'
+                                                        onClick={() =>
+                                                            handleOpenFeedbackModal(
+                                                                item.orderDetailId,
+                                                                item.productItemId,
+                                                                item.productId
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            orderStatus !==
+                                                            'DELIVERED'
+                                                        }
+                                                        sx={{ ml: 1 }}
+                                                    >
+                                                        Leave Feedback
+                                                    </Button>
+                                                )
+                                            }
+                                        </Box>
                                     </Box>
                                 ))}
                             </Box>
