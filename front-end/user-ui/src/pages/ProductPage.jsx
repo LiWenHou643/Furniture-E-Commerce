@@ -56,10 +56,13 @@ const ProductPage = () => {
         }, 500) // Adjust debounce delay as needed
     );
 
-    // Handle search input change
     const handleSearch = (event) => {
         const keyword = event.target.value;
-        debouncedSearchRef.current(keyword); // Call the debounced function
+        const currentParams = Object.fromEntries(searchParams.entries()); // Get all current search params
+        const updatedParams = { ...currentParams, keyword }; // Merge with the updated keyword
+        setSearchParams(updatedParams); // Set the new search parameters
+        navigate(`?${new URLSearchParams(updatedParams).toString()}`); // Update the URL
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Clean up debounce function on component unmount
