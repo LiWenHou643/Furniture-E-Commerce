@@ -408,7 +408,7 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
         };
     };
 
-    const formattedAddresses = addresses.map(formatAddress);
+    const formattedAddresses = addresses?.map(formatAddress);
 
     const handleAddClick = () => {
         setCurrentAddress({
@@ -456,7 +456,7 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
             </Box>
 
             {/* No addresses */}
-            {formattedAddresses.length === 0 && (
+            {formattedAddresses?.length === 0 && (
                 <Typography
                     variant='body1'
                     sx={{ marginBottom: 2, textAlign: 'center' }}
@@ -473,10 +473,14 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                             <CardContent>
                                 <Grid container alignItems='center' spacing={2}>
                                     <Grid item xs={8}>
-                                        <Typography variant='body1'>
+                                        <Typography
+                                            variant='body1'
+                                            component='div' // Change this to 'div' to avoid nesting issues
+                                            sx={{ marginBottom: 2 }}
+                                        >
                                             {address.streetAddress}
 
-                                            {address.defaultAddress ? (
+                                            {address.defaultAddress && (
                                                 <Chip
                                                     label='Default Address'
                                                     color='primary'
@@ -487,10 +491,9 @@ const AddressesTab = ({ addresses: AddressesArray }) => {
                                                         mb: 0.5,
                                                     }}
                                                 />
-                                            ) : (
-                                                ''
                                             )}
                                         </Typography>
+
                                         <Typography variant='body2'>
                                             {address.wardName},{' '}
                                             {address.districtName},{' '}

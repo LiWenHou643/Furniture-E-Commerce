@@ -6,6 +6,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -120,9 +121,11 @@ public class OrderService {
 			statusCountMap.put(dto.getStatus(), dto.getCount());
 		}
 
-		// Step 4: Convert the map back to a list
-		return statusCountMap.entrySet().stream()
-				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+		// Step 4: Sort the result by the enum order
+		return Arrays.stream(OrderStatus.values()) // Use Arrays.stream() here
+				.map(orderStatus -> new OrderCountByStatusDTO(orderStatus.name(), // Order status as the key
+						statusCountMap.get(orderStatus.name()) // Fetch the count from the map
+				)).collect(Collectors.toList()); // Collect as a list
 	}
 
 	public List<OrderCountByStatusDTO> findOrdersCountByStatusAndMonth(Integer year, Integer month) {
@@ -148,9 +151,11 @@ public class OrderService {
 			statusCountMap.put(dto.getStatus(), dto.getCount());
 		}
 
-		// Step 4: Convert the map back to a list
-		return statusCountMap.entrySet().stream()
-				.map(entry -> new OrderCountByStatusDTO(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+		// Step 4: Sort the result by the enum order
+		return Arrays.stream(OrderStatus.values()) // Use Arrays.stream() here
+				.map(orderStatus -> new OrderCountByStatusDTO(orderStatus.name(), // Order status as the key
+						statusCountMap.get(orderStatus.name()) // Fetch the count from the map
+				)).collect(Collectors.toList()); // Collect as a list
 	}
 
 	public int findTotalFinishedOrdersAllTime() {
