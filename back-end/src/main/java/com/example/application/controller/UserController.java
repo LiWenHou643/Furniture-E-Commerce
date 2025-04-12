@@ -69,14 +69,11 @@ public class UserController {
 				userService.deleteAddress(userId, addressId)));
 	}
 
-	@PutMapping("/{userId}/profile")
+	@PutMapping("/profile")
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	public ResponseEntity<?> updateProfile(@PathVariable(required = false) Long userId, @RequestBody UserDTO request) {
-		if (userId == null) {
-			userId = getUserId();
-		}
+	public ResponseEntity<?> updateProfile(@RequestBody UserDTO request) {
 		return ResponseEntity
-				.ok(new ApiResponse<>("success", "User updated successfully", userService.updateUser(userId, request)));
+				.ok(new ApiResponse<>("success", "User updated successfully", userService.updateUser(getUserId(), request)));
 	}
 
 	@PutMapping("/password")
