@@ -1,26 +1,28 @@
 package com.example.application.service;
 
-import com.example.application.dto.ChatMessageDTO;
-import com.example.application.dto.ChatRoomDTO;
-import com.example.application.entity.ChatMessage;
-import com.example.application.mapper.ChatMessageMapper;
-import com.example.application.repository.ChatMessageRepository;
-import com.example.application.repository.ChatRoomRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.example.application.dto.ChatMessageDTO;
+import com.example.application.dto.ChatRoomDTO;
+import com.example.application.entity.ChatMessage;
+import com.example.application.mapper.ChatMessageMapper;
+import com.example.application.repository.ChatMessageRepository;
+import com.example.application.repository.ChatRoomRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class ChatMessageService {
     ChatMessageRepository chatMessageRepository;
     ChatRoomService chatRoomService;
     ChatRoomRepository chatRoomRepository;
+    ChatMessageMapper chatMessageMapper;
 
     public ChatMessageDTO save(ChatMessageDTO chatMessageDTO) {
         LocalDateTime utcTime = chatMessageDTO.getTimestamp(); // Received UTC time
@@ -39,14 +42,14 @@ public class ChatMessageService {
         LocalDateTime localVietnamTime = vietnamTime.toLocalDateTime();
 
         // Map DTO to Entity
-        var chatEntity = ChatMessageMapper.INSTANCE.toEntity(chatMessageDTO);
+        var chatEntity = chatMessageMapper.toEntity(chatMessageDTO);
         chatEntity.setChatMessageId(null);
         chatEntity.setTimestamp(localVietnamTime);
         var chatId = chatRoomService.getChatRoomId(chatMessageDTO.getSenderId(), chatMessageDTO.getRecipientId(), true)
                                     .orElseThrow(); // You can create your own dedicated exception
         chatEntity.setChatId(chatId);
         var saved = chatMessageRepository.save(chatEntity);
-        return ChatMessageMapper.INSTANCE.toDTO(saved);
+        return chatMessageMapper.toDTO(saved);
     }
 
     public List<ChatMessageDTO> findChatMessages(Long senderId, Long recipientId, LocalDateTime lastTimestamp, int size) {
@@ -64,7 +67,7 @@ public class ChatMessageService {
             chatMessagesPage = chatMessageRepository.findByChatIdAndTimestampBefore(chatId, lastTimestamp, pageable);
         }
 
-        return chatMessagesPage.stream().map(ChatMessageMapper.INSTANCE::toDTO).sorted(Comparator.comparing(
+        return chatMessagesPage.stream().map(chatMessageMapper::toDTO).sorted(Comparator.comparing(
                                        ChatMessageDTO::getTimestamp)) // Ascending order for UI display
                                .collect(Collectors.toList());
     }
@@ -77,7 +80,7 @@ public class ChatMessageService {
         return chatIds.stream().map(chatId -> {
             var pageable = PageRequest.of(0, size, Sort.by("timestamp").descending());
             var chatMessages = chatMessageRepository.findByChatId(chatId, pageable)
-                                                    .stream().map(ChatMessageMapper.INSTANCE::toDTO)
+                                                    .stream().map(chatMessageMapper::toDTO)
                                                     .toList();
 
             // Handle case where there are no messages for the chat room

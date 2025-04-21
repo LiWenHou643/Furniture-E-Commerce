@@ -57,7 +57,7 @@ const ProductDetailPage = () => {
     }
 
     const productFeedbacks = product?.feedbacks;
-    productFeedbacks.map((feedback) => {
+    productFeedbacks?.map((feedback) => {
         const productItem = product.productItems.find(
             (item) => item.productItemId === feedback.productItemId
         );
@@ -153,7 +153,7 @@ const ProductDetailPage = () => {
                                 marginTop: 2,
                             }}
                         >
-                            {selectedVariant?.productImages.map(
+                            {selectedVariant?.productImages?.map(
                                 (img, index) => (
                                     <CardMedia
                                         key={index}
@@ -305,7 +305,7 @@ const ProductDetailPage = () => {
                                         mb: 2,
                                     }}
                                 >
-                                    {productVariants.map((variant) => (
+                                    {productVariants?.map((variant) => (
                                         <CustomTooltip
                                             key={variant.color.colorId}
                                             title={variant.color.colorName}

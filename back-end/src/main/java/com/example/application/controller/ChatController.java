@@ -33,12 +33,13 @@ public class ChatController {
 
     SimpMessagingTemplate messagingTemplate;
     ChatMessageService chatMessageService;
+    ChatMessageMapper chatMessageMapper;
 
     // For regular public messages (if you still want that)
     @MessageMapping("/broadcast")
     @SendTo("/topic/messages")
     public ChatMessageDTO sendMessage(ChatMessage message) {
-        return ChatMessageMapper.INSTANCE.toDTO(message); // Broadcast to all users
+        return chatMessageMapper.toDTO(message); // Broadcast to all users
     }
 
     // This will handle private messages.

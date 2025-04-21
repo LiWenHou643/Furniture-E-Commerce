@@ -1,3 +1,4 @@
+
 package com.example.application.service;
 
 import org.springframework.data.domain.Page;
@@ -25,11 +26,13 @@ public class UserService {
 	UserRepository userRepository;
 	AddressRepository addressRepository;
 	PasswordEncoder passwordEncoder;
+	UserMapper userMapper;
+	AddressMapper addressMapper;
 
 	public Page<UserDTO> getAllUsers(int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		var users = userRepository.findAllUsers(pageable);
-		return users.map(UserMapper.INSTANCE::toDTO);
+		return users.map(userMapper::toDTO);
 	}
 	
 	public Long getAdminId() {
@@ -39,7 +42,7 @@ public class UserService {
 	public UserDTO getUserById(Long userId) {
 		var user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-		return UserMapper.INSTANCE.toDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO updateAddress(Long userId, AddressDTO addressDTO) {
@@ -47,11 +50,11 @@ public class UserService {
 			// Add new address
 			var user = userRepository.findById(userId)
 					.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-			Address newAddress = AddressMapper.INSTANCE.toAddress(addressDTO);
+			Address newAddress = addressMapper.toAddress(addressDTO);
 			newAddress.setUser(user);
 			user.getAddresses().add(newAddress);
 			userRepository.save(user);
-			return UserMapper.INSTANCE.toDTO(user);
+			return userMapper.toDTO(user);
 		}
 
 		// Update existing address
@@ -68,7 +71,7 @@ public class UserService {
 		address.setCity(addressDTO.getCity());
 		addressRepository.save(address);
 
-		return UserMapper.INSTANCE.toDTO(address.getUser());
+		return userMapper.toDTO(address.getUser());
 	}
 
 	public UserDTO deleteAddress(Long userId, Long addressId) {
@@ -82,7 +85,7 @@ public class UserService {
 		}
 
 		userRepository.save(user);
-		return UserMapper.INSTANCE.toDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO updateUser(Long userId, UserDTO userDTO) {
@@ -95,7 +98,7 @@ public class UserService {
 		user.setPhoneNumber(userDTO.getPhoneNumber());
 		user.setAvatar(userDTO.getAvatar());
 		userRepository.save(user);
-		return UserMapper.INSTANCE.toDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO updatePassword(Long userId, UserDTO userDTO) {
@@ -111,7 +114,7 @@ public class UserService {
 
 		user.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
 		userRepository.save(user);
-		return UserMapper.INSTANCE.toDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO updateAvatar(Long userId, String avatarUrl) {
@@ -119,7 +122,7 @@ public class UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 		user.setAvatar(avatarUrl);
 		userRepository.save(user);
-		return UserMapper.INSTANCE.toDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO changeUserStatus(Long userId) {
@@ -127,7 +130,7 @@ public class UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "user Id", userId));
 		user.setUserStatus(!user.getUserStatus());
 
-		return UserMapper.INSTANCE.toDTO(userRepository.save(user));
+		return userMapper.toDTO(userRepository.save(user));
 	}
 
 	public UserDTO changeDefaultAddress(Long oldDefaultAddressId, Long newDefaultAddressId) {
@@ -146,7 +149,7 @@ public class UserService {
 		addressRepository.save(oldDefaultAddress);
 		addressRepository.save(newDefaultAddress);
 
-		return UserMapper.INSTANCE.toDTO(newDefaultAddress.getUser());
+		return userMapper.toDTO(newDefaultAddress.getUser());
 	}
 	
 	public int countUsers() {

@@ -23,15 +23,16 @@ public class MaterialService {
     private static final String MATERIAL_CACHE_KEY = "material";
 
     MaterialRepository materialRepository;
+    MaterialMapper materialMapper;
 
     @Cacheable(cacheNames = MATERIAL_LIST_CACHE_KEY)
     public List<MaterialDTO> getMaterials() {
-        return materialRepository.findAll().stream().map(MaterialMapper.INSTANCE::toDTO).collect(Collectors.toList());
+        return materialRepository.findAll().stream().map(materialMapper::toDTO).collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = MATERIAL_CACHE_KEY, key = "#id")
     public MaterialDTO getMaterialById(Long id) {
-        return materialRepository.findById(id).map(MaterialMapper.INSTANCE::toDTO).orElseThrow(
+        return materialRepository.findById(id).map(materialMapper::toDTO).orElseThrow(
                 () -> new ResourceNotFoundException("Material", "id", id)
         );
     }
@@ -42,7 +43,7 @@ public class MaterialService {
     )
     public MaterialDTO addOrUpdateMaterial(MaterialDTO materialDTO) {
         if (materialDTO.getMaterialId() == null) {
-            return MaterialMapper.INSTANCE.toDTO(materialRepository.save(MaterialMapper.INSTANCE.toEntity(materialDTO)));
+            return materialMapper.toDTO(materialRepository.save(materialMapper.toEntity(materialDTO)));
         }
 
         var material = materialRepository.findById(materialDTO
@@ -50,7 +51,7 @@ public class MaterialService {
 
         material.setMaterialName(materialDTO.getMaterialName());
         material.setMaterialDescription(materialDTO.getMaterialDescription());
-        return MaterialMapper.INSTANCE.toDTO(materialRepository.save(material));
+        return materialMapper.toDTO(materialRepository.save(material));
     }
 
     @Caching(

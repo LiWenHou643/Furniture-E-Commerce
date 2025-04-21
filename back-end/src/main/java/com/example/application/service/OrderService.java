@@ -65,6 +65,8 @@ public class OrderService {
 	OrderRepository orderRepository;
 	PaymentRepository paymentRepository;
 	ProductItemRepository productItemRepository;
+	OrderDetailMapper orderDetailMapper;
+	OrderMapper orderMapper;
 	PayPalService payPalService;
 	MessageProducer messageProducer;
 
@@ -84,7 +86,7 @@ public class OrderService {
 			// Convert and sort OrderDetails by orderDetailId
 			List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
 					.sorted(Comparator.comparing(OrderDetail::getOrderDetailId)).map(orderDetail -> {
-						OrderDetailDTO orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(orderDetail);
+						OrderDetailDTO orderDetailDTO = orderDetailMapper.toDTO(orderDetail);
 
 						// Set the main product image URL
 						orderDetailDTO.setProductImage(orderDetail.getProductItem().getProductImages().stream()
@@ -94,7 +96,7 @@ public class OrderService {
 					}).collect(Collectors.toList());
 
 			// Map Order to OrderDTO and set sorted OrderDetails
-			OrderDTO orderDTO = OrderMapper.INSTANCE.toDTO(order);
+			OrderDTO orderDTO = orderMapper.toDTO(order);
 			orderDTO.setOrderDetails(sortedOrderDetails);
 			return orderDTO;
 		});
@@ -189,13 +191,13 @@ public class OrderService {
 		// Convert Set<OrderDetail> to List<OrderDetail> and sort by orderDetailId
 		var orderDetails = order.getOrderDetails();
 		var orderDetailsDto = orderDetails.stream().map(orderDetail -> {
-			var orderDetailDTO = OrderDetailMapper.INSTANCE.toDTO(orderDetail);
+			var orderDetailDTO = orderDetailMapper.toDTO(orderDetail);
 			orderDetailDTO.setProductImage(orderDetail.getProductItem().getProductImages().stream()
 					.filter(ProductImage::isMainImage).findFirst().map(ProductImage::getImageUrl).orElse(null));
 			return orderDetailDTO;
 		}).sorted(Comparator.comparing(OrderDetailDTO::getOrderDetailId)).collect(Collectors.toList());
 
-		var orderDTO = OrderMapper.INSTANCE.toDTO(order);
+		var orderDTO = orderMapper.toDTO(order);
 		orderDTO.setOrderDetails(orderDetailsDto);
 		orderDTO.setUserName(new StringBuilder().append(order.getUser().getLastName()).append(" ")
 				.append(order.getUser().getFirstName()).toString());
@@ -214,7 +216,7 @@ public class OrderService {
 		user.setUserId(userId);
 
 		// Convert OrderDTO to Order entity
-		var order = OrderMapper.INSTANCE.toEntity(orderDTO);
+		var order = orderMapper.toEntity(orderDTO);
 		order.setUser(user);
 		order.setOrderStatus(OrderStatus.PENDING);
 
@@ -233,7 +235,7 @@ public class OrderService {
 		// Process OrderDetails
 		Order finalOrder = order;
 		var orderDetails = orderDTO.getOrderDetails().stream().map(orderDetailDTO -> {
-			var orderDetail = OrderDetailMapper.INSTANCE.toEntity(orderDetailDTO);
+			var orderDetail = orderDetailMapper.toEntity(orderDetailDTO);
 			var productItem = productItemMap.get(orderDetailDTO.getProductItemId());
 
 			if (productItem == null) {
@@ -281,11 +283,11 @@ public class OrderService {
 
 		// Sort OrderDetails by orderDetailId and convert to DTOs
 		List<OrderDetailDTO> sortedOrderDetails = order.getOrderDetails().stream()
-				.sorted(Comparator.comparing(OrderDetail::getOrderDetailId)).map(OrderDetailMapper.INSTANCE::toDTO)
+				.sorted(Comparator.comparing(OrderDetail::getOrderDetailId)).map(orderDetailMapper::toDTO)
 				.collect(Collectors.toList());
 
 		// Convert Order to OrderDTO and set sorted OrderDetails
-		OrderDTO savedOrderDTO = OrderMapper.INSTANCE.toDTO(order);
+		OrderDTO savedOrderDTO = orderMapper.toDTO(order);
 		savedOrderDTO.setOrderDetails(sortedOrderDetails);
 
 		return savedOrderDTO;

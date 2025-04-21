@@ -39,11 +39,13 @@ public class FeedbackService {
 	FeedbackRepository feedbackRepository;
 	ProductRepository productRepository;
 	OrderDetailRepository orderDetailRepository;
+	FeedbackMapper feedbackMapper;
+	ProductMapper productMapper;
 	Cloudinary cloudinary;
 
 	public List<FeedbackDTO> getFeedbacksByProductId(Long productId) {
 		var feedbacks = feedbackRepository.findByProductId(productId);
-		return feedbacks.stream().map(FeedbackMapper.INSTANCE::toDTO).collect(Collectors.toList());
+		return feedbacks.stream().map(feedbackMapper::toDTO).collect(Collectors.toList());
 	}
 
 	@Caching(evict = { @CacheEvict(value = PRODUCT_LIST_CACHE_KEY, allEntries = true),
@@ -106,12 +108,12 @@ public class FeedbackService {
 		orderDetailRepository.save(orderDetail);
 
 		// Return updated product as DTO
-		var productDTO = ProductMapper.INSTANCE.toDTO(product);
+		var productDTO = productMapper.toDTO(product);
 		if (productDTO.getFeedbacks() == null) {
 			productDTO.setFeedbacks(new ArrayList<>());
 		}
 
-		productDTO.getFeedbacks().add(FeedbackMapper.INSTANCE.toDTO(savedFeedback));
+		productDTO.getFeedbacks().add(feedbackMapper.toDTO(savedFeedback));
 		return productDTO;
 	}
 }

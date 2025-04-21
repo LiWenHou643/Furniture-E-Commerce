@@ -30,17 +30,19 @@ public class CartService {
 	CartRepository cartRepository;
 	ProductItemRepository productItemRepository;
 	OrderRepository orderRepository;
+	CartMapper cartMapper;
+	CartItemMapper cartItemMapper;
 
 	public CartDTO getCartByUserId(Long userId) {
 		// Fetch the cart by userId, or throw an exception if not found
 		var cart = cartRepository.findByUser_UserId(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
 
-		var cartItemsDTO = cart.getCartItems().stream().map(CartItemMapper.INSTANCE::toDTO)
+		var cartItemsDTO = cart.getCartItems().stream().map(cartItemMapper::toDTO)
 				.collect(Collectors.toList());
 
 		// Sort cart items by created date in descending order
-		var cartDTO = CartMapper.INSTANCE.toDTO(cart);
+		var cartDTO = cartMapper.toDTO(cart);
 
 		cartItemsDTO.sort((item1, item2) -> item2.getCreatedAt().compareTo(item1.getCreatedAt()));
 		cartDTO.setCartItems(cartItemsDTO);
@@ -61,7 +63,7 @@ public class CartService {
 			cartItem.get().setQuantity(cartItem.get().getQuantity() + cartItemDTO.getQuantity());
 			var savedCart = cartRepository.save(cart);
 
-			return CartMapper.INSTANCE.toDTO(savedCart);
+			return cartMapper.toDTO(savedCart);
 		}
 
 		// Add item to cart
@@ -75,7 +77,7 @@ public class CartService {
 
 		var savedCart = cartRepository.save(cart);
 
-		return CartMapper.INSTANCE.toDTO(savedCart);
+		return cartMapper.toDTO(savedCart);
 	}
 
 	public CartDTO updateItemInCart(Long userId, CartItemDTO cartItemDTO) {
@@ -97,7 +99,7 @@ public class CartService {
 
 		var savedCart = cartRepository.save(cart);
 
-		return CartMapper.INSTANCE.toDTO(savedCart);
+		return cartMapper.toDTO(savedCart);
 	}
 
 	public CartDTO removeItemFromCart(Long userId, Long cartItemId) {
@@ -109,7 +111,7 @@ public class CartService {
 
 		var savedCart = cartRepository.save(cart);
 
-		return CartMapper.INSTANCE.toDTO(savedCart);
+		return cartMapper.toDTO(savedCart);
 	}
 
 	@Transactional
@@ -124,14 +126,14 @@ public class CartService {
 				.map(orderItem -> orderItem.getProductItem().getProductItemId()).collect(Collectors.toSet());
 
 		if (productItemIdsToRemove.isEmpty()) {
-			return CartMapper.INSTANCE.toDTO(cart); // Return early if there are no items to remove
+			return cartMapper.toDTO(cart); // Return early if there are no items to remove
 		}
 
 		// Use a HashSet for O(1) lookup instead of O(n) stream operations
 		cart.getCartItems().removeIf(item -> productItemIdsToRemove.contains(item.getProductItem().getProductItemId()));
 
 		var savedCart = cartRepository.save(cart);
-		return CartMapper.INSTANCE.toDTO(savedCart);
+		return cartMapper.toDTO(savedCart);
 	}
 
 	public CartDTO removeAllItemsFromCart(Long userId) {
@@ -143,6 +145,6 @@ public class CartService {
 
 		var savedCart = cartRepository.save(cart);
 
-		return CartMapper.INSTANCE.toDTO(savedCart);
+		return cartMapper.toDTO(savedCart);
 	}
 }

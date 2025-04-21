@@ -28,7 +28,8 @@ public class ProductItemDTO {
 	double originalPrice;
 	double salePrice;
 	int stockQuantity;
-	boolean productItemStatus;
+	@Builder.Default
+	boolean productItemStatus = true;
 	List<ProductImageDTO> productImages;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

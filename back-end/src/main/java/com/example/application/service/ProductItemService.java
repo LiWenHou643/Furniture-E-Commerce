@@ -39,15 +39,18 @@ public class ProductItemService {
 
 	ProductItemRepository productItemRepository;
 	ProductRepository productRepository;
+	ProductItemMapper productItemMapper;
+	ProductImageMapper productImageMapper;
+	ColorMapper colorMapper;
 	Cloudinary cloudinary;
 
 	public ProductItemDTO getProductItemById(Long id) {
-		return ProductItemMapper.INSTANCE.toDTO(productItemRepository.findById(id)
+		return productItemMapper.toDTO(productItemRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("ProductItem", "id", id)));
 	}
 
 	public List<ProductItemDTO> getAllProductItemsByIds(List<Long> ids) {
-		return productItemRepository.findAllById(ids).stream().map(ProductItemMapper.INSTANCE::toDTO)
+		return productItemRepository.findAllById(ids).stream().map(productItemMapper::toDTO)
 				.collect(Collectors.toList());
 	}
 
@@ -72,16 +75,16 @@ public class ProductItemService {
 		}
 
 		Set<ProductImage> productImageList = productItemDTO.getProductImages().stream()
-				.map(ProductImageMapper.INSTANCE::toEntity).collect(Collectors.toSet());
+				.map(productImageMapper::toEntity).collect(Collectors.toSet());
 
 		ProductItem productItem = ProductItem.builder().product(product)
-				.color(ColorMapper.INSTANCE.toEntity(productItemDTO.getColor())).sku(productItemDTO.getSku())
+				.color(colorMapper.toEntity(productItemDTO.getColor())).sku(productItemDTO.getSku())
 				.originalPrice(productItemDTO.getOriginalPrice()).salePrice(productItemDTO.getSalePrice())
 				.stockQuantity(productItemDTO.getStockQuantity()).productImages(productImageList).build();
 
 		productImageList.forEach(productImage -> productImage.setProductItem(productItem));
 
-		ProductItemDTO saved = ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
+		ProductItemDTO saved = productItemMapper.toDTO(productItemRepository.save(productItem));
 		log.info("ProductItem saved with product id: {}", saved.getProductId());
 		return saved;
 	}
@@ -93,7 +96,7 @@ public class ProductItemService {
 		ProductItem productItem = productItemRepository.findById(productItemDTO.getProductItemId()).orElseThrow(
 				() -> new ResourceNotFoundException("ProductItem", "id", productItemDTO.getProductItemId()));
 
-		productItem.setColor(ColorMapper.INSTANCE.toEntity(productItemDTO.getColor()));
+		productItem.setColor(colorMapper.toEntity(productItemDTO.getColor()));
 		productItem.setSku(productItemDTO.getSku());
 		productItem.setOriginalPrice(productItemDTO.getOriginalPrice());
 		productItem.setSalePrice(productItemDTO.getSalePrice());
@@ -151,7 +154,7 @@ public class ProductItemService {
 			}
 
 			Set<ProductImage> productImageList = productItemDTO.getNewProductImages().stream()
-					.map(ProductImageMapper.INSTANCE::toEntity).collect(Collectors.toSet());
+					.map(productImageMapper::toEntity).collect(Collectors.toSet());
 
 			productImageList.forEach(productImage -> productImage.setProductItem(productItem));
 			productItem.getProductImages().addAll(productImageList);
@@ -186,7 +189,7 @@ public class ProductItemService {
 			}
 		}
 
-		return ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
+		return productItemMapper.toDTO(productItemRepository.save(productItem));
 	}
 
 	@Caching(evict = { @CacheEvict(value = PRODUCT_LIST_CACHE_KEY, allEntries = true),
@@ -198,7 +201,7 @@ public class ProductItemService {
 
 		productItem.setProductItemStatus(false);
 
-		var productItemDTO = ProductItemMapper.INSTANCE.toDTO(productItemRepository.save(productItem));
+		var productItemDTO = productItemMapper.toDTO(productItemRepository.save(productItem));
 
 		return productItemDTO;
 	}

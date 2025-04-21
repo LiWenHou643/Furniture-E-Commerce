@@ -19,6 +19,7 @@ public class CachedProductService {
     private static final String PRODUCT_LIST_CACHE_KEY = "productList";
 
     ProductRepository productRepository;
+    ProductMapper productMapper;
 
     @Cacheable(cacheNames = PRODUCT_LIST_CACHE_KEY, key = "#categories + ':' + #brands + ':' + #materials + ':' + #minPrice + ':' + #maxPrice + ':' + #minRating")
     public List<ProductDTO> getFilteredProducts(
@@ -31,7 +32,7 @@ public class CachedProductService {
     ) {
         List<Product> products = productRepository.findFilteredProductsWithVariations(categories, brands, materials, minPrice, maxPrice, minRating);
         return products.stream()
-                       .map(ProductMapper.INSTANCE::toDTO)
+                       .map(productMapper::toDTO)
                        .collect(Collectors.toList());
     }
 }

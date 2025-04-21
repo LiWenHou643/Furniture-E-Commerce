@@ -1,7 +1,7 @@
 package com.example.application.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
 import com.example.application.dto.NotificationDTO;
 import com.example.application.entity.Notification;
@@ -9,9 +9,12 @@ import com.example.application.entity.Notification;
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
-	NotificationMapper INSTANCE = Mappers.getMapper(NotificationMapper.class);
-
+	@Mapping(target = "channel", ignore = true)
+	@Mapping(target = "notificationType", ignore = true)
+	@Mapping(target = "recipient", ignore = true)
+	@Mapping(target = "subject", ignore = true)
 	NotificationDTO toDTO(Notification notification);
+
 
 	Notification toEntity(NotificationDTO notificationDTO);
 

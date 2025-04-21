@@ -1,19 +1,21 @@
 package com.example.application.service;
 
-import com.example.application.dto.CategoryDTO;
-import com.example.application.exception.ResourceNotFoundException;
-import com.example.application.mapper.CategoryMapper;
-import com.example.application.repository.CategoryRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.application.dto.CategoryDTO;
+import com.example.application.exception.ResourceNotFoundException;
+import com.example.application.mapper.CategoryMapper;
+import com.example.application.repository.CategoryRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +25,12 @@ public class CategoryService {
     private static final String CATEGORY_CACHE_KEY = "category";
 
     CategoryRepository categoryRepository;
+    CategoryMapper categoryMapper;
 
     @Cacheable(cacheNames = CATEGORY_LIST_CACHE_KEY)
     public List<CategoryDTO> getCategories() {
         return categoryRepository.findAll().stream()
-                                 .map(CategoryMapper.INSTANCE::toDTO)
+                                 .map(categoryMapper::toDTO)
                                  .collect(Collectors.toList());
     }
 
@@ -36,7 +39,7 @@ public class CategoryService {
         var category = categoryRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "id", id)
         );
-        return CategoryMapper.INSTANCE.toDTO(category);
+        return categoryMapper.toDTO(category);
     }
 
     @Caching(
@@ -45,7 +48,7 @@ public class CategoryService {
     )
     public CategoryDTO addOrUpdateCategory(CategoryDTO categoryDTO) {
         if (categoryDTO.getCategoryId() == null) {
-            return CategoryMapper.INSTANCE.toDTO(categoryRepository.save(CategoryMapper.INSTANCE.toEntity(categoryDTO)));
+            return categoryMapper.toDTO(categoryRepository.save(categoryMapper.toEntity(categoryDTO)));
         }
 
         var category = categoryRepository.findById(categoryDTO.getCategoryId()).orElseThrow(
@@ -54,7 +57,7 @@ public class CategoryService {
 
         category.setCategoryName(categoryDTO.getCategoryName());
         category.setCategoryDescription(categoryDTO.getCategoryDescription());
-        return CategoryMapper.INSTANCE.toDTO(categoryRepository.save(category));
+        return categoryMapper.toDTO(categoryRepository.save(category));
     }
 
     @Caching(

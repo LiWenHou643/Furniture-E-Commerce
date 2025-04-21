@@ -46,6 +46,8 @@ public class ProductService {
 	CategoryRepository categoryRepository;
 	BrandRepository brandRepository;
 	MaterialRepository materialRepository;
+	ProductMapper productMapper;
+	FeedbackMapper feedbackMapper;
 
 	// Inject the cached product service
 	CachedProductService cachedProductService;
@@ -78,11 +80,11 @@ public class ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
 
 		// Map the product to DTO
-		var productDTO = ProductMapper.INSTANCE.toDTO(product);
+		var productDTO = productMapper.toDTO(product);
 
 		// Extract feedbacks from the product items and map them to DTOs
 		var feedbacks = product.getProductItems().stream().flatMap(pi -> pi.getFeedbacks().stream())
-				.map(FeedbackMapper.INSTANCE::toDTO).collect(Collectors.toList());
+				.map(feedbackMapper::toDTO).collect(Collectors.toList());
 
 		productDTO.setFeedbacks(feedbacks);
 
@@ -119,7 +121,7 @@ public class ProductService {
 		}
 
 		// Map the DTO to an entity
-		Product product = ProductMapper.INSTANCE.toEntity(productDTO); // Map DTO to entity
+		Product product = productMapper.toEntity(productDTO); // Map DTO to entity
 		product.setCategory(category);
 		product.setBrand(brand);
 		product.setMaterial(material);
@@ -134,7 +136,7 @@ public class ProductService {
 		}); // Set the product for each product item
 
 		productRepository.save(product); // Save the new product
-		return ProductMapper.INSTANCE.toDTO(product); // Return the DTO
+		return productMapper.toDTO(product); // Return the DTO
 	}
 
 	// Cache the individual product and evict the product list cache on update
@@ -167,7 +169,7 @@ public class ProductService {
 		product.setProductDescription(productDTO.getProductDescription());
 
 		productRepository.save(product); // Save the updated product
-		return ProductMapper.INSTANCE.toDTO(product); // Return the updated DTO
+		return productMapper.toDTO(product); // Return the updated DTO
 	}
 
 	@CacheEvict(cacheNames = PRODUCT_LIST_CACHE_KEY, allEntries = true)
@@ -183,7 +185,7 @@ public class ProductService {
 	public List<ProductDTO> getTopSalesProducts() {
 		List<Product> products = productRepository.findTop3BySoldQuantityGreaterThanZero();
 
-		return products.stream().map((ProductMapper.INSTANCE::toDTO)).collect(Collectors.toList());
+		return products.stream().map((productMapper::toDTO)).collect(Collectors.toList());
 	}
 
 	public int getTotalSold() {

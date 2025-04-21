@@ -1,99 +1,98 @@
 spring:
-  application:
-    name: ${SPRING_APP_NAME:LuxeHouse}
-  datasource:
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/db}
-    username: ${DATABASE_USERNAME:root}
-    password: ${DATABASE_PASSWORD:root}
-  jackson:
-    time-zone: UTC
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format-sql: true
-        jdbc:
-          time-zone: UTC
-  web:
-    resources:
-      add-mappings: false
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      timeout: 2000
-      lettuce:
-        pool:
-          max-idle: 20
-          min-idle: 2
-          max-active: 20
-          max-wait: 3000ms
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID:GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET:GOOGLE_CLIENT_SECRET}
-          facebook:
-            client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
-            client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:MAIL_USERNAME}
-    password: ${MAIL_PASSWORD:MAIL_PASSWORD}
-    properties:
-      protocol: smtp
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          ssl:
-            trust: smtp.gmail.com
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 5MB
-      max-request-size: 10MB
-  kafka:
-    bootstrap-servers: localhost:9092
-
+    application:
+        name: ${SPRING_APP_NAME:LuxeHouse}
+    datasource:
+        url: ${DATABASE_URL:jdbc:mysql://localhost:3306/db}
+        username: ${DATABASE_USERNAME:root}
+        password: ${DATABASE_PASSWORD:root}
+    jackson:
+        time-zone: UTC
+    jpa:
+        hibernate:
+            ddl-auto: none
+        show-sql: false
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                format-sql: true
+                jdbc:
+                    time-zone: UTC
+    web:
+        resources:
+            add-mappings: false
+    data:
+        redis:
+            host: redis
+            port: 6379
+            timeout: 2000
+            lettuce:
+                pool:
+                    max-idle: 20
+                    min-idle: 2
+                    max-active: 20
+                    max-wait: 3000ms
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: ${GOOGLE_CLIENT_ID:GOOGLE_CLIENT_ID}
+                        client-secret: ${GOOGLE_CLIENT_SECRET:GOOGLE_CLIENT_SECRET}
+                    facebook:
+                        client-id: ${FACEBOOK_CLIENT_ID:FACEBOOK_CLIENT_ID}
+                        client-secret: ${FACEBOOK_CLIENT_SECRET:FACEBOOK_CLIENT_SECRET}
+    mail:
+        host: ${MAIL_HOST:smtp.gmail.com}
+        port: ${MAIL_PORT:587}
+        username: ${MAIL_USERNAME:MAIL_USERNAME}
+        password: ${MAIL_PASSWORD:MAIL_PASSWORD}
+        properties:
+            protocol: smtp
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    ssl:
+                        trust: smtp.gmail.com
+    servlet:
+        multipart:
+            enabled: true
+            max-file-size: 5MB
+            max-request-size: 10MB
+    kafka:
+        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 logging:
-  level:
-    root: INFO
-    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:DEBUG} # Security logs
-    org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG}      # Cache logs
-    org.springframework.cache.interceptor.CacheInterceptor: ${CACHE_INTERCEPTOR_LOG_LEVEL:TRACE} # Detailed cache logging
-    org.springframework.web.socket: ${SPRING_WEBSOCKET_LOG_LEVEL:DEBUG} # Websocket logs
-    org.springframework.messaging.simp: ${SPRING_MESSAGING_LOG_LEVEL:DEBUG} # Messaging logs
-    com.example.application.service: INFO                                         # Application services
-    com.example.application.repository: DEBUG                                     # Application repository
-    com.example.application.controller: DEBUG                                     # Application controller
-  pattern:
-    console: ${LOG_PATTERN_CONSOLE:%magenta(%d{HH:mm:ss}) %blue(%-5level) %red([%thread]) %cyan(%logger{15}) - %msg%n}
+    level:
+        root: INFO
+        org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:DEBUG} # Security logs
+        org.springframework.cache: ${SPRING_CACHE_LOG_LEVEL:DEBUG} # Cache logs
+        org.springframework.cache.interceptor.CacheInterceptor: ${CACHE_INTERCEPTOR_LOG_LEVEL:TRACE} # Detailed cache logging
+        org.springframework.web.socket: ${SPRING_WEBSOCKET_LOG_LEVEL:DEBUG} # Websocket logs
+        org.springframework.messaging.simp: ${SPRING_MESSAGING_LOG_LEVEL:DEBUG} # Messaging logs
+        com.example.application.service: INFO # Application services
+        com.example.application.repository: DEBUG # Application repository
+        com.example.application.controller: DEBUG # Application controller
+    pattern:
+        console: ${LOG_PATTERN_CONSOLE:%magenta(%d{HH:mm:ss}) %blue(%-5level) %red([%thread]) %cyan(%logger{15}) - %msg%n}
 
 server:
-  servlet:
-    session:
-      timeout: ${SESSION_TIMEOUT:20m}
+    servlet:
+        session:
+            timeout: ${SESSION_TIMEOUT:20m}
 
 jwt:
-  rsa-private-key: classpath:certs/privateKey.pem
-  rsa-public-key: classpath:certs/publicKey.pem
+    rsa-private-key: classpath:certs/privateKey.pem
+    rsa-public-key: classpath:certs/publicKey.pem
 
 paypal:
-  client:
-    id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
-    secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
-  mode: ${PAYPAL_MODE:sandbox}
+    client:
+        id: ${PAYPAL_CLIENT_ID:PAYPAL_CLIENT_ID}
+        secret: ${PAYPAL_CLIENT_SECRET:PAYPAL_CLIENT_SECRET}
+    mode: ${PAYPAL_MODE:sandbox}
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME:CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY:CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET:CLOUDINARY_API_SECRET}
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:CLOUDINARY_CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY:CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET:CLOUDINARY_API_SECRET}

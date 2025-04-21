@@ -1,15 +1,17 @@
 package com.example.application.mapper;
 
-import com.example.application.dto.FeedbackDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+
+import com.example.application.dto.FeedbackImageDTO;
+import com.example.application.entity.FeedbackImage;
 
 @Mapper(componentModel = "spring")
 public interface FeedbackImageMapper {
 
-    FeedbackImageMapper INSTANCE = Mappers.getMapper(FeedbackImageMapper.class);
+    @Mapping(target = "feedbackId", source = "feedback.feedbackId")
+    FeedbackImageDTO toDTO(FeedbackImage feedbackImage);
 
-    FeedbackDTO toDTO(FeedbackDTO feedbackDTO);
-
-    FeedbackDTO toEntity(FeedbackDTO feedbackDTO);
+    @Mapping(target = "feedback", ignore = true)
+    FeedbackImage toEntity(FeedbackImageDTO feedbackImageDTO);
 }

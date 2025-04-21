@@ -104,7 +104,7 @@ const ProductPage = () => {
                             <Grid container spacing={2}>
                                 {/* Here, map over your products data */}
                                 {data?.content?.length > 0 ? (
-                                    data.content.map((product, index) => (
+                                    data?.content?.map((product, index) => (
                                         <Grid
                                             item
                                             xs={12}

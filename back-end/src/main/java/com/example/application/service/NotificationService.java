@@ -1,12 +1,7 @@
 package com.example.application.service;
 
-import com.example.application.dto.NotificationDTO;
-import com.example.application.entity.Notification;
-import com.example.application.mapper.NotificationMapper;
-import com.example.application.repository.NotificationRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +9,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.example.application.dto.NotificationDTO;
+import com.example.application.entity.Notification;
+import com.example.application.mapper.NotificationMapper;
+import com.example.application.repository.NotificationRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -22,6 +24,7 @@ import java.util.List;
 public class NotificationService {
 
     NotificationRepository notificationRepository;
+    NotificationMapper notificationMapper;
     SimpMessagingTemplate messagingTemplate;
 
     public void markAsRead(List<Long> notificationIds) {
@@ -33,7 +36,7 @@ public class NotificationService {
     public Page<NotificationDTO> getNotifications(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return notificationRepository.findByUserId(userId, pageable).map(
-                NotificationMapper.INSTANCE::toDTO
+        		notificationMapper::toDTO
         );
     }
 
@@ -47,7 +50,7 @@ public class NotificationService {
     }
 
     public void saveNotification(NotificationDTO notificationDTO) {
-        Notification notification = NotificationMapper.INSTANCE.toEntity(notificationDTO);
+        Notification notification = notificationMapper.toEntity(notificationDTO);
         notificationRepository.save(notification);
     }
 

@@ -1,19 +1,18 @@
 package com.example.application.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
 import com.example.application.dto.ProductDTO;
 import com.example.application.entity.Product;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AreaMapper.class, DescriptionDetailMapper.class,CategoryMapper.class, BrandMapper.class, MaterialMapper.class, ProductItemMapper.class, FeedbackMapper.class})
 public interface ProductMapper {
-	ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
-
 	Product toEntity(ProductDTO productDTO);
 
+	@Mapping(target = "brandId", source = "brand.brandId")
+	@Mapping(target = "categoryId", source = "category.categoryId")
+	@Mapping(target = "materialId", source = "material.materialId")
+	@Mapping(target = "feedbacks", ignore = true)
 	ProductDTO toDTO(Product product);
-
-	void updateProductFromDTO(ProductDTO productDTO, @MappingTarget Product product);
 }

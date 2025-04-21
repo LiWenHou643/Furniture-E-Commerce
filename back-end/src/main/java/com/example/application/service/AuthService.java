@@ -54,7 +54,8 @@ public class AuthService {
 	RefreshTokenRepository refreshTokenRepository;
 	MessageProducer messageProducer;
 	private final CartRepository cartRepository;
-
+	UserMapper userMapper;
+	
 	public AuthDTO authenticate(AuthDTO request, HttpServletResponse response) {
 		User user;
 		if (isPhoneNumber(request.getUsername())) {
@@ -156,7 +157,7 @@ public class AuthService {
 
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 
-		return UserMapper.INSTANCE.toDTO(isSaved);
+		return userMapper.toDTO(isSaved);
 	}
 
 	public UserDTO resetPassword(String username) {
@@ -177,7 +178,7 @@ public class AuthService {
 		messageProducer.sendMessage(KafkaTopics.NOTIFICATION_DELIVERY, notificationDTO);
 
 		// Return the updated user
-		return UserMapper.INSTANCE.toDTO(updatedUser);
+		return userMapper.toDTO(updatedUser);
 	}
 
 	public AuthDTO refreshToken(HttpServletRequest httpServletRequest) {
